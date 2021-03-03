@@ -1,5 +1,5 @@
 import pygame
-from menu import MainMenu
+from menu import *
 
 
 class game():
@@ -12,11 +12,13 @@ class game():
         self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE) # CHANGE THIS TO FULLSCREEN 
         self.font_name = 'Fonts/gameFont.ttf'
         self.fullscreen = False
-        self.curr_menu = MainMenu(self)
         pygame.display.set_caption("St. Mike's Among Us!")
         self.icon = pygame.image.load("images/icon.png")
         pygame.display.set_icon(self.icon)
         self.clock = pygame.time.Clock()
+        self.main_menu = MainMenu(self)
+        self.settings = settingsMenu(self)
+        self.curr_menu = self.main_menu
 
     def game_loop(self):
         while self.playing:

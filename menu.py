@@ -7,6 +7,7 @@ class menu():
         self.run_display = True
         self.cursor_rect = pygame.Rect(0, 0, 20, 20)
         self.offset = -250
+        self.menu_background = pygame.image.load("images/background/menu/MainMenu.png")
 
 
     def draw_cursor(self):
@@ -32,7 +33,7 @@ class MainMenu(menu):
             if self.state == "Start":
                 self.game.playing = True
             elif self.state == "Settings":
-                pass
+                self.game.curr_menu = self.game.settings
             elif self.state == "Quit Game":
                 self.game.running, self.game.playing = False, False
             self.run_display = False
@@ -42,8 +43,7 @@ class MainMenu(menu):
         while self.run_display:
             self.game.check_events()
             self.check_input()
-            menu_background = pygame.image.load("images/background/menu/MainMenu.png")
-            self.game.display.blit(menu_background, (0, 0))
+            self.game.display.blit(self.menu_background, (0, 0))
             self.game.draw_text("Play Game", 150, self.startx, self.starty)
             self.game.draw_text("Settings", 150, self.settingsx, self.settingsy)
             self.game.draw_text("Quit Game", 150, self.quitx, self.quity)
@@ -76,6 +76,43 @@ class MainMenu(menu):
             elif self.state == "Quit Game":
                 self.cursor_rect.midtop = (self.settingsx + self.offset, self.settingsy)
                 self.state = "Settings"
+
+class settingsMenu(menu):
+    def __init__(self, game):
+        menu.__init__(self, game)
+        self.state = 'Volume'
+        self.volx, self.voly = self.mid_w, self.mid_h + 150
+        self.controlsx, self.controlsy = self.mid_w, self.mid_h + 300
+        self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
+    
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            self.check_input()
+            self.game.display.blit(self.menu_background, (0, 0))
+            self.game.draw_text("Settings", 200, self.game.display_W / 2, self.game.display_H / 2)
+            self.game.draw_text("Volume", 100, self.volx, self.voly)
+            self.game.draw_text("Controls", 100, self.controlsx, self.controlsy)
+            self.draw_cursor()
+            self.blit_screen()
+    
+    def check_input(self):
+        if self.game.back_key:
+            self.game.curr_menu = self.game.main_menu
+            self.run_display = False
+        elif self.game.up_key or self.game.down_key:
+            if self.state == "Volume":
+                self.state = "Controls"
+                self.cursor_rect.midtop = (self.controlsx + self.offset, self.controlsy)
+            elif self.state == "Controls":
+                self.state = "Volume"
+                self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
+        elif self.game.start_key:
+            # TODO
+            pass
+
+
 
 
 
