@@ -31,7 +31,8 @@ class MainMenu(menu):
         self.move_cursor()
         if self.game.start_key:
             if self.state == "Start":
-                self.game.playing = True
+                self.game.curr_menu = self.game.host_join
+                # self.game.playing = True
             elif self.state == "Settings":
                 self.game.curr_menu = self.game.settings
             elif self.state == "Quit Game":
@@ -294,10 +295,52 @@ class skinMenu(menu):
             self.run_display = False
 
         elif self.game.start_key:
-            # TODO
-            pass
+            self.game.skin = self.state
+            self.game.curr_menu = self.game.settings
+            self.run_display = False
 
 
+class host_join_menu(menu):
+    def __init__(self, game):
+        menu.__init__(self, game)
+        self.state = 'Host'
+        self.hostx, self.hosty = self.mid_w - 500, self.mid_h + 200
+        self.joinx, self.joiny = self.mid_w + 500, self.mid_h + 200
+        self.offset = 100
+        self.cursor_rect.midtop = (self.hostx, self.hosty + self.offset)
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            self.check_input()
+            self.game.display.blit(self.menu_background, (0, 0))
+            self.game.draw_text("Host or Join Game", 150, self.game.display_W / 2, self.game.display_H / 2 - 50)
+            self.game.draw_text("Host", 200, self.hostx, self.hosty)
+            self.game.draw_text("Join", 200, self.joinx, self.joiny)
+            self.draw_cursor()
+            self.blit_screen()
+    
+    def check_input(self):
+        if self.game.back_key:
+            self.game.curr_menu = self.game.main_menu
+            self.run_display = False
+        elif self.game.right_key or self.game.left_key:
+            if self.state == "Host":
+                self.cursor_rect.midtop = (self.joinx, self.joiny + self.offset)
+                self.state = "Join"
+            elif self.state == "Join":
+                self.cursor_rect.midtop = (self.hostx, self.hosty + self.offset)
+                self.state = "Host"
+        elif self.game.start_key:
+            if self.state == "Host":
+                # TODO
+                pass
+            elif self.state == "Join":
+                # TODO
+                pass
+        self.run_display = False
+        
 
 
 

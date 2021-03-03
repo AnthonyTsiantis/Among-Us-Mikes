@@ -19,7 +19,9 @@ class game():
         self.main_menu = MainMenu(self)
         self.settings = settingsMenu(self)
         self.skin_menu = skinMenu(self)
+        self.host_join = host_join_menu(self)
         self.curr_menu = self.main_menu
+        self.skin = "Black"
 
     def game_loop(self):
         while self.playing:
