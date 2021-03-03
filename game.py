@@ -6,7 +6,7 @@ class game():
     def __init__(self):
         pygame.init()
         self.running, self.playing = True, False
-        self.up_key, self.down_key, self.start_key, self.back_key = False, False, False, False
+        self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False
         self.display_W, self.display_H = 1920, 1080
         self.display = pygame.Surface((self.display_W, self.display_H))
         self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE) # CHANGE THIS TO FULLSCREEN 
@@ -18,6 +18,7 @@ class game():
         self.clock = pygame.time.Clock()
         self.main_menu = MainMenu(self)
         self.settings = settingsMenu(self)
+        self.skin_menu = skinMenu(self)
         self.curr_menu = self.main_menu
 
     def game_loop(self):
@@ -52,9 +53,15 @@ class game():
 
                 if event.key == pygame.K_UP:
                     self.up_key = True
+                
+                if event.key == pygame.K_RIGHT:
+                    self.right_key = True
+                
+                if event.key == pygame.K_LEFT:
+                    self.left_key = True
 
     def reset_keys(self):
-        self.up_key, self.down_key, self.start_key, self.back_key = False, False, False, False
+        self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False
 
     def draw_text(self, text, size, x, y):
         font = pygame.font.Font(self.font_name, size)
