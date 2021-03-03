@@ -22,9 +22,9 @@ class MainMenu(menu):
     def __init__(self, game):
         menu.__init__(self, game)
         self.state = "Start"
-        self.startx, self.starty = self.mid_w, self.mid_h
-        self.settingsx, self.settingsy = self.mid_w, self.mid_h + 150
-        self.quitx, self.quity = self.mid_w, self.mid_h + 300
+        self.startx, self.starty = self.mid_w, self.mid_h + 75
+        self.settingsx, self.settingsy = self.mid_w, self.mid_h + 200
+        self.quitx, self.quity = self.mid_w, self.mid_h + 325
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
     
     def check_input(self):
@@ -44,9 +44,10 @@ class MainMenu(menu):
             self.game.check_events()
             self.check_input()
             self.game.display.blit(self.menu_background, (0, 0))
-            self.game.draw_text("Play Game", 150, self.startx, self.starty)
-            self.game.draw_text("Settings", 150, self.settingsx, self.settingsy)
-            self.game.draw_text("Quit Game", 150, self.quitx, self.quity)
+            self.game.draw_text("Main Menu", 250, self.mid_w, self.mid_h - 75)
+            self.game.draw_text("Play Game", 100, self.startx, self.starty)
+            self.game.draw_text("Settings", 100, self.settingsx, self.settingsy)
+            self.game.draw_text("Quit Game", 100, self.quitx, self.quity)
             self.draw_cursor()
             self.blit_screen()
     
@@ -80,10 +81,10 @@ class MainMenu(menu):
 class settingsMenu(menu):
     def __init__(self, game):
         menu.__init__(self, game)
-        self.state = 'Volume'
-        self.volx, self.voly = self.mid_w, self.mid_h + 150
+        self.state = 'Skin'
+        self.skinx, self.skiny = self.mid_w, self.mid_h + 150
         self.controlsx, self.controlsy = self.mid_w, self.mid_h + 300
-        self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
+        self.cursor_rect.midtop = (self.skinx + self.offset, self.skiny)
     
     def display_menu(self):
         self.run_display = True
@@ -92,7 +93,7 @@ class settingsMenu(menu):
             self.check_input()
             self.game.display.blit(self.menu_background, (0, 0))
             self.game.draw_text("Settings", 200, self.game.display_W / 2, self.game.display_H / 2)
-            self.game.draw_text("Volume", 100, self.volx, self.voly)
+            self.game.draw_text("Select Skin", 100, self.skinx, self.skiny)
             self.game.draw_text("Controls", 100, self.controlsx, self.controlsy)
             self.draw_cursor()
             self.blit_screen()
@@ -102,12 +103,12 @@ class settingsMenu(menu):
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
         elif self.game.up_key or self.game.down_key:
-            if self.state == "Volume":
+            if self.state == "Skin":
                 self.state = "Controls"
                 self.cursor_rect.midtop = (self.controlsx + self.offset, self.controlsy)
             elif self.state == "Controls":
-                self.state = "Volume"
-                self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
+                self.state = "Skin"
+                self.cursor_rect.midtop = (self.skinx + self.offset, self.skiny)
         elif self.game.start_key:
             # TODO
             pass
