@@ -83,8 +83,9 @@ class settingsMenu(menu):
     def __init__(self, game):
         menu.__init__(self, game)
         self.state = 'Skin'
-        self.skinx, self.skiny = self.mid_w, self.mid_h + 150
-        self.controlsx, self.controlsy = self.mid_w, self.mid_h + 300
+        self.skinx, self.skiny = self.mid_w, self.mid_h + 75
+        self.graphicsx, self.graphicsy = self.mid_w, self.mid_h + 200
+        self.controlsx, self.controlsy = self.mid_w, self.mid_h + 325
         self.cursor_rect.midtop = (self.skinx + self.offset, self.skiny)
     
     def display_menu(self):
@@ -93,8 +94,9 @@ class settingsMenu(menu):
             self.game.check_events()
             self.check_input()
             self.game.display.blit(self.menu_background, (0, 0))
-            self.game.draw_text("Settings", 200, self.game.display_W / 2, self.game.display_H / 2 - 50)
+            self.game.draw_text("Settings", 250, self.game.display_W / 2, self.game.display_H / 2 - 75)
             self.game.draw_text("Select Skin", 100, self.skinx, self.skiny)
+            self.game.draw_text("Graphics/Audio", 100, self.graphicsx, self.graphicsy)
             self.game.draw_text("Controls", 100, self.controlsx, self.controlsy)
             self.draw_cursor()
             self.blit_screen()
@@ -103,19 +105,34 @@ class settingsMenu(menu):
         if self.game.back_key:
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
-        elif self.game.up_key or self.game.down_key:
+        elif self.game.up_key:
             if self.state == "Skin":
+                self.state = "Controls"
+                self.cursor_rect.midtop = (self.controlsx + self.offset, self.controlsy)
+            elif self.state == "Controls":
+                self.state = "Graphics"
+                self.cursor_rect.midtop = (self.graphicsx + self.offset, self.graphicsy)
+            elif self.state == "Graphics":
+                self.state = "Skin"
+                self.cursor_rect.midtop = (self.skinx + self.offset, self.skiny)
+        elif self.game.down_key:
+            if self.state == "Skin":
+                self.state = "Graphics"
+                self.cursor_rect.midtop = (self.graphicsx + self.offset, self.graphicsy)
+            elif self.state == "Graphics":
                 self.state = "Controls"
                 self.cursor_rect.midtop = (self.controlsx + self.offset, self.controlsy)
             elif self.state == "Controls":
                 self.state = "Skin"
                 self.cursor_rect.midtop = (self.skinx + self.offset, self.skiny)
+
         elif self.game.start_key:
             if self.state == "Skin":
                 self.game.curr_menu = self.game.skin_menu
+            elif self.state == "Graphics":
+                self.game.curr_menu = self.game.graphics_menu
             elif self.state == "Controls":
-                # TODO
-                pass
+                self.game.curr_menu = self.game.controls_menu
         self.run_display = False
 
 class skinMenu(menu):
@@ -124,29 +141,29 @@ class skinMenu(menu):
         self.state = "Black"
         self.img_scale = (200, 241) # original Dimension: 440, 482
         self.blackx, self.blacky = self.mid_w - 825, self.mid_h
-        self.black_img = pygame.transform.scale(pygame.image.load("images/characters/black.png"), self.img_scale) 
+        self.black_img = pygame.transform.scale(pygame.image.load("images/characters/Black.png"), self.img_scale) 
         self.whitex, self.whitey = self.mid_w - 675, self.mid_h
-        self.white_img = pygame.transform.scale(pygame.image.load("images/characters/white.png"), self.img_scale)
+        self.white_img = pygame.transform.scale(pygame.image.load("images/characters/White.png"), self.img_scale)
         self.brownx, self.browny = self.mid_w - 525, self.mid_h
-        self.brown_img = pygame.transform.scale(pygame.image.load("images/characters/brown.png"), self.img_scale)
+        self.brown_img = pygame.transform.scale(pygame.image.load("images/characters/Brown.png"), self.img_scale)
         self.redx, self.redy = self.mid_w - 375, self.mid_h
-        self.red_img = pygame.transform.scale(pygame.image.load("images/characters/red.png"), self.img_scale)
+        self.red_img = pygame.transform.scale(pygame.image.load("images/characters/Red.png"), self.img_scale)
         self.orangex, self.orangey = self.mid_w - 225, self.mid_h
-        self.orange_img = pygame.transform.scale(pygame.image.load("images/characters/orange.png"), self.img_scale)
+        self.orange_img = pygame.transform.scale(pygame.image.load("images/characters/Orange.png"), self.img_scale)
         self.yellowx, self.yellowy = self.mid_w - 75, self.mid_h
-        self.yellow_img = pygame.transform.scale(pygame.image.load("images/characters/yellow.png"), self.img_scale)
+        self.yellow_img = pygame.transform.scale(pygame.image.load("images/characters/Yellow.png"), self.img_scale)
         self.limex, self.limey = self.mid_w + 75, self.mid_h
-        self.lime_img = pygame.transform.scale(pygame.image.load("images/characters/lime.png"), self.img_scale)
+        self.lime_img = pygame.transform.scale(pygame.image.load("images/characters/Lime.png"), self.img_scale)
         self.greenx, self.greeny = self.mid_w + 225, self.mid_h
-        self.green_img = pygame.transform.scale(pygame.image.load("images/characters/green.png"), self.img_scale)
+        self.green_img = pygame.transform.scale(pygame.image.load("images/characters/Green.png"), self.img_scale)
         self.cyanx, self.cyany = self.mid_w + 375, self.mid_h
-        self.cyan_img = pygame.transform.scale(pygame.image.load("images/characters/cyan.png"), self.img_scale)
+        self.cyan_img = pygame.transform.scale(pygame.image.load("images/characters/Cyan.png"), self.img_scale)
         self.bluex, self.bluey = self.mid_w + 525, self.mid_h
-        self.blue_img = pygame.transform.scale(pygame.image.load("images/characters/blue.png"), self.img_scale)
+        self.blue_img = pygame.transform.scale(pygame.image.load("images/characters/Blue.png"), self.img_scale)
         self.purplex, self.purpley = self.mid_w + 675, self.mid_h
-        self.purple_img = pygame.transform.scale(pygame.image.load("images/characters/purple.png"), self.img_scale)
+        self.purple_img = pygame.transform.scale(pygame.image.load("images/characters/Purple.png"), self.img_scale)
         self.pinkx, self.pinky = self.mid_w + 825, self.mid_h
-        self.pink_img = pygame.transform.scale(pygame.image.load("images/characters/pink.png"), self.img_scale)
+        self.pink_img = pygame.transform.scale(pygame.image.load("images/characters/Pink.png"), self.img_scale)
         self.vert_offset = 15
         self.hori_offset = 115
         self.cursor_vert_offset = 250
@@ -342,10 +359,54 @@ class host_join_menu(menu):
         self.run_display = False
         
 
+class controls_menu(menu):
+    def __init__(self, game):
+        menu.__init__(self, game)
+        self.menu_navx, self.menu_navy = self.mid_w - 500, self.mid_h + 50
+        self.player_controlsx, self.player_controlsy = self.mid_w + 500, self.mid_h + 50
+        self.offset = 100
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            self.check_input()
+            self.game.display.blit(self.menu_background, (0, 0))
+            self.game.draw_text("Controls", 200, self.game.display_W / 2, self.game.display_H / 2 - 100)
+            self.game.draw_text("Menu Navigation", 100, self.menu_navx, self.menu_navy)
+            self.game.draw_text("Navigate Menu's using the arrow keys, enter and backspace", 50, self.menu_navx, self.menu_navy + self.offset)
+            self.game.draw_text("Player controls", 100, self.player_controlsx, self.player_controlsy)
+            self.game.draw_text("Control the player using WASD and enter keys", 50, self.player_controlsx, self.player_controlsy + self.offset)
+            self.draw_cursor()
+            self.blit_screen()
+    
+    def check_input(self):
+        if self.game.back_key:
+            self.game.curr_menu = self.game.settings
+        self.run_display = False
 
 
+class graphics_menu(menu): # TODO
+    def __init__(self, game):
+        menu.__init__(self, game)
+        self.displayx, self.displayy = self.mid_w - 500, self.mid_h + 50
+        self.audiox, self.audioy = self.mid_w + 500, self.mid_h + 50
+        self.offset = 100
+        # self.cursor_rect.midtop = (self.hostx, self.hosty + self.offset)
 
-
-
-
-
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            self.check_input()
+            self.game.display.blit(self.menu_background, (0, 0))
+            self.game.draw_text("Graphics and Audio", 200, self.game.display_W / 2, self.game.display_H / 2 - 100)
+            self.game.draw_text("Graphics", 100, self.displayx, self.displayy)
+            self.game.draw_text("Audio", 100, self.audiox, self.audioy)
+            self.draw_cursor()
+            self.blit_screen()
+    
+    def check_input(self):
+        if self.game.back_key:
+            self.game.curr_menu = self.game.settings
+        self.run_display = False

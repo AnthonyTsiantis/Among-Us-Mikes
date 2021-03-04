@@ -1,5 +1,5 @@
 import pygame
-from game import game
+from game import *
 g = game()
 
 while g.running:

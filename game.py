@@ -7,6 +7,7 @@ class game():
         pygame.init()
         self.running, self.playing = True, False
         self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False
+        self.move_f, self.move_d, self.move_r, self.move_l = False, False, False, False
         self.display_W, self.display_H = 1920, 1080
         self.display = pygame.Surface((self.display_W, self.display_H))
         self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE) # CHANGE THIS TO FULLSCREEN 
@@ -20,6 +21,8 @@ class game():
         self.settings = settingsMenu(self)
         self.skin_menu = skinMenu(self)
         self.host_join = host_join_menu(self)
+        self.controls_menu = controls_menu(self)
+        self.graphics_menu = graphics_menu(self)
         self.curr_menu = self.main_menu
         self.skin = "Black"
 
@@ -61,6 +64,19 @@ class game():
                 
                 if event.key == pygame.K_LEFT:
                     self.left_key = True
+                
+                if event.key == pygame.K_a:
+                    self.move_l = True
+                
+                if event.key == pygame.K_d:
+                    self.move_r = True
+                
+                if event.key == pygame.K_w:
+                    self.move_f = True
+                
+                if event.key == pygame.K_s:
+                    self.move_d = True
+
 
     def reset_keys(self):
         self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False
@@ -71,3 +87,5 @@ class game():
         text_rect = text_surface.get_rect()
         text_rect.center = (x, y)
         self.display.blit(text_surface, text_rect)
+
+
