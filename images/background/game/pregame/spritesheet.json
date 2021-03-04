@@ -1,0 +1,235 @@
+{
+	"frames": {
+		"box.png": {
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 105,
+				"h": 146
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 105,
+				"h": 146
+			},
+			"sourceSize": {
+				"w": 105,
+				"h": 146
+			}
+		},
+		"computer1.png": {
+			"frame": {
+				"x": 108,
+				"y": 1,
+				"w": 80,
+				"h": 71
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 80,
+				"h": 71
+			},
+			"sourceSize": {
+				"w": 80,
+				"h": 71
+			}
+		},
+		"computer2.png": {
+			"frame": {
+				"x": 190,
+				"y": 1,
+				"w": 78,
+				"h": 68
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 78,
+				"h": 68
+			},
+			"sourceSize": {
+				"w": 78,
+				"h": 68
+			}
+		},
+		"front.png": {
+			"frame": {
+				"x": 270,
+				"y": 1,
+				"w": 661,
+				"h": 372
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 661,
+				"h": 372
+			},
+			"sourceSize": {
+				"w": 661,
+				"h": 372
+			}
+		},
+		"rocket1.png": {
+			"frame": {
+				"x": 933,
+				"y": 1,
+				"w": 173,
+				"h": 198
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 173,
+				"h": 198
+			},
+			"sourceSize": {
+				"w": 173,
+				"h": 198
+			}
+		},
+		"rocket2.png": {
+			"frame": {
+				"x": 1108,
+				"y": 1,
+				"w": 171,
+				"h": 195
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 171,
+				"h": 195
+			},
+			"sourceSize": {
+				"w": 171,
+				"h": 195
+			}
+		},
+		"rocket3.png": {
+			"frame": {
+				"x": 1,
+				"y": 198,
+				"w": 173,
+				"h": 194
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 173,
+				"h": 194
+			},
+			"sourceSize": {
+				"w": 173,
+				"h": 194
+			}
+		},
+		"rocket4.png": {
+			"frame": {
+				"x": 1108,
+				"y": 198,
+				"w": 171,
+				"h": 201
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 171,
+				"h": 201
+			},
+			"sourceSize": {
+				"w": 171,
+				"h": 201
+			}
+		},
+		"rocket5.png": {
+			"frame": {
+				"x": 1,
+				"y": 401,
+				"w": 171,
+				"h": 200
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 171,
+				"h": 200
+			},
+			"sourceSize": {
+				"w": 171,
+				"h": 200
+			}
+		},
+		"rocket6.png": {
+			"frame": {
+				"x": 174,
+				"y": 401,
+				"w": 173,
+				"h": 200
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 173,
+				"h": 200
+			},
+			"sourceSize": {
+				"w": 173,
+				"h": 200
+			}
+		},
+		"ship.png": {
+			"frame": {
+				"x": 1281,
+				"y": 1,
+				"w": 1229,
+				"h": 998
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 1229,
+				"h": 998
+			},
+			"sourceSize": {
+				"w": 1229,
+				"h": 998
+			}
+		}
+	},
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2511,
+			"h": 1000
+		},
+		"scale": "1"
+	}
+}

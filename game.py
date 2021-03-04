@@ -23,8 +23,10 @@ class game():
         self.host_join = host_join_menu(self)
         self.controls_menu = controls_menu(self)
         self.graphics_menu = graphics_menu(self)
+        self.pregame = pregame_lobby(self)
         self.curr_menu = self.main_menu
         self.skin = "Black"
+        self.username = "Test"
 
     def game_loop(self):
         while self.playing:

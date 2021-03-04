@@ -1,4 +1,5 @@
 import pygame
+from spritesheet import *
 
 class menu():
     def __init__(self, game):
@@ -351,12 +352,11 @@ class host_join_menu(menu):
                 self.state = "Host"
         elif self.game.start_key:
             if self.state == "Host":
-                # TODO
-                pass
+                self.game.curr_menu = self.game.pregame
             elif self.state == "Join":
                 # TODO
                 pass
-        self.run_display = False
+            self.run_display = False
         
 
 class controls_menu(menu):
@@ -409,4 +409,40 @@ class graphics_menu(menu): # TODO
     def check_input(self):
         if self.game.back_key:
             self.game.curr_menu = self.game.settings
+        self.run_display = False
+
+class pregame_lobby(menu):
+    def __init__(self, game):
+        menu.__init__(self, game)
+        Spritesheet = spritesheet("images/background/game/pregame/spritesheet.png")
+        self.box = Spritesheet.parse_sprite('box.png')
+        self.ship = Spritesheet.parse_sprite('ship.png')
+        self.front = Spritesheet.parse_sprite('front.png')
+        self.computers = [Spritesheet.parse_sprite('computer1.png'), Spritesheet.parse_sprite('computer2.png')]
+        self.left_rocket = [Spritesheet.parse_sprite('rocket1.png'), Spritesheet.parse_sprite('rocket2.png'), Spritesheet.parse_sprite('rocket3.png')]
+        self.right_rocket = [Spritesheet.parse_sprite('rocket4.png'), Spritesheet.parse_sprite('rocket5.png'), Spritesheet.parse_sprite('rocket6.png')]
+        
+
+    def display_menu(self):
+        self.run_display = True
+        computer_counter = 0
+        rocket_counter = 0
+        while self.run_display:
+            if computer_counter == 2:
+                computer_counter = 0
+            
+            if rocket_counter == 3:
+                rocket_counter = 0
+            
+
+            self.game.check_events()
+            self.check_input()
+            self.game.display.fill((0,0,0))
+            self.game.display.blit(self.ship, (320, 10))
+            self.game.display.blit(self.front, (600, 650))
+            self.blit_screen()
+    
+    def check_input(self):
+        if self.game.back_key:
+            self.game.curr_menu = self.game.main_menu
         self.run_display = False
