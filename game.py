@@ -1,8 +1,9 @@
 import pygame
 from menu import *
 
-
+# game class that controls key inputs and what is displayed on screen
 class game():
+    # Initilizing screen and menu's
     def __init__(self):
         pygame.init()
         self.running, self.playing = True, False
@@ -28,6 +29,7 @@ class game():
         self.skin = "Black"
         self.username = "Test"
 
+    # game class game loop
     def game_loop(self):
         while self.playing:
             self.check_events()
@@ -39,6 +41,7 @@ class game():
             self.clock.tick(60)
             self.reset_keys()
 
+    # event checker
     def check_events(self):
         # Event listener for loop
         for event in pygame.event.get():
@@ -79,10 +82,11 @@ class game():
                 if event.key == pygame.K_s:
                     self.move_d = True
 
-
+    # reset key input
     def reset_keys(self):
         self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False
 
+    # draw text to screen
     def draw_text(self, text, size, x, y):
         font = pygame.font.Font(self.font_name, size)
         text_surface = font.render(text, True, (255, 255, 255))

@@ -2,7 +2,7 @@ import pygame
 from spritesheet import *
 from character import *
 
-
+# menu class that will be inherited to furture classes
 class menu():
     def __init__(self, game):
         self.game = game
@@ -10,18 +10,19 @@ class menu():
         self.run_display = True
         self.cursor_rect = pygame.Rect(0, 0, 20, 20)
         self.offset = -250
-        self.menu_background = pygame.image.load(
-            "images/background/menu/MainMenu.png")
+        self.menu_background = pygame.image.load("images/background/menu/MainMenu.png")
 
+    # draw cursor function
     def draw_cursor(self):
         self.game.draw_text("*", 100, self.cursor_rect.x, self.cursor_rect.y)
 
+    # update screen
     def blit_screen(self):
         self.game.window.blit(self.game.display, (0, 0))
         pygame.display.update()
         self.game.reset_keys()
 
-
+# main menu class
 class MainMenu(menu):
     def __init__(self, game):
         menu.__init__(self, game)
@@ -31,6 +32,7 @@ class MainMenu(menu):
         self.quitx, self.quity = self.mid_w, self.mid_h + 325
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
 
+    # check for input
     def check_input(self):
         self.move_cursor()
         if self.game.start_key:
@@ -43,6 +45,7 @@ class MainMenu(menu):
                 self.game.running, self.game.playing = False, False
             self.run_display = False
 
+    # display menu
     def display_menu(self):
         self.run_display = True
         while self.run_display:
@@ -57,6 +60,7 @@ class MainMenu(menu):
             self.draw_cursor()
             self.blit_screen()
 
+    # move the cursor
     def move_cursor(self):
         if self.game.down_key:
             if self.state == "Start":
@@ -90,7 +94,7 @@ class MainMenu(menu):
                     self.settingsx + self.offset, self.settingsy)
                 self.state = "Settings"
 
-
+# settings menu
 class settingsMenu(menu):
     def __init__(self, game):
         menu.__init__(self, game)
@@ -156,7 +160,7 @@ class settingsMenu(menu):
                 self.game.curr_menu = self.game.controls_menu
         self.run_display = False
 
-
+# skin menu
 class skinMenu(menu):
     def __init__(self, game):
         menu.__init__(self, game)
@@ -385,7 +389,7 @@ class skinMenu(menu):
             self.game.curr_menu = self.game.settings
             self.run_display = False
 
-
+# host/join menu
 class host_join_menu(menu):
     def __init__(self, game):
         menu.__init__(self, game)
@@ -430,6 +434,7 @@ class host_join_menu(menu):
             self.run_display = False
 
 
+# controls menu
 class controls_menu(menu):
     def __init__(self, game):
         menu.__init__(self, game)
@@ -462,6 +467,7 @@ class controls_menu(menu):
         self.run_display = False
 
 
+# Graphics menu
 class graphics_menu(menu):  # TODO
     def __init__(self, game):
         menu.__init__(self, game)
@@ -489,6 +495,7 @@ class graphics_menu(menu):  # TODO
         self.run_display = False
 
 
+# Pregame lobby
 class pregame_lobby(menu):
     def __init__(self, game):
         menu.__init__(self, game)
@@ -500,17 +507,14 @@ class pregame_lobby(menu):
         self.box = Spritesheet.parse_sprite('box.png', self.black)
         self.ship = Spritesheet.parse_sprite('ship.png', self.black)
         self.front = Spritesheet.parse_sprite('front.png', self.black)
-        self.computers = [Spritesheet.parse_sprite(
-            'computer1.png', self.black), Spritesheet.parse_sprite('computer2.png', self.black)]
-        self.rocket = [Spritesheet.parse_sprite('rocket1.png', self.black), Spritesheet.parse_sprite('rocket3.png', self.black), Spritesheet.parse_sprite(
-            'rocket3.png', self.black), Spritesheet.parse_sprite('rocket4.png', self.black), Spritesheet.parse_sprite('rocket5.png', self.black), Spritesheet.parse_sprite('rocket6.png', self.black)]
+        self.computers = [Spritesheet.parse_sprite('computer1.png', self.black), Spritesheet.parse_sprite('computer2.png', self.black)]
+        self.rocket = [Spritesheet.parse_sprite('rocket1.png', self.black), Spritesheet.parse_sprite('rocket3.png', self.black), Spritesheet.parse_sprite('rocket3.png', self.black), Spritesheet.parse_sprite('rocket4.png', self.black), Spritesheet.parse_sprite('rocket5.png', self.black), Spritesheet.parse_sprite('rocket6.png', self.black)]
         self.left_rocket = []
         for rocket in self.rocket:
             self.left_rocket.append(pygame.transform.rotate(rocket, 23))
         self.index = 0
         self.counter = 0
-        Spritesheet = spritesheet(
-            "images/characters/character_spritesheet.png")
+        Spritesheet = spritesheet("images/characters/character_spritesheet.png")
         self.idle1 = Spritesheet.parse_sprite('idle1.png', self.black)
 
     def display_menu(self):
