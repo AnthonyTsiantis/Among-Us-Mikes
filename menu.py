@@ -414,35 +414,41 @@ class graphics_menu(menu): # TODO
 class pregame_lobby(menu):
     def __init__(self, game):
         menu.__init__(self, game)
+        self.stars = pygame.image.load("images/background/game/pregame/stars.png")
         Spritesheet = spritesheet("images/background/game/pregame/spritesheet.png")
         self.box = Spritesheet.parse_sprite('box.png')
         self.ship = Spritesheet.parse_sprite('ship.png')
         self.front = Spritesheet.parse_sprite('front.png')
         self.computers = [Spritesheet.parse_sprite('computer1.png'), Spritesheet.parse_sprite('computer2.png')]
-        self.left_rocket = [Spritesheet.parse_sprite('rocket1.png'), Spritesheet.parse_sprite('rocket2.png'), Spritesheet.parse_sprite('rocket3.png')]
-        self.right_rocket = [Spritesheet.parse_sprite('rocket4.png'), Spritesheet.parse_sprite('rocket5.png'), Spritesheet.parse_sprite('rocket6.png')]
+        self.rocket = [Spritesheet.parse_sprite('rocket1.png'), Spritesheet.parse_sprite('rocket3.png'), Spritesheet.parse_sprite('rocket3.png'), Spritesheet.parse_sprite('rocket4.png'), Spritesheet.parse_sprite('rocket5.png'), Spritesheet.parse_sprite('rocket6.png')]
+        self.left_rocket = []
+        for rocket in self.rocket:
+            self.left_rocket.append(pygame.transform.rotate(rocket, 23))
+        self.index = 0
+        self.counter = 0
         
 
     def display_menu(self):
         self.run_display = True
-        computer_counter = 0
-        rocket_counter = 0
         while self.run_display:
-            if computer_counter == 2:
-                computer_counter = 0
-            
-            if rocket_counter == 3:
-                rocket_counter = 0
-            
+            if self.counter == 3:
+                self.counter = 0
+                self.index = (self.index + 1) % len(self.rocket)
 
             self.game.check_events()
             self.check_input()
-            self.game.display.fill((0,0,0))
+            self.game.display.blit(self.stars, (0,0))
             self.game.display.blit(self.ship, (320, 10))
-            self.game.display.blit(self.front, (600, 650))
+            self.game.display.blit(pygame.transform.scale(self.front, (640, 361)), (612, 646))
+            self.game.display.blit(self.box, (725, 450))
+            self.game.display.blit(self.computers[0], (730, 430))
+            self.game.display.blit(self.left_rocket[self.index], (340, 707))
+            self.game.display.blit(self.rocket[self.index], (1326, 736))
             self.blit_screen()
+            self.counter += 1
     
     def check_input(self):
         if self.game.back_key:
             self.game.curr_menu = self.game.main_menu
+
         self.run_display = False
