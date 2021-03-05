@@ -499,23 +499,21 @@ class graphics_menu(menu):  # TODO
 class pregame_lobby(menu):
     def __init__(self, game):
         menu.__init__(self, game)
-        self.black = (0, 0, 0)
-        self.stars = pygame.image.load(
-            "images/background/game/pregame/stars.png")
-        Spritesheet = spritesheet(
-            "images/background/game/pregame/spritesheet.png")
-        self.box = Spritesheet.parse_sprite('box.png', self.black)
-        self.ship = Spritesheet.parse_sprite('ship.png', self.black)
-        self.front = Spritesheet.parse_sprite('front.png', self.black)
-        self.computers = [Spritesheet.parse_sprite('computer1.png', self.black), Spritesheet.parse_sprite('computer2.png', self.black)]
-        self.rocket = [Spritesheet.parse_sprite('rocket1.png', self.black), Spritesheet.parse_sprite('rocket3.png', self.black), Spritesheet.parse_sprite('rocket3.png', self.black), Spritesheet.parse_sprite('rocket4.png', self.black), Spritesheet.parse_sprite('rocket5.png', self.black), Spritesheet.parse_sprite('rocket6.png', self.black)]
+        self.skin = "Black"
+        self.stars = pygame.image.load("images/background/game/pregame/stars.png")
+        Spritesheet = spritesheet("images/background/game/pregame/spritesheet.png", "map", self.skin)
+        self.box = Spritesheet.parse_sprite('box.png',)
+        self.ship = Spritesheet.parse_sprite('ship.png')
+        self.front = Spritesheet.parse_sprite('front.png')
+        self.computers = [Spritesheet.parse_sprite('computer1.png'), Spritesheet.parse_sprite('computer2.png')]
+        self.rocket = [Spritesheet.parse_sprite('rocket1.png'), Spritesheet.parse_sprite('rocket3.png'), Spritesheet.parse_sprite('rocket3.png'), Spritesheet.parse_sprite('rocket4.png'), Spritesheet.parse_sprite('rocket5.png'), Spritesheet.parse_sprite('rocket6.png')]
         self.left_rocket = []
         for rocket in self.rocket:
             self.left_rocket.append(pygame.transform.rotate(rocket, 23))
         self.index = 0
         self.counter = 0
-        Spritesheet = spritesheet("images/characters/character_spritesheet.png")
-        self.idle1 = Spritesheet.parse_sprite('idle1.png', self.black)
+        Spritesheet = spritesheet("images/characters/character_spritesheet.png", "Character", self.skin)
+        self.idle1 = Spritesheet.parse_sprite('idle1.png')
 
     def display_menu(self):
         self.run_display = True
@@ -528,8 +526,7 @@ class pregame_lobby(menu):
             self.check_input()
             self.game.display.blit(self.stars, (0, 0))
             self.game.display.blit(self.ship, (320, 10))
-            self.game.display.blit(pygame.transform.scale(
-                self.front, (640, 361)), (612, 646))
+            self.game.display.blit(pygame.transform.scale(self.front, (640, 361)), (612, 646))
             self.game.display.blit(self.box, (725, 450))
             self.game.display.blit(self.computers[0], (730, 430))
             self.game.display.blit(self.left_rocket[self.index], (340, 707))
