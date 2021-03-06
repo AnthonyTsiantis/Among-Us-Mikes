@@ -499,9 +499,8 @@ class graphics_menu(menu):  # TODO
 class pregame_lobby(menu):
     def __init__(self, game):
         menu.__init__(self, game)
-        self.skin = "Black"
         self.stars = pygame.image.load("images/background/game/pregame/stars.png")
-        Spritesheet = spritesheet("images/background/game/pregame/spritesheet.png", "map", self.skin)
+        Spritesheet = spritesheet("images/background/game/pregame/spritesheet.png", "Map", "Black")
         self.box = Spritesheet.parse_sprite('box.png',)
         self.ship = Spritesheet.parse_sprite('ship.png')
         self.front = Spritesheet.parse_sprite('front.png')
@@ -512,7 +511,7 @@ class pregame_lobby(menu):
             self.left_rocket.append(pygame.transform.rotate(rocket, 23))
         self.index = 0
         self.counter = 0
-        Spritesheet = spritesheet("images/characters/character_spritesheet.png", "Character", self.skin)
+        Spritesheet = spritesheet("images/characters/character_spritesheet.png", "Character", "Black")
         self.idle1 = Spritesheet.parse_sprite('idle1.png')
 
     def display_menu(self):
