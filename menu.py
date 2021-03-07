@@ -517,9 +517,7 @@ class pregame_lobby(menu):
                 self.walk_counter = (self.walk_counter + 1) % len(self.walk)
             
             if self.status == "walking_l":
-                # TODO
-                # Flip sprite on x axis
-                self.game.display.blit(self.walk[self.walk_counter], (self.playerx, self.playery))
+                self.game.display.blit(pygame.transform.flip(self.walk[self.walk_counter], True, False), (self.playerx, self.playery))
                 self.walk_counter = (self.walk_counter + 1) % len(self.walk)
 
             self.frame_index += 1
