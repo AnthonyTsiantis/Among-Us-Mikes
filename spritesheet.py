@@ -2,8 +2,7 @@ import pygame
 import json
 
 class spritesheet():
-    def __init__(self, filename, sprite_type, skin):
-        self.skin = skin
+    def __init__(self, filename, sprite_type):
         self.filename = filename
         self.sprite_type = sprite_type
         if self.sprite_type == "Character":

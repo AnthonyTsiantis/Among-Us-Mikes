@@ -8,7 +8,7 @@ class game():
         pygame.init()
         self.running, self.playing = True, False
         self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False
-        self.move_f, self.move_d, self.move_r, self.move_l = False, False, False, False
+        self.no_input = True
         self.display_W, self.display_H = 1920, 1080
         self.display = pygame.Surface((self.display_W, self.display_H))
         self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE) # CHANGE THIS TO FULLSCREEN 
@@ -18,6 +18,7 @@ class game():
         self.icon = pygame.image.load("images/icon.png")
         pygame.display.set_icon(self.icon)
         self.clock = pygame.time.Clock()
+        self.skin = "Black"
         self.main_menu = MainMenu(self)
         self.settings = settingsMenu(self)
         self.skin_menu = skinMenu(self)
@@ -26,7 +27,6 @@ class game():
         self.graphics_menu = graphics_menu(self)
         self.pregame = pregame_lobby(self)
         self.curr_menu = self.main_menu
-        self.skin = "Black"
         self.username = "Test"
 
     # game class game loop
@@ -54,37 +54,82 @@ class game():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     self.start_key = True
+                    self.no_input = False
 
                 if event.key == pygame.K_BACKSPACE:
                     self.back_key = True
+                    self.no_input = False
 
                 if event.key == pygame.K_DOWN:
                     self.down_key = True
+                    self.no_input = False
 
                 if event.key == pygame.K_UP:
                     self.up_key = True
+                    self.no_input = False
                 
                 if event.key == pygame.K_RIGHT:
                     self.right_key = True
+                    self.no_input = False
                 
                 if event.key == pygame.K_LEFT:
                     self.left_key = True
+                    self.no_input = False
                 
                 if event.key == pygame.K_a:
-                    self.move_l = True
+                    self.left_key = True
+                    self.no_input = False
                 
                 if event.key == pygame.K_d:
-                    self.move_r = True
+                    self.right_key = True
+                    self.no_input = False
                 
                 if event.key == pygame.K_w:
-                    self.move_f = True
+                    self.up_key = True
+                    self.no_input = False
                 
                 if event.key == pygame.K_s:
-                    self.move_d = True
+                    self.down_key = True
+                    self.no_input = False
+            
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_DOWN:
+                    self.down_key = False
+                    self.no_input = True
+
+                if event.key == pygame.K_UP:
+                    self.up_key = False
+                    self.no_input = True
+                
+                if event.key == pygame.K_RIGHT:
+                    self.right_key = False
+                    self.no_input = True
+                
+                if event.key == pygame.K_LEFT:
+                    self.left_key = False
+                    self.no_input = True
+                
+                if event.key == pygame.K_a:
+                    self.left_key = False
+                    self.no_input = True
+                
+                if event.key == pygame.K_d:
+                    self.right_key = False
+                    self.no_input = True
+                
+                if event.key == pygame.K_w:
+                    self.up_key = False
+                    self.no_input = True
+                
+                if event.key == pygame.K_s:
+                    self.down_key = False
+                    self.no_input = True
+                
+                
 
     # reset key input
     def reset_keys(self):
-        self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False
+        self.start_key, self.back_key = False, False
 
     # draw text to screen
     def draw_text(self, text, size, x, y):
@@ -93,5 +138,7 @@ class game():
         text_rect = text_surface.get_rect()
         text_rect.center = (x, y)
         self.display.blit(text_surface, text_rect)
+    
+
 
 
