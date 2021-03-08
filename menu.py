@@ -489,6 +489,7 @@ class pregame_lobby(menu):
         self.frame_index = 0
         self.playerx = 800
         self.playery = 500
+        self.input = False
 
     def display_menu(self):
         self.run_display = True
@@ -528,22 +529,29 @@ class pregame_lobby(menu):
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
         
-        if self.game.up_key:
+        if self.game.move_f:
+            self.input = True
             self.playery -= 10
             self.status = "walking_r"
         
-        if self.game.down_key:
+        if self.game.move_b:
+            self.input = True
             self.playery += 10
             self.status = "walking_r"
         
-        if self.game.right_key:
+        if self.game.move_r:
+            self.input = True
             self.playerx += 10
             self.status = "walking_r"
         
-        if self.game.left_key:
+        if self.game.move_l:
+            self.input = True
             self.playerx -= 10
             self.status = "walking_l"
         
-        if self.game.no_input:
+        if not self.game.move_l and not self.game.move_r and not self.game.move_f and not self.game.move_b:
+            self.input = False
+        
+        if not self.input:
             self.status = "idle_r"
 

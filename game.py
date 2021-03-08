@@ -8,7 +8,7 @@ class game():
         pygame.init()
         self.running, self.playing = True, False
         self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False
-        self.no_input = True
+        self.move_f, self.move_b, self.move_l, self.move_r = False, False, False, False
         self.display_W, self.display_H = 1920, 1080
         self.display = pygame.Surface((self.display_W, self.display_H))
         self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE) # CHANGE THIS TO FULLSCREEN 
@@ -54,82 +54,52 @@ class game():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     self.start_key = True
-                    self.no_input = False
 
                 if event.key == pygame.K_BACKSPACE:
                     self.back_key = True
-                    self.no_input = False
 
                 if event.key == pygame.K_DOWN:
                     self.down_key = True
-                    self.no_input = False
 
                 if event.key == pygame.K_UP:
                     self.up_key = True
-                    self.no_input = False
                 
                 if event.key == pygame.K_RIGHT:
                     self.right_key = True
-                    self.no_input = False
                 
                 if event.key == pygame.K_LEFT:
                     self.left_key = True
-                    self.no_input = False
                 
                 if event.key == pygame.K_a:
-                    self.left_key = True
-                    self.no_input = False
-                
+                    self.move_l = True
+
                 if event.key == pygame.K_d:
-                    self.right_key = True
-                    self.no_input = False
+                    self.move_r = True
                 
                 if event.key == pygame.K_w:
-                    self.up_key = True
-                    self.no_input = False
+                    self.move_f = True
                 
                 if event.key == pygame.K_s:
-                    self.down_key = True
-                    self.no_input = False
+                    self.move_b = True
             
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_DOWN:
-                    self.down_key = False
-                    self.no_input = True
-
-                if event.key == pygame.K_UP:
-                    self.up_key = False
-                    self.no_input = True
-                
-                if event.key == pygame.K_RIGHT:
-                    self.right_key = False
-                    self.no_input = True
-                
-                if event.key == pygame.K_LEFT:
-                    self.left_key = False
-                    self.no_input = True
-                
                 if event.key == pygame.K_a:
-                    self.left_key = False
-                    self.no_input = True
+                    self.move_l = False
                 
                 if event.key == pygame.K_d:
-                    self.right_key = False
-                    self.no_input = True
+                    self.move_r = False
                 
                 if event.key == pygame.K_w:
-                    self.up_key = False
-                    self.no_input = True
+                    self.move_f = False
                 
                 if event.key == pygame.K_s:
-                    self.down_key = False
-                    self.no_input = True
+                    self.move_b = False
                 
                 
 
     # reset key input
     def reset_keys(self):
-        self.start_key, self.back_key = False, False
+        self.start_key, self.back_key, self.right_key, self.left_key, self.up_key, self.down_key = False, False, False, False, False, False
 
     # draw text to screen
     def draw_text(self, text, size, x, y):
