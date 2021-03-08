@@ -477,24 +477,22 @@ class pregame_lobby(menu):
             self.left_rocket.append(pygame.transform.rotate(rocket, 23))
         
         self.status = "idle_r"
-        if self.game.skin == "Black":
-            Spritesheet = spritesheet("images/characters/Black/black_character_spritesheet.png", "Character")
-            self.idle = [Spritesheet.parse_sprite('idle1.png'), Spritesheet.parse_sprite('idle2.png')]
-            self.walk = []
-            for i in range(12): 
-                self.walk.append(Spritesheet.parse_sprite('walk' + str(i + 1) + '.png'))
-
         self.walk_counter = 0
         self.rocket_counter = 0
         self.frame_index = 0
-        self.playerx = 800
-        self.playery = 500
+        self.playerx = 770
+        self.playery = 220
         self.input = False
+        self.spawned = False
+        self.spawn_counter = 0
+        self.spawn_index = 0
 
     def display_menu(self):
         self.run_display = True
+        self.get_character()
+        self.spawned = False
         while self.run_display:
-            if self.frame_index == 5:
+            if self.frame_index == 10:
                 self.frame_index = 0
                 self.rocket_counter = (self.rocket_counter + 1) % len(self.rocket)
             self.game.check_events()
@@ -507,22 +505,48 @@ class pregame_lobby(menu):
             self.game.display.blit(self.left_rocket[self.rocket_counter], (340, 707))
             self.game.display.blit(self.rocket[self.rocket_counter], (1326, 736))
 
-            if self.status == "idle_r":
+            if not self.spawned and self.spawn_index % 6 == 0:
+                self.spawn_counter = (self.spawn_counter + 1) % len(self.spawn_in)
+                if self.spawn_counter == 13:
+                    self.playery += 5
+                    self.spawned = True
+            
+            if not self.spawned:
+                if self.spawn_counter > 6:
+                    self.playerx += 2
+                    self.game.display.blit(self.spawn_in[self.spawn_counter], (self.playerx, self.playery))
+                else:
+                    self.game.display.blit(self.spawn_in[self.spawn_counter], (self.playerx, self.playery - 10))
+
+            if self.status == "idle_r" and self.spawned:
                 self.game.display.blit(self.idle[0], (self.playerx, self.playery))
 
-            if self.status == "idle_l":
+            if self.status == "idle_l" and self.spawned:
                 self.game.display.blit(self.idle[1], (self.playerx, self.playery))
             
-            if self.status == "walking_r":
+            if self.status == "walking_r" and self.spawned:
                 self.game.display.blit(self.walk[self.walk_counter], (self.playerx, self.playery))
                 self.walk_counter = (self.walk_counter + 1) % len(self.walk)
             
-            if self.status == "walking_l":
+            if self.status == "walking_l" and self.spawned:
                 self.game.display.blit(pygame.transform.flip(self.walk[self.walk_counter], True, False), (self.playerx, self.playery))
                 self.walk_counter = (self.walk_counter + 1) % len(self.walk)
 
             self.frame_index += 1
+            if not self.spawned:
+                self.spawn_index += 1
             self.blit_screen()
+    
+    def get_character(self):
+        Spritesheet = spritesheet("images/characters/"+ self.game.skin + "/" + self.game.skin + "_character_spritesheet.png", "Character")
+        self.idle = [Spritesheet.parse_sprite('idle1.png'), Spritesheet.parse_sprite('idle2.png')]
+        self.walk = []
+        for i in range(12): 
+            self.walk.append(Spritesheet.parse_sprite('walk' + str(i + 1) + '.png'))
+        
+        self.spawn_in = []
+        for i in range(14):
+            self.spawn_in.append(Spritesheet.parse_sprite('spawn-in' + str(i + 1) + '.png'))
 
     def check_input(self):
         if self.game.back_key:
