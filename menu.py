@@ -1,5 +1,6 @@
 import pygame
 from spritesheet import *
+import math
 
 # menu class that will be inherited to furture classes
 class menu():
@@ -480,12 +481,15 @@ class pregame_lobby(menu):
         self.walk_counter = 0
         self.rocket_counter = 0
         self.frame_index = 0
-        self.playerx = 770
-        self.playery = 220
+        self.playerx = 800
+        self.playery = 240
         self.input = False
         self.spawned = False
         self.spawn_counter = 0
         self.spawn_index = 0
+        self.num_usersx, self.num_usersy = 932, 900
+        self.num_of_players = 1
+        self.boxx, self.boxy = 725, 450
 
     def display_menu(self):
         self.run_display = True
@@ -496,11 +500,14 @@ class pregame_lobby(menu):
                 self.frame_index = 0
                 self.rocket_counter = (self.rocket_counter + 1) % len(self.rocket)
             self.game.check_events()
-            self.check_input()
+            
+            if self.spawned:
+                self.check_input()
+
             self.game.display.blit(self.stars, (0, 0))
             self.game.display.blit(self.ship, (320, 10))
             self.game.display.blit(pygame.transform.scale(self.front, (640, 361)), (612, 646))
-            self.game.display.blit(self.box, (725, 450))
+            self.game.display.blit(self.box, (self.boxx, self.boxy))
             self.game.display.blit(self.computers[0], (730, 430))
             self.game.display.blit(self.left_rocket[self.rocket_counter], (340, 707))
             self.game.display.blit(self.rocket[self.rocket_counter], (1326, 736))
@@ -513,28 +520,34 @@ class pregame_lobby(menu):
             
             if not self.spawned:
                 if self.spawn_counter > 6:
-                    self.playerx += 2
-                    self.game.display.blit(self.spawn_in[self.spawn_counter], (self.playerx, self.playery))
+                    self.playerx += 1
+                    self.game.display.blit(pygame.transform.scale(self.spawn_in[self.spawn_counter], (50, 77)), (self.playerx, self.playery))
                 else:
-                    self.game.display.blit(self.spawn_in[self.spawn_counter], (self.playerx, self.playery - 10))
+                    self.game.display.blit(pygame.transform.scale(self.spawn_in[self.spawn_counter], (50, 77)), (self.playerx, self.playery - 10))
 
             if self.status == "idle_r" and self.spawned:
-                self.game.display.blit(self.idle[0], (self.playerx, self.playery))
+                self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), (self.playerx, self.playery))
 
             if self.status == "idle_l" and self.spawned:
-                self.game.display.blit(self.idle[1], (self.playerx, self.playery))
+                self.game.display.blit(pygame.transform.scale(self.idle[1], (50, 77)), (self.playerx, self.playery))
             
             if self.status == "walking_r" and self.spawned:
-                self.game.display.blit(self.walk[self.walk_counter], (self.playerx, self.playery))
+                self.game.display.blit(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), (self.playerx, self.playery))
                 self.walk_counter = (self.walk_counter + 1) % len(self.walk)
             
             if self.status == "walking_l" and self.spawned:
-                self.game.display.blit(pygame.transform.flip(self.walk[self.walk_counter], True, False), (self.playerx, self.playery))
+                self.game.display.blit(pygame.transform.flip(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), True, False), (self.playerx, self.playery))
                 self.walk_counter = (self.walk_counter + 1) % len(self.walk)
 
             self.frame_index += 1
+            
             if not self.spawned:
                 self.spawn_index += 1
+
+
+            self.game.draw_text("Players: " + str(self.num_of_players) + "/30", 100, self.num_usersx, self.num_usersy)
+            self.game.draw_text("Game Code: XYZ", 65, self.num_usersx, self.num_usersy - 75)
+            self.game.draw_text("*Host must start game by hitting the enter key*", 30, self.num_usersx, self.num_usersy + 85)
             self.blit_screen()
     
     def get_character(self):
@@ -553,29 +566,50 @@ class pregame_lobby(menu):
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
         
+        if self.game.start_key:
+            # TODO
+            self.run_display = False
+        
         if self.game.move_f:
-            self.input = True
-            self.playery -= 10
-            self.status = "walking_r"
+            if self.playery < 273:
+                pass
+            else:
+                self.playery -= 7
+                self.status = "walking_r"
+                self.input = True
         
         if self.game.move_b:
-            self.input = True
-            self.playery += 10
-            self.status = "walking_r"
+            if self.playery > 546:
+                pass
+            else:
+                self.input = True
+                self.playery += 7
+                self.status = "walking_r"
         
         if self.game.move_r:
-            self.input = True
-            self.playerx += 10
-            self.status = "walking_r"
+            if self.playerx > 1158:
+                pass
+            else:   
+                self.input = True
+                self.playerx += 7
+                self.status = "walking_r"
         
         if self.game.move_l:
-            self.input = True
-            self.playerx -= 10
-            self.status = "walking_l"
+            if self.playerx < 661:
+                pass
+            else:
+                self.input = True
+                self.playerx -= 7
+                self.status = "walking_l"
         
         if not self.game.move_l and not self.game.move_r and not self.game.move_f and not self.game.move_b:
             self.input = False
         
         if not self.input:
             self.status = "idle_r"
+
+
+
+
+
 
