@@ -26,6 +26,7 @@ class game():
         self.controls_menu = controls_menu(self)
         self.graphics_menu = graphics_menu(self)
         self.pregame = pregame_lobby(self)
+        self.game_screen = game_lobby(self)
         self.curr_menu = self.main_menu
         self.username = "Test"
 

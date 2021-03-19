@@ -442,7 +442,6 @@ class graphics_menu(menu):  # TODO
         self.displayx, self.displayy = self.mid_w - 500, self.mid_h + 50
         self.audiox, self.audioy = self.mid_w + 500, self.mid_h + 50
         self.offset = 100
-        # self.cursor_rect.midtop = (self.hostx, self.hosty + self.offset)
 
     def display_menu(self):
         self.run_display = True
@@ -508,7 +507,7 @@ class pregame_lobby(menu):
             self.game.display.blit(self.ship, (320, 10))
             self.game.display.blit(pygame.transform.scale(self.front, (640, 361)), (612, 646))
             self.game.display.blit(self.box, (self.boxx, self.boxy))
-            self.game.display.blit(self.computers[0], (730, 430))
+            self.game.display.blit(self.computers[0], (740, 440))
             self.game.display.blit(self.left_rocket[self.rocket_counter], (340, 707))
             self.game.display.blit(self.rocket[self.rocket_counter], (1326, 736))
 
@@ -544,12 +543,14 @@ class pregame_lobby(menu):
             if not self.spawned:
                 self.spawn_index += 1
 
-
             self.game.draw_text("Players: " + str(self.num_of_players) + "/30", 100, self.num_usersx, self.num_usersy)
             self.game.draw_text("Game Code: XYZ", 65, self.num_usersx, self.num_usersy - 75)
             self.game.draw_text("*Host must start game by hitting the enter key*", 30, self.num_usersx, self.num_usersy + 85)
             self.blit_screen()
-    
+        
+        self.playerx = 800
+        self.playery = 240
+
     def get_character(self):
         Spritesheet = spritesheet("images/characters/"+ self.game.skin + "/" + self.game.skin + "_character_spritesheet.png", "Character")
         self.idle = [Spritesheet.parse_sprite('idle1.png'), Spritesheet.parse_sprite('idle2.png')]
@@ -560,6 +561,20 @@ class pregame_lobby(menu):
         self.spawn_in = []
         for i in range(14):
             self.spawn_in.append(Spritesheet.parse_sprite('spawn-in' + str(i + 1) + '.png'))
+    
+    def box_collision(self):
+        xvalues = False
+        yvalues = False
+        if self.playerx > 682 and self.playerx < 820:
+            xvalues = True
+        
+        if self.playery > 380 and self.playery < 532:
+            yvalues = True
+        
+        if xvalues and yvalues:
+            return True
+        else:
+            return False
 
     def check_input(self):
         if self.game.back_key:
@@ -567,40 +582,60 @@ class pregame_lobby(menu):
             self.run_display = False
         
         if self.game.start_key:
-            # TODO
+            self.game.curr_menu = self.game.game_screen
             self.run_display = False
         
         if self.game.move_f:
             if self.playery < 273:
                 pass
+            elif self.box_collision():
+                pass
             else:
                 self.playery -= 7
                 self.status = "walking_r"
                 self.input = True
+            
+            while self.box_collision():
+                    self.playery += 1
         
         if self.game.move_b:
             if self.playery > 546:
+                pass
+            elif self.box_collision():
                 pass
             else:
                 self.input = True
                 self.playery += 7
                 self.status = "walking_r"
+            
+            while self.box_collision():
+                    self.playery -= 1
         
         if self.game.move_r:
             if self.playerx > 1158:
+                pass
+            elif self.box_collision():
                 pass
             else:   
                 self.input = True
                 self.playerx += 7
                 self.status = "walking_r"
+            
+            while self.box_collision():
+                    self.playerx -= 1
         
         if self.game.move_l:
             if self.playerx < 661:
+                pass
+            elif self.box_collision():
                 pass
             else:
                 self.input = True
                 self.playerx -= 7
                 self.status = "walking_l"
+            
+            while self.box_collision():
+                    self.playerx += 1
         
         if not self.game.move_l and not self.game.move_r and not self.game.move_f and not self.game.move_b:
             self.input = False
@@ -609,7 +644,23 @@ class pregame_lobby(menu):
             self.status = "idle_r"
 
 
+# TODO
+class game_lobby(menu):
+    def __init__(self, game):
+        menu.__init__(self, game)
 
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            self.check_input()
+            self.game.display.blit(self.menu_background, (0, 0))
+            self.game.draw_text("TODO", 300, self.game.display_W / 2, self.game.display_H / 2)
+            self.blit_screen()
 
+    def check_input(self):
+        if self.game.back_key:
+            self.game.curr_menu = self.game.settings
+        self.run_display = False
 
 
