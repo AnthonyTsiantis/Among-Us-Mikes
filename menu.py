@@ -1,6 +1,7 @@
 import pygame
 from spritesheet import *
 import math
+import random
 
 # menu class that will be inherited to furture classes
 class menu():
@@ -523,20 +524,9 @@ class pregame_lobby(menu):
                     self.game.display.blit(pygame.transform.scale(self.spawn_in[self.spawn_counter], (50, 77)), (self.playerx, self.playery))
                 else:
                     self.game.display.blit(pygame.transform.scale(self.spawn_in[self.spawn_counter], (50, 77)), (self.playerx, self.playery - 10))
-
-            if self.status == "idle_r" and self.spawned:
-                self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), (self.playerx, self.playery))
-
-            if self.status == "idle_l" and self.spawned:
-                self.game.display.blit(pygame.transform.scale(self.idle[1], (50, 77)), (self.playerx, self.playery))
             
-            if self.status == "walking_r" and self.spawned:
-                self.game.display.blit(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), (self.playerx, self.playery))
-                self.walk_counter = (self.walk_counter + 1) % len(self.walk)
-            
-            if self.status == "walking_l" and self.spawned:
-                self.game.display.blit(pygame.transform.flip(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), True, False), (self.playerx, self.playery))
-                self.walk_counter = (self.walk_counter + 1) % len(self.walk)
+            self.check_status()
+
 
             self.frame_index += 1
             
@@ -575,6 +565,21 @@ class pregame_lobby(menu):
             return True
         else:
             return False
+    
+    def check_status(self):
+        if self.status == "idle_r" and self.spawned:
+                self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), (self.playerx, self.playery))
+
+        if self.status == "idle_l" and self.spawned:
+            self.game.display.blit(pygame.transform.scale(self.idle[1], (50, 77)), (self.playerx, self.playery))
+        
+        if self.status == "walking_r" and self.spawned:
+            self.game.display.blit(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), (self.playerx, self.playery))
+            self.walk_counter = (self.walk_counter + 1) % len(self.walk)
+        
+        if self.status == "walking_l" and self.spawned:
+            self.game.display.blit(pygame.transform.flip(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), True, False), (self.playerx, self.playery))
+            self.walk_counter = (self.walk_counter + 1) % len(self.walk)
 
     def check_input(self):
         if self.game.back_key:
@@ -645,22 +650,84 @@ class pregame_lobby(menu):
 
 
 # TODO
-class game_lobby(menu):
+class game_lobby(pregame_lobby):
     def __init__(self, game):
         menu.__init__(self, game)
+        self.stars = pygame.image.load("images/background/game/pregame/stars.png")
+        self.cafeteria = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria.png")
+        self.cafeteria_hallway_left = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria_Upper_Engine_Medbay_Hallway.png") 
+        self.status = "idle_r"
+        self.playerx = 0
+        self.playery = 0
+        self.camerax = 0
+        self.cameray = 0
+        self.walk_counter = 0
+        self.spawn_coords = [(920, 330), (1070, 450), (920, 540), (770, 450)]
+        self.spawned = False
 
     def display_menu(self):
         self.run_display = True
+        pregame_lobby.get_character(self)
         while self.run_display:
             self.game.check_events()
             self.check_input()
-            self.game.display.blit(self.menu_background, (0, 0))
-            self.game.draw_text("TODO", 300, self.game.display_W / 2, self.game.display_H / 2)
+            self.game.display.blit(self.stars, (0, 0))
+            self.game.display.blit(self.cafeteria, (467, 0))
+            self.game.display.blit(self.cafeteria_hallway_left, (-253, 353)) 
+
+            if not self.spawned:
+                rand_coords = self.spawn_coords[random.randint(0,3)]
+                self.playerx, self.playery = rand_coords
+                self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), rand_coords)
+                self.spawned = True
+            
+            self.check_status()
             self.blit_screen()
 
     def check_input(self):
         if self.game.back_key:
-            self.game.curr_menu = self.game.settings
+            self.game.curr_menu = self.game.main_menu
         self.run_display = False
+
+        if self.game.move_f:
+            self.playery -= 10
+            self.status = "walking_r"
+            self.input = True
+            
+        if self.game.move_b:
+            self.input = True
+            self.playery += 10
+            self.status = "walking_r"
+            
+        if self.game.move_r:
+            self.input = True
+            self.playerx += 10
+            self.status = "walking_r"
+        
+        if self.game.move_l:
+            self.input = True
+            self.playerx -= 10
+            self.status = "walking_l"
+    
+        if not self.game.move_l and not self.game.move_r and not self.game.move_f and not self.game.move_b:
+            self.input = False
+        
+        if not self.input:
+            self.status = "idle_r"
+        
+    def check_status(self):
+        if self.status == "idle_r":
+            self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), (self.playerx, self.playery))
+
+        if self.status == "idle_l":
+            self.game.display.blit(pygame.transform.scale(self.idle[1], (50, 77)), (self.playerx, self.playery))
+        
+        if self.status == "walking_r":
+            self.game.display.blit(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), (self.playerx, self.playery))
+            self.walk_counter = (self.walk_counter + 1) % len(self.walk)
+        
+        if self.status == "walking_l":
+            self.game.display.blit(pygame.transform.flip(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), True, False), (self.playerx, self.playery))
+            self.walk_counter = (self.walk_counter + 1) % len(self.walk)
 
 
