@@ -685,6 +685,9 @@ class game_lobby(pregame_lobby):
         self.weapons_gun = []
         for i in range(25):
             self.weapons_gun.append(weapons_spritesheet.parse_sprite('gun' + str(i + 1) + '.png'))
+        
+        self.O2_nav_weap_hallway = pygame.image.load("images/background/game/game_map/weapons_navigation_hallway/O2_Navigation_Shields_Hallway.png").convert_alpha()
+        self.O2_nav_weap_task = pygame.image.load("images/background/game/game_map/weapons_navigation_hallway/O2_Navigation_Shields_task.png").convert_alpha()
 
 
     def display_menu(self):
@@ -708,7 +711,9 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.stars, (0, 0))
         self.game.display.blit(self.cafeteria, (467 + self.scrollx, 0 + self.scrolly))
         self.game.display.blit(self.cafeteria_hallway_left, (-253 + self.scrollx, 353 + self.scrolly))
+        self.game.display.blit(self.O2_nav_weap_hallway, (1675 + self.scrollx, 660 + self.scrolly))
         self.load_weapons()
+        self.game.display.blit(self.O2_nav_weap_task, (2210 + self.scrollx, 890 + self.scrolly))
 
     def spawn(self):
         rand_coords = self.spawn_coords[random.randint(0,3)]
@@ -732,6 +737,9 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.weapons_screen[self.screen_index], (1775 + self.scrollx, 300 + self.scrolly))
         self.game.display.blit(self.weapons_box, (1958 + self.scrollx, 377 + self.scrolly))
         self.game.display.blit(self.weapons_task[0], (1725 + self.scrollx, 225 + self.scrolly))
+        
+        # TODO
+        # blit the blaster to the display "self.weapons_gun"
 
     def check_input(self):
         if self.game.back_key:
