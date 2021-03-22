@@ -5,11 +5,7 @@ class spritesheet():
     def __init__(self, filename, sprite_type):
         self.filename = filename
         self.sprite_type = sprite_type
-        if self.sprite_type == "Character":
-            self.sprite_sheet = pygame.image.load(filename).convert_alpha()
-
-        if self.sprite_type == "Map":
-            self.sprite_sheet = pygame.image.load(filename).convert()
+        self.sprite_sheet = pygame.image.load(filename).convert_alpha()
         self.meta_data = self.filename.replace('png', 'json')
         with open(self.meta_data) as f:
             self.data = json.load(f)

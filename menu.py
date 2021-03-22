@@ -496,7 +496,7 @@ class pregame_lobby(menu):
         self.get_character()
         self.spawned = False
         while self.run_display:
-            if self.frame_index == 10:
+            if self.frame_index == 5:
                 self.frame_index = 0
                 self.rocket_counter = (self.rocket_counter + 1) % len(self.rocket)
             self.game.check_events()
@@ -526,7 +526,6 @@ class pregame_lobby(menu):
                     self.game.display.blit(pygame.transform.scale(self.spawn_in[self.spawn_counter], (50, 77)), (self.playerx, self.playery - 10))
             
             self.check_status()
-
 
             self.frame_index += 1
             
@@ -665,13 +664,27 @@ class game_lobby(pregame_lobby):
         self.walk_counter = 0
         self.spawn_coords = [(920, 330), (1070, 450), (920, 540), (770, 450)]
         self.spawned = False
+        self.screen_index = 0
+        self.animation_index = 0
     
     def load_background(self):
-        weapons_spritesheet = spritesheet("images/background/game/game_map/weapons/weapons.png", "Map")
+        weapons_spritesheet = spritesheet("images/background/game/game_map/weapons/weapons.png", "Character")
         self.cafeteria_weapons_hallway = weapons_spritesheet.parse_sprite('hallway.png')
+        self.weapons_chair = weapons_spritesheet.parse_sprite('chair.png')
+        self.weapons_box = weapons_spritesheet.parse_sprite('box.png')
         self.weapons_base = []
         for i in range(9):
             self.weapons_base.append(weapons_spritesheet.parse_sprite('base' + str(i + 1) + '.png'))
+        
+        self.weapons_screen = []
+        for i in range(22):
+            self.weapons_screen.append(weapons_spritesheet.parse_sprite('screen' + str(i + 1) + '.png'))
+
+        self.weapons_task = [weapons_spritesheet.parse_sprite('task1.png'), weapons_spritesheet.parse_sprite('task2.png')]
+
+        self.weapons_gun = []
+        for i in range(25):
+            self.weapons_gun.append(weapons_spritesheet.parse_sprite('gun' + str(i + 1) + '.png'))
 
 
     def display_menu(self):
@@ -681,10 +694,13 @@ class game_lobby(pregame_lobby):
             self.game.check_events()
             self.check_input()
             self.background()
+            self.animation_index = (self.animation_index + 1) % 3
 
             if not self.spawned:
                 self.spawn()
             
+            if self.animation_index == 0:
+                self.screen_index = (self.screen_index + 1) % len(self.weapons_screen)
             self.check_status()
             self.blit_screen()
     
@@ -692,17 +708,30 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.stars, (0, 0))
         self.game.display.blit(self.cafeteria, (467 + self.scrollx, 0 + self.scrolly))
         self.game.display.blit(self.cafeteria_hallway_left, (-253 + self.scrollx, 353 + self.scrolly))
-        self.game.display.blit(self.weapons_base[0], (1570 + self.scrollx, 257 + self.scrolly)) 
-        self.game.display.blit(self.weapons_base[1], (1587 + self.scrollx, 264 + self.scrolly)) 
-        self.game.display.blit(self.cafeteria_weapons_hallway, (1447 + self.scrollx, 362 + self.scrolly)) 
-        self.game.display.blit(self.weapons_base[2], (1447 + self.scrollx, 193 + self.scrolly))
-        # self.game.display.blit(self.weapons_base[4], (1447 + self.scrollx, 193 + self.scrolly))
+        self.load_weapons()
 
     def spawn(self):
         rand_coords = self.spawn_coords[random.randint(0,3)]
         self.playerx, self.playery = rand_coords
         self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), rand_coords)
         self.spawned = True
+
+    def load_weapons(self):
+        self.game.display.blit(self.weapons_base[0], (1570 + self.scrollx, 257 + self.scrolly))
+        self.game.display.blit(self.weapons_base[3], (1605 + self.scrollx, 205 + self.scrolly)) 
+        self.game.display.blit(self.weapons_base[4], (1604 + self.scrollx, 290 + self.scrolly))
+        self.game.display.blit(self.weapons_base[5], (1850 + self.scrollx, 465 + self.scrolly))
+        self.game.display.blit(self.weapons_base[1], (1587 + self.scrollx, 264 + self.scrolly)) 
+        self.game.display.blit(self.cafeteria_weapons_hallway, (1447 + self.scrollx, 362 + self.scrolly)) 
+        self.game.display.blit(self.weapons_base[2], (1447 + self.scrollx, 193 + self.scrolly))
+        self.game.display.blit(self.weapons_base[6], (1596 + self.scrollx, 250 + self.scrolly))
+        self.game.display.blit(self.weapons_base[7], (1598 + self.scrollx, 516 + self.scrolly))
+        self.game.display.blit(self.weapons_base[8], (1859 + self.scrollx, 419 + self.scrolly))
+        self.game.display.blit(self.weapons_base[2], (1447 + self.scrollx, 193 + self.scrolly))
+        self.game.display.blit(self.weapons_chair, (1725 + self.scrollx, 375 + self.scrolly))
+        self.game.display.blit(self.weapons_screen[self.screen_index], (1775 + self.scrollx, 300 + self.scrolly))
+        self.game.display.blit(self.weapons_box, (1958 + self.scrollx, 377 + self.scrolly))
+        self.game.display.blit(self.weapons_task[0], (1725 + self.scrollx, 225 + self.scrolly))
 
     def check_input(self):
         if self.game.back_key:
@@ -749,6 +778,3 @@ class game_lobby(pregame_lobby):
         if self.status == "walking_l":
             self.game.display.blit(pygame.transform.flip(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), True, False), (self.playerx, self.playery))
             self.walk_counter = (self.walk_counter + 1) % len(self.walk)
-
-
- 
