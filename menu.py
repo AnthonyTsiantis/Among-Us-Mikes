@@ -656,14 +656,23 @@ class game_lobby(pregame_lobby):
         self.stars = pygame.image.load("images/background/game/pregame/stars.png")
         self.cafeteria = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria.png")
         self.cafeteria_hallway_left = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria_Upper_Engine_Medbay_Hallway.png") 
+        self.load_background()
         self.status = "idle_r"
         self.playerx = 0
         self.playery = 0
-        self.camerax = 0
-        self.cameray = 0
+        self.scrollx = 0
+        self.scrolly = 0
         self.walk_counter = 0
         self.spawn_coords = [(920, 330), (1070, 450), (920, 540), (770, 450)]
         self.spawned = False
+    
+    def load_background(self):
+        weapons_spritesheet = spritesheet("images/background/game/game_map/weapons/weapons.png", "Map")
+        self.cafeteria_weapons_hallway = weapons_spritesheet.parse_sprite('hallway.png')
+        self.weapons_base = []
+        for i in range(9):
+            self.weapons_base.append(weapons_spritesheet.parse_sprite('base' + str(i + 1) + '.png'))
+
 
     def display_menu(self):
         self.run_display = True
@@ -671,18 +680,29 @@ class game_lobby(pregame_lobby):
         while self.run_display:
             self.game.check_events()
             self.check_input()
-            self.game.display.blit(self.stars, (0, 0))
-            self.game.display.blit(self.cafeteria, (467, 0))
-            self.game.display.blit(self.cafeteria_hallway_left, (-253, 353)) 
+            self.background()
 
             if not self.spawned:
-                rand_coords = self.spawn_coords[random.randint(0,3)]
-                self.playerx, self.playery = rand_coords
-                self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), rand_coords)
-                self.spawned = True
+                self.spawn()
             
             self.check_status()
             self.blit_screen()
+    
+    def background(self):
+        self.game.display.blit(self.stars, (0, 0))
+        self.game.display.blit(self.cafeteria, (467 + self.scrollx, 0 + self.scrolly))
+        self.game.display.blit(self.cafeteria_hallway_left, (-253 + self.scrollx, 353 + self.scrolly))
+        self.game.display.blit(self.weapons_base[0], (1570 + self.scrollx, 257 + self.scrolly)) 
+        self.game.display.blit(self.weapons_base[1], (1587 + self.scrollx, 264 + self.scrolly)) 
+        self.game.display.blit(self.cafeteria_weapons_hallway, (1447 + self.scrollx, 362 + self.scrolly)) 
+        self.game.display.blit(self.weapons_base[2], (1447 + self.scrollx, 193 + self.scrolly))
+        # self.game.display.blit(self.weapons_base[4], (1447 + self.scrollx, 193 + self.scrolly))
+
+    def spawn(self):
+        rand_coords = self.spawn_coords[random.randint(0,3)]
+        self.playerx, self.playery = rand_coords
+        self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), rand_coords)
+        self.spawned = True
 
     def check_input(self):
         if self.game.back_key:
@@ -690,23 +710,23 @@ class game_lobby(pregame_lobby):
         self.run_display = False
 
         if self.game.move_f:
-            self.playery -= 10
+            self.scrolly += 10
             self.status = "walking_r"
             self.input = True
             
         if self.game.move_b:
             self.input = True
-            self.playery += 10
+            self.scrolly -= 10
             self.status = "walking_r"
             
         if self.game.move_r:
             self.input = True
-            self.playerx += 10
+            self.scrollx -= 10
             self.status = "walking_r"
         
         if self.game.move_l:
             self.input = True
-            self.playerx -= 10
+            self.scrollx += 10
             self.status = "walking_l"
     
         if not self.game.move_l and not self.game.move_r and not self.game.move_f and not self.game.move_b:
@@ -731,3 +751,4 @@ class game_lobby(pregame_lobby):
             self.walk_counter = (self.walk_counter + 1) % len(self.walk)
 
 
+ 
