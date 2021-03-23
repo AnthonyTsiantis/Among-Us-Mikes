@@ -714,7 +714,17 @@ class game_lobby(pregame_lobby):
         self.nav_box = nav_spritesheet.parse_sprite('box.png')
         self.nav_task1 = nav_spritesheet.parse_sprite('task1.png')
         self.nav_task2 = nav_spritesheet.parse_sprite('task2.png')
-        
+
+        shield_spritesheet = spritesheet("images/background/game/game_map/shields/shield_spritesheet.png", "Character")
+        self.shield_light = shield_spritesheet.parse_sprite('light.png')
+        self.shield_mic = shield_spritesheet.parse_sprite('mic.png')
+        self.shield_rail1 = shield_spritesheet.parse_sprite('rail1.png')
+        self.shield_rail2 = shield_spritesheet.parse_sprite('rail2.png')
+        self.shield_rail3 = shield_spritesheet.parse_sprite('rail3.png')
+        self.shield_rail4 = shield_spritesheet.parse_sprite('rail4.png')
+        self.shield1 = shield_spritesheet.parse_sprite('shield1.png')
+        self.shield2 = shield_spritesheet.parse_sprite('shield2.png')
+        self.shield3 = shield_spritesheet.parse_sprite('shield3.png')
 
     def display_menu(self):
         self.run_display = True
@@ -745,6 +755,7 @@ class game_lobby(pregame_lobby):
         self.load_weapons()
         self.game.display.blit(self.O2_nav_weap_task, (2210 + self.scrollx, 890 + self.scrolly))
         self.load_oxygen()
+        self.load_shield()
 
     def spawn(self):
         rand_coords = self.spawn_coords[random.randint(0,3)]
@@ -791,6 +802,24 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.nav_box, (2325 + self.scrollx, 770 + self.scrolly))
         self.game.display.blit(self.nav_task1, (2415 + self.scrollx, 770 + self.scrolly))
         self.game.display.blit(self.nav1, (2274 + self.scrollx, 751 + self.scrolly))
+
+    def load_shield(self):
+        self.game.display.blit(self.shield1, (1550 + self.scrollx, 1375 + self.scrolly))
+        self.game.display.blit(self.shield2, (1550 + self.scrollx, 1375 + self.scrolly))
+        self.game.display.blit(self.shield3, (1525 + self.scrollx, 1344 + self.scrolly))
+        self.game.display.blit(self.shield_light, (1670 + self.scrollx, 1380 + self.scrolly))
+        self.game.display.blit(self.shield_light, (1655 + self.scrollx, 1400 + self.scrolly))
+        self.game.display.blit(self.shield_light, (1640 + self.scrollx, 1420 + self.scrolly))
+        self.game.display.blit(self.shield_light, (1625 + self.scrollx, 1440 + self.scrolly))
+        self.game.display.blit(self.shield_light, (1940 + self.scrollx, 1480 + self.scrolly))
+        self.game.display.blit(self.shield_light, (1940 + self.scrollx, 1505 + self.scrolly))
+        self.game.display.blit(self.shield_light, (1940 + self.scrollx, 1530 + self.scrolly))
+        self.game.display.blit(self.shield_rail1, (1536 + self.scrollx, 1620 + self.scrolly))
+        self.game.display.blit(self.shield_rail2, (1784 + self.scrollx, 1440 + self.scrolly))
+        self.game.display.blit(self.shield_rail3, (1846 + self.scrollx, 1596 + self.scrolly))
+        self.game.display.blit(self.shield_rail4, (1576 + self.scrollx, 1429 + self.scrolly))
+        self.game.display.blit(self.shield_mic, (1600 + self.scrollx, 1700 + self.scrolly))
+
 
     def check_input(self):
         if self.game.back_key:
