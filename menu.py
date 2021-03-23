@@ -467,7 +467,7 @@ class pregame_lobby(menu):
     def __init__(self, game):
         menu.__init__(self, game)
         self.stars = pygame.image.load("images/background/game/pregame/stars.png")
-        Spritesheet = spritesheet("images/background/game/pregame/spritesheet.png", "Map")
+        Spritesheet = spritesheet("images/background/game/pregame/spritesheet.png", "Character")
         self.box = Spritesheet.parse_sprite('box.png',)
         self.ship = Spritesheet.parse_sprite('ship.png')
         self.front = Spritesheet.parse_sprite('front.png')
@@ -665,6 +665,7 @@ class game_lobby(pregame_lobby):
         self.spawn_coords = [(920, 330), (1070, 450), (920, 540), (770, 450)]
         self.spawned = False
         self.screen_index = 0
+        self.oxygen_index = 0
         self.animation_index = 0
     
     def load_background(self):
@@ -688,7 +689,32 @@ class game_lobby(pregame_lobby):
         
         self.O2_nav_weap_hallway = pygame.image.load("images/background/game/game_map/weapons_navigation_hallway/O2_Navigation_Shields_Hallway.png").convert_alpha()
         self.O2_nav_weap_task = pygame.image.load("images/background/game/game_map/weapons_navigation_hallway/O2_Navigation_Shields_task.png").convert_alpha()
+        oxygen_spritesheet = spritesheet("images/background/game/game_map/oxygen/oxygen_spritesheet.png", "Character")
+        self.oxygen = oxygen_spritesheet.parse_sprite('oxygen.png')
 
+        self.oxygen_fans = []
+        for i in range(5):
+            self.oxygen_fans.append(oxygen_spritesheet.parse_sprite('fan' + str(i + 1) + '.png'))
+        
+        self.oxygen_fans_closed = oxygen_spritesheet.parse_sprite('fans_closed.png')
+        self.oxygen_vent = oxygen_spritesheet.parse_sprite('task1.png')
+        self.oxygen_task1 = oxygen_spritesheet.parse_sprite('task2.png')
+        self.oxygen_task2 = oxygen_spritesheet.parse_sprite('task3.png')
+        self.oxygen_plant = oxygen_spritesheet.parse_sprite('plant.png')
+
+        nav_spritesheet = spritesheet("images/background/game/game_map/nav/nav_spritesheet.png", "Character")
+        self.nav1 = nav_spritesheet.parse_sprite('nav1.png')
+        self.nav2 = nav_spritesheet.parse_sprite('nav2.png')
+        self.nav3 = nav_spritesheet.parse_sprite('nav3.png')
+        self.console1 = nav_spritesheet.parse_sprite('console1.png')
+        self.console2 = nav_spritesheet.parse_sprite('console2.png')
+        self.chair1 = nav_spritesheet.parse_sprite('chair1.png')
+        self.chair2 = nav_spritesheet.parse_sprite('chair2.png')
+        self.chair3 = nav_spritesheet.parse_sprite('chair3.png')
+        self.nav_box = nav_spritesheet.parse_sprite('box.png')
+        self.nav_task1 = nav_spritesheet.parse_sprite('task1.png')
+        self.nav_task2 = nav_spritesheet.parse_sprite('task2.png')
+        
 
     def display_menu(self):
         self.run_display = True
@@ -704,6 +730,9 @@ class game_lobby(pregame_lobby):
             
             if self.animation_index == 0:
                 self.screen_index = (self.screen_index + 1) % len(self.weapons_screen)
+            
+            if self.animation_index == 0:
+                self.oxygen_index = (self.oxygen_index + 1) % len(self.oxygen_fans)
             self.check_status()
             self.blit_screen()
     
@@ -711,9 +740,11 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.stars, (0, 0))
         self.game.display.blit(self.cafeteria, (467 + self.scrollx, 0 + self.scrolly))
         self.game.display.blit(self.cafeteria_hallway_left, (-253 + self.scrollx, 353 + self.scrolly))
+        self.load_nav()
         self.game.display.blit(self.O2_nav_weap_hallway, (1675 + self.scrollx, 660 + self.scrolly))
         self.load_weapons()
         self.game.display.blit(self.O2_nav_weap_task, (2210 + self.scrollx, 890 + self.scrolly))
+        self.load_oxygen()
 
     def spawn(self):
         rand_coords = self.spawn_coords[random.randint(0,3)]
@@ -740,6 +771,26 @@ class game_lobby(pregame_lobby):
         
         # TODO
         # blit the blaster to the display "self.weapons_gun"
+    
+    def load_oxygen(self):
+        self.game.display.blit(self.oxygen, (1342 + self.scrollx, 717 + self.scrolly))
+        self.game.display.blit(self.oxygen_fans[self.oxygen_index], (1358 + self.scrollx, 785 + self.scrolly))
+        self.game.display.blit(self.oxygen_vent, (1475 + self.scrollx, 810 + self.scrolly))
+        self.game.display.blit(self.oxygen_plant, (1535 + self.scrollx, 729 + self.scrolly))
+        self.game.display.blit(self.oxygen_task2, (1410 + self.scrollx, 835 + self.scrolly))
+        self.game.display.blit(self.oxygen_task1, (1558 + self.scrollx, 811 + self.scrolly))
+
+    def load_nav(self):
+        self.game.display.blit(self.nav2, (2270 + self.scrollx, 801 + self.scrolly))
+        self.game.display.blit(self.nav3, (2276 + self.scrollx, 755 + self.scrolly))
+        self.game.display.blit(self.console1, (2531 + self.scrollx, 905 + self.scrolly))
+        self.game.display.blit(self.console2, (2483 + self.scrollx, 815 + self.scrolly))
+        self.game.display.blit(self.chair1, (2450 + self.scrollx, 840 + self.scrolly))
+        self.game.display.blit(self.chair2, (2465 + self.scrollx, 1060 + self.scrolly))
+        self.game.display.blit(self.chair3, (2479 + self.scrollx, 919 + self.scrolly))
+        self.game.display.blit(self.nav_box, (2325 + self.scrollx, 770 + self.scrolly))
+        self.game.display.blit(self.nav_task1, (2415 + self.scrollx, 770 + self.scrolly))
+        self.game.display.blit(self.nav1, (2274 + self.scrollx, 751 + self.scrolly))
 
     def check_input(self):
         if self.game.back_key:
