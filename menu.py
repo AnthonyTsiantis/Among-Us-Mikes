@@ -726,6 +726,23 @@ class game_lobby(pregame_lobby):
         self.shield2 = shield_spritesheet.parse_sprite('shield2.png')
         self.shield3 = shield_spritesheet.parse_sprite('shield3.png')
 
+        admin_spritesheet = spritesheet("images/background/game/game_map/admin/admin_spritesheet.png", "Character")
+        self.admin_base1 = admin_spritesheet.parse_sprite('base1.png')
+        self.admin_base2 = admin_spritesheet.parse_sprite('base2.png')
+        self.admin_base3 = admin_spritesheet.parse_sprite('base3.png')
+        self.admin_chairs = admin_spritesheet.parse_sprite('chairs.png')
+        self.admin_hallway = admin_spritesheet.parse_sprite('hallway.png')
+        self.admin_screen1 = admin_spritesheet.parse_sprite('screen1.png')
+        self.admin_screen2 = admin_spritesheet.parse_sprite('screen2.png')
+        self.admin_table1 = admin_spritesheet.parse_sprite('table1.png')
+        self.admin_table2 = admin_spritesheet.parse_sprite('table2.png')
+        self.admin_table3 = admin_spritesheet.parse_sprite('table3.png')
+        self.admin_table4 = admin_spritesheet.parse_sprite('table4.png')
+        self.admin_task1 = admin_spritesheet.parse_sprite('task.png')
+        self.admin_task2 = admin_spritesheet.parse_sprite('task2.png')
+        self.admin_vent = admin_spritesheet.parse_sprite('vent.png')
+
+
     def display_menu(self):
         self.run_display = True
         pregame_lobby.get_character(self)
@@ -748,20 +765,24 @@ class game_lobby(pregame_lobby):
     
     def background(self):
         self.game.display.blit(self.stars, (0, 0))
-        self.game.display.blit(self.cafeteria, (467 + self.scrollx, 0 + self.scrolly))
-        self.game.display.blit(self.cafeteria_hallway_left, (-253 + self.scrollx, 353 + self.scrolly))
+        self.load_cafeteria()
         self.load_nav()
         self.game.display.blit(self.O2_nav_weap_hallway, (1675 + self.scrollx, 660 + self.scrolly))
         self.load_weapons()
         self.game.display.blit(self.O2_nav_weap_task, (2210 + self.scrollx, 890 + self.scrolly))
         self.load_oxygen()
         self.load_shield()
+        self.load_admin()
 
     def spawn(self):
         rand_coords = self.spawn_coords[random.randint(0,3)]
         self.playerx, self.playery = rand_coords
         self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), rand_coords)
         self.spawned = True
+    
+    def load_cafeteria(self):
+        self.game.display.blit(self.cafeteria, (467 + self.scrollx, 0 + self.scrolly))
+        self.game.display.blit(self.cafeteria_hallway_left, (-253 + self.scrollx, 353 + self.scrolly))
 
     def load_weapons(self):
         self.game.display.blit(self.weapons_base[0], (1570 + self.scrollx, 257 + self.scrolly))
@@ -819,6 +840,23 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.shield_rail3, (1846 + self.scrollx, 1596 + self.scrolly))
         self.game.display.blit(self.shield_rail4, (1576 + self.scrollx, 1429 + self.scrolly))
         self.game.display.blit(self.shield_mic, (1600 + self.scrollx, 1700 + self.scrolly))
+    
+    def load_admin(self):
+        self.game.display.blit(self.admin_base1, (1025 + self.scrollx, 1107 + self.scrolly))
+        self.game.display.blit(self.admin_base3, (1039 + self.scrollx, 1057 + self.scrolly))
+        self.game.display.blit(self.admin_hallway, (881 + self.scrollx, 952 + self.scrolly))
+        self.game.display.blit(self.admin_base2, (1040 + self.scrollx, 1049 + self.scrolly))
+        self.game.display.blit(self.admin_screen2, (1290 + self.scrollx, 1075 + self.scrolly))
+        self.game.display.blit(self.admin_screen1, (1457 + self.scrollx, 1074 + self.scrolly))
+        self.game.display.blit(self.admin_chairs, (1295 + self.scrollx, 1100 + self.scrolly))
+        self.game.display.blit(self.admin_table1, (1290 + self.scrollx, 1244 + self.scrolly))
+        self.game.display.blit(self.admin_table2, (1288 + self.scrollx, 1252 + self.scrolly))
+        self.game.display.blit(self.admin_table3, (1462 + self.scrollx, 1252 + self.scrolly))
+        self.game.display.blit(self.admin_table4, (1335 + self.scrollx, 1257 + self.scrolly))
+        self.game.display.blit(self.admin_task1, (1203 + self.scrollx, 1080 + self.scrolly))
+        self.game.display.blit(self.admin_task2, (1110 + self.scrollx, 1085 + self.scrolly))
+        self.game.display.blit(self.admin_vent, (1535 + self.scrollx, 1091 + self.scrolly))
+
 
 
     def check_input(self):
