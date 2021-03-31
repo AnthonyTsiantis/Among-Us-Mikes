@@ -742,6 +742,16 @@ class game_lobby(pregame_lobby):
         self.admin_task2 = admin_spritesheet.parse_sprite('task2.png')
         self.admin_vent = admin_spritesheet.parse_sprite('vent.png')
 
+        storage_spritesheet = spritesheet("images/background/game/game_map/Storage/spritesheet.png", "Character")
+        self.storage_base = storage_spritesheet.parse_sprite('base.png')
+        self.storage_bins = storage_spritesheet.parse_sprite('bins.png')
+        self.storage_bin = storage_spritesheet.parse_sprite('bin.png')
+        self.storage_fuel = storage_spritesheet.parse_sprite('fuel.png')
+        self.storage_task1 = storage_spritesheet.parse_sprite('task1.png')
+        self.storage_task2 = storage_spritesheet.parse_sprite('task2.png')
+
+        self.storage_shield_hallway = pygame.image.load("images/background/game/game_map/storage_shield/storage_shield_hallway.png")
+
 
     def display_menu(self):
         self.run_display = True
@@ -771,8 +781,11 @@ class game_lobby(pregame_lobby):
         self.load_weapons()
         self.game.display.blit(self.O2_nav_weap_task, (2210 + self.scrollx, 890 + self.scrolly))
         self.load_oxygen()
+        self.game.display.blit(self.storage_shield_hallway, (1105 + self.scrollx, 1477 + self.scrolly))
         self.load_shield()
         self.load_admin()
+        self.load_storage()
+
 
     def spawn(self):
         rand_coords = self.spawn_coords[random.randint(0,3)]
@@ -857,6 +870,13 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.admin_task2, (1110 + self.scrollx, 1085 + self.scrolly))
         self.game.display.blit(self.admin_vent, (1535 + self.scrollx, 1091 + self.scrolly))
 
+    def load_storage(self):
+        self.game.display.blit(self.storage_base, (548 + self.scrollx, 1240 + self.scrolly))
+        self.game.display.blit(self.storage_bins, (670 + self.scrollx, 1477 + self.scrolly))
+        self.game.display.blit(self.storage_bin, (925 + self.scrollx, 1485 + self.scrolly))
+        self.game.display.blit(self.storage_fuel, (750 + self.scrollx, 1700 + self.scrolly))
+        self.game.display.blit(self.storage_task1, (1069 + self.scrollx, 1925 + self.scrolly))
+        self.game.display.blit(self.storage_task2, (835 + self.scrollx, 1285 + self.scrolly))
 
 
     def check_input(self):
