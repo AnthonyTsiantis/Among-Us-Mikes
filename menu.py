@@ -666,6 +666,7 @@ class game_lobby(pregame_lobby):
         self.spawned = False
         self.screen_index = 0
         self.oxygen_index = 0
+        self.comms_index = 0
         self.animation_index = 0
     
     def load_background(self):
@@ -752,6 +753,20 @@ class game_lobby(pregame_lobby):
 
         self.storage_shield_hallway = pygame.image.load("images/background/game/game_map/storage_shield/storage_shield_hallway.png")
 
+        comms_spritesheet = spritesheet("images/background/game/game_map/comms/spritesheet.png", "Character")
+        self.comms_base1 = comms_spritesheet.parse_sprite('base1.png')
+        self.comms_base2 = comms_spritesheet.parse_sprite('base2.png')
+        self.comms_base3 = comms_spritesheet.parse_sprite('base3.png')
+        self.comms_base4 = comms_spritesheet.parse_sprite('base4.png')
+        self.comms_base5 = comms_spritesheet.parse_sprite('base5.png')
+        self.comms_base6 = comms_spritesheet.parse_sprite('base6.png')
+        self.comms_base7 = comms_spritesheet.parse_sprite('base7.png')
+        self.comms_task = self.storage_task2
+        self.comms_tape = []
+        for i in range(1, 6):
+            self.comms_tape.append(comms_spritesheet.parse_sprite('tape' + str(i) + '.png'))
+        
+
 
     def display_menu(self):
         self.run_display = True
@@ -767,9 +782,9 @@ class game_lobby(pregame_lobby):
             
             if self.animation_index == 0:
                 self.screen_index = (self.screen_index + 1) % len(self.weapons_screen)
-            
-            if self.animation_index == 0:
                 self.oxygen_index = (self.oxygen_index + 1) % len(self.oxygen_fans)
+                self.comms_index = (self.comms_index + 1) % len(self.comms_tape)
+
             self.check_status()
             self.blit_screen()
     
@@ -785,6 +800,7 @@ class game_lobby(pregame_lobby):
         self.load_shield()
         self.load_admin()
         self.load_storage()
+        self.load_comms()
 
 
     def spawn(self):
@@ -878,6 +894,16 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.storage_task1, (1069 + self.scrollx, 1925 + self.scrolly))
         self.game.display.blit(self.storage_task2, (835 + self.scrollx, 1285 + self.scrolly))
 
+    def load_comms(self):
+        self.game.display.blit(self.comms_base1, (1131 + self.scrollx, 1735 + self.scrolly))
+        self.game.display.blit(self.comms_base3, (1143 + self.scrollx, 1722 + self.scrolly))
+        self.game.display.blit(self.comms_base5, (1260 + self.scrollx, 1927 + self.scrolly))
+        self.game.display.blit(self.comms_base4, (1277 + self.scrollx, 1962 + self.scrolly))
+        self.game.display.blit(self.comms_base6, (1137 + self.scrollx, 1850 + self.scrolly))
+        self.game.display.blit(self.comms_base7, (1510 + self.scrollx, 1845 + self.scrolly))
+        self.game.display.blit(self.comms_task, (1515 + self.scrollx, 1740 + self.scrolly))
+        self.game.display.blit(self.comms_tape[self.comms_index], (1163 + self.scrollx, 1748 + self.scrolly))
+        self.game.display.blit(self.comms_base2, (1130 + self.scrollx, 1690 + self.scrolly))
 
     def check_input(self):
         if self.game.back_key:
