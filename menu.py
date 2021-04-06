@@ -765,8 +765,17 @@ class game_lobby(pregame_lobby):
         self.comms_tape = []
         for i in range(1, 6):
             self.comms_tape.append(comms_spritesheet.parse_sprite('tape' + str(i) + '.png'))
-        
 
+        electrical_spritesheet = spritesheet("images/background/game/game_map/electrical/spritesheet.png", "Character")
+        self.elec_base1 = electrical_spritesheet.parse_sprite('base1.png')
+        self.elec_base2 = electrical_spritesheet.parse_sprite('base2.png')
+        self.elec_door1 = electrical_spritesheet.parse_sprite('door1.png')
+        self.elec_door2 = electrical_spritesheet.parse_sprite('door2.png')
+        self.elec_wire1 = electrical_spritesheet.parse_sprite('wire1.png')
+        self.elec_wire2 = electrical_spritesheet.parse_sprite('wire2.png')
+        self.elec_task1 = electrical_spritesheet.parse_sprite('task1.png')
+        self.elec_task2 = self.comms_task
+        
 
     def display_menu(self):
         self.run_display = True
@@ -799,6 +808,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.storage_shield_hallway, (1105 + self.scrollx, 1477 + self.scrolly))
         self.load_shield()
         self.load_admin()
+        self.load_electrical()
         self.load_storage()
         self.load_comms()
 
@@ -904,6 +914,17 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.comms_task, (1515 + self.scrollx, 1740 + self.scrolly))
         self.game.display.blit(self.comms_tape[self.comms_index], (1163 + self.scrollx, 1748 + self.scrolly))
         self.game.display.blit(self.comms_base2, (1130 + self.scrollx, 1690 + self.scrolly))
+
+    def load_electrical(self):
+        self.game.display.blit(self.elec_base1, (-222 + self.scrollx, 1138 + self.scrolly))
+        self.game.display.blit(self.elec_base2, (154 + self.scrollx, 1275 + self.scrolly))
+        self.game.display.blit(self.elec_task1, (348 + self.scrollx, 1202 + self.scrolly))
+        self.game.display.blit(self.elec_task2, (248 + self.scrollx, 1173 + self.scrolly))
+        self.game.display.blit(self.elec_door1, (160 + self.scrollx, 1368 + self.scrolly))
+        self.game.display.blit(self.elec_door2, (502 + self.scrollx, 1173 + self.scrolly))
+        self.game.display.blit(self.elec_wire1, (130 + self.scrollx, 1150 + self.scrolly))
+        self.game.display.blit(self.elec_wire2, (151 + self.scrollx, 1324 + self.scrolly))
+
 
     def check_input(self):
         if self.game.back_key:
