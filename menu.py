@@ -655,7 +655,7 @@ class game_lobby(pregame_lobby):
         self.stars = pygame.image.load("images/background/game/pregame/stars.png")
         self.cafeteria = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria.png")
         self.cafeteria_hallway_left = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria_Upper_Engine_Medbay_Hallway.png") 
-        self.load_background()
+        self.load_sprites()
         self.status = "idle_r"
         self.playerx = 0
         self.playery = 0
@@ -667,9 +667,12 @@ class game_lobby(pregame_lobby):
         self.screen_index = 0
         self.oxygen_index = 0
         self.comms_index = 0
+        self.engine_index = 0
+        self.engine_bolt_index = 0
+        self.engine_puff_index = 0
         self.animation_index = 0
-    
-    def load_background(self):
+
+    def load_sprites(self):
         weapons_spritesheet = spritesheet("images/background/game/game_map/weapons/weapons.png", "Character")
         self.cafeteria_weapons_hallway = weapons_spritesheet.parse_sprite('hallway.png')
         self.weapons_chair = weapons_spritesheet.parse_sprite('chair.png')
@@ -775,6 +778,32 @@ class game_lobby(pregame_lobby):
         self.elec_wire2 = electrical_spritesheet.parse_sprite('wire2.png')
         self.elec_task1 = electrical_spritesheet.parse_sprite('task1.png')
         self.elec_task2 = self.comms_task
+
+        engine_spritesheet = spritesheet("images/background/game/game_map/engines/spritesheet.png", "Character")
+        self.lower_engine_base = engine_spritesheet.parse_sprite('lower_engine.png')
+        self.upper_engine_base = engine_spritesheet.parse_sprite('upper_engine.png')
+        
+        self.engine_base = []
+        self.engine_puff = []
+        self.engine_bolt = []
+        for i in range(1, 13):
+            if i < 5:
+                self.engine_base.append(engine_spritesheet.parse_sprite('engine' + str(i) + '.png'))
+                self.engine_puff.append(engine_spritesheet.parse_sprite('puff' + str(i) + '.png'))
+                self.engine_bolt.append(engine_spritesheet.parse_sprite('bolt' + str(i) + '.png'))
+            elif i < 9:
+                self.engine_puff.append(engine_spritesheet.parse_sprite('puff' + str(i) + '.png'))
+                self.engine_bolt.append(engine_spritesheet.parse_sprite('bolt' + str(i) + '.png'))
+            
+            else:
+                self.engine_bolt.append(engine_spritesheet.parse_sprite('bolt' + str(i) + '.png'))
+
+        self.engine_rail1 = engine_spritesheet.parse_sprite('rail1.png')
+        self.engine_rail2 = engine_spritesheet.parse_sprite('rail2.png')
+        self.engine_task1 = engine_spritesheet.parse_sprite('task1.png')
+        self.engine_task2 = engine_spritesheet.parse_sprite('task2.png')
+        self.engine_task3 = engine_spritesheet.parse_sprite('task4.png')
+        self.engines_reactor_security_hallway = pygame.image.load("images/background/game/game_map/reactor_security_engine_hallway/Reactor_Security_Engines_Hallway.png")
         
 
     def display_menu(self):
@@ -793,6 +822,9 @@ class game_lobby(pregame_lobby):
                 self.screen_index = (self.screen_index + 1) % len(self.weapons_screen)
                 self.oxygen_index = (self.oxygen_index + 1) % len(self.oxygen_fans)
                 self.comms_index = (self.comms_index + 1) % len(self.comms_tape)
+                self.engine_index = (self.engine_index + 1) % len(self.engine_base)
+                self.engine_bolt_index = (self.engine_bolt_index + 1) % len(self.engine_bolt)
+                self.engine_puff_index = (self.engine_puff_index + 1) % len(self.engine_puff)
 
             self.check_status()
             self.blit_screen()
@@ -811,6 +843,7 @@ class game_lobby(pregame_lobby):
         self.load_electrical()
         self.load_storage()
         self.load_comms()
+        self.load_engines()
 
 
     def spawn(self):
@@ -820,8 +853,8 @@ class game_lobby(pregame_lobby):
         self.spawned = True
     
     def load_cafeteria(self):
+        self.game.display.blit(self.cafeteria_hallway_left, (-248 + self.scrollx, 353 + self.scrolly))
         self.game.display.blit(self.cafeteria, (467 + self.scrollx, 0 + self.scrolly))
-        self.game.display.blit(self.cafeteria_hallway_left, (-253 + self.scrollx, 353 + self.scrolly))
 
     def load_weapons(self):
         self.game.display.blit(self.weapons_base[0], (1570 + self.scrollx, 257 + self.scrolly))
@@ -924,6 +957,34 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.elec_door2, (502 + self.scrollx, 1173 + self.scrolly))
         self.game.display.blit(self.elec_wire1, (130 + self.scrollx, 1150 + self.scrolly))
         self.game.display.blit(self.elec_wire2, (151 + self.scrollx, 1324 + self.scrolly))
+    
+    def load_engines(self):
+        self.game.display.blit(self.upper_engine_base, (-629 + self.scrollx, 261 + self.scrolly))
+        self.game.display.blit(self.engine_task3, (-445 + self.scrollx, 295 + self.scrolly))
+        self.game.display.blit(self.engines_reactor_security_hallway, (-585 + self.scrollx, 725 + self.scrolly))
+        self.game.display.blit(self.lower_engine_base, (-629 + self.scrollx, 1261 + self.scrolly))
+        self.game.display.blit(self.engine_task3, (-510 + self.scrollx, 1335 + self.scrolly))
+        # upper
+        self.create_engine(-620, 370)
+
+        # lower
+        self.create_engine(-618, 1392)
+
+
+
+    def create_engine(self, x, y):
+        self.game.display.blit(self.engine_rail2, (x + 252 + self.scrollx, y + 40 + self.scrolly))
+        self.game.display.blit(self.engine_base[self.engine_index], (x + self.scrollx, y + self.scrolly))
+        self.game.display.blit(self.engine_rail1, (x + 97 + self.scrollx, y + 188 + self.scrolly))
+
+        bolt = random.randint(0, 10)
+        if bolt:
+            self.game.display.blit(self.engine_bolt[self.engine_bolt_index], (x + 103 + self.scrollx, y + 49 + self.scrolly))
+            self.game.display.blit(self.engine_bolt[self.engine_bolt_index], (x + 103 + self.scrollx, y + 85 + self.scrolly))
+        
+        self.game.display.blit(self.engine_puff[self.engine_puff_index], (x + 275 + self.scrollx, y + 35 + (self.engine_puff_index * -25) + self.scrolly))
+        self.game.display.blit(self.engine_task1, (x + 10 + self.scrollx, y + 210 + self.scrolly))
+        self.game.display.blit(self.engine_task2, (x + 77 + self.scrollx, y + 197 + self.scrolly))
 
 
     def check_input(self):
