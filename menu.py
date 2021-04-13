@@ -828,6 +828,32 @@ class game_lobby(pregame_lobby):
         for i in range(1, 6):
             self.security_server.append(security_spritesheet.parse_sprite('server' + str(i) + '.png'))
 
+
+        reactor_spritesheet = spritesheet("images/background/game/game_map/reactor/spritesheet.png", "Character")
+        self.reactor_base1 = reactor_spritesheet.parse_sprite('base1.png')
+        self.reactor_base2 = reactor_spritesheet.parse_sprite('base2.png')
+        self.reactor_base5 = reactor_spritesheet.parse_sprite('base5.png')
+        self.reactor_base3 = reactor_spritesheet.parse_sprite('base3.png')
+        self.reactor_base4 = reactor_spritesheet.parse_sprite('base4.png')
+        self.reactor_part1 = reactor_spritesheet.parse_sprite('reactor1.png')
+        self.reactor_part2 = reactor_spritesheet.parse_sprite('reactor2.png')
+        self.reactor_part3 = reactor_spritesheet.parse_sprite('reactor3.png')
+        self.reactor_part4 = reactor_spritesheet.parse_sprite('reactor4.png')
+        self.reactor_part5 = reactor_spritesheet.parse_sprite('reactor5.png')
+        self.reactor_part6 = reactor_spritesheet.parse_sprite('reactor6.png')
+        self.reactor_part7 = reactor_spritesheet.parse_sprite('reactor7.png')
+        self.reactor_part8 = reactor_spritesheet.parse_sprite('reactor8.png')
+        self.reactor_part9 = reactor_spritesheet.parse_sprite('reactor9.png')
+        self.reactor_part10 = reactor_spritesheet.parse_sprite('reactor10.png')
+        self.reactor_part11 = reactor_spritesheet.parse_sprite('reactor11.png')
+        self.reactor_part12 = reactor_spritesheet.parse_sprite('reactor12.png')
+        self.reactor_part13 = reactor_spritesheet.parse_sprite('reactor13.png')
+        self.reactor_part14 = reactor_spritesheet.parse_sprite('reactor14.png')
+        self.reactor_part15 = reactor_spritesheet.parse_sprite('reactor15.png')
+        self.reactor_task1 = reactor_spritesheet.parse_sprite('task1.png')
+        self.reactor_task2 = reactor_spritesheet.parse_sprite('task2.png')
+        self.reactor_task3 = reactor_spritesheet.parse_sprite('task3.png')
+
         
 
     def display_menu(self):
@@ -873,6 +899,7 @@ class game_lobby(pregame_lobby):
         self.load_engines()
         self.load_medbay()
         self.load_security()
+        self.load_reactor()
 
 
     def spawn(self):
@@ -1027,6 +1054,32 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.security_screen[self.security_screen_index], (-155 + self.scrollx, 740 + self.scrolly))
         self.game.display.blit(self.security_server[self.security_server_index], (-200 + self.scrollx, 780 + self.scrolly))
         self.game.display.blit(self.security_chair, (-125 + self.scrollx, 802 + self.scrolly))
+
+    def load_reactor(self):
+        self.game.display.blit(self.reactor_base1, (-967 + self.scrollx, 700 + self.scrolly))
+        self.game.display.blit(self.reactor_part3, (-730 + self.scrollx, 950 + self.scrolly))
+        self.game.display.blit(self.reactor_part3, (-730 + self.scrollx, 1083 + self.scrolly))
+        self.game.display.blit(self.reactor_base5, (-592 + self.scrollx, 918 + self.scrolly))
+        self.game.display.blit(self.reactor_base3, (-950 + self.scrollx, 650 + self.scrolly))
+        self.game.display.blit(self.reactor_part11, (-810 + self.scrollx, 820 + self.scrolly))
+        self.game.display.blit(self.reactor_base4, (-724 + self.scrollx, 795 + self.scrolly))
+        self.game.display.blit(self.reactor_part13, (-870 + self.scrollx, 680 + self.scrolly))
+        self.game.display.blit(self.reactor_part15, (-955 + self.scrollx, 670 + self.scrolly))
+        self.game.display.blit(self.reactor_part8, (-939 + self.scrollx, 798 + self.scrolly))
+        self.game.display.blit(self.reactor_part10, (-887 + self.scrollx, 690 + self.scrolly))
+        self.game.display.blit(self.reactor_part2, (-890 + self.scrollx, 1082 + self.scrolly))
+        self.game.display.blit(self.reactor_task2, (-785 + self.scrollx, 660 + self.scrolly))
+        self.game.display.blit(self.reactor_part14, (-960 + self.scrollx, 965 + self.scrolly))
+        self.game.display.blit(self.reactor_part1, (-967 + self.scrollx, 830 + self.scrolly))
+        self.game.display.blit(self.reactor_task3, (-675 + self.scrollx, 815 + self.scrolly))
+        self.game.display.blit(self.reactor_part9, (-815 + self.scrollx, 1190 + self.scrolly))
+        self.game.display.blit(self.reactor_part7, (-939 + self.scrollx, 1150 + self.scrolly))
+        self.game.display.blit(self.reactor_part12, (-939 + self.scrollx, 1075 + self.scrolly))
+        self.game.display.blit(self.reactor_task1, (-835 + self.scrollx, 1000 + self.scrolly))
+        self.game.display.blit(self.reactor_part4, (-875 + self.scrollx, 1035 + self.scrolly))
+        self.game.display.blit(self.reactor_part5, (-900 + self.scrollx, 1000 + self.scrolly))
+        self.game.display.blit(self.reactor_part6, (-860 + self.scrollx, 995 + self.scrolly))
+        self.game.display.blit(self.reactor_base2, (-963 + self.scrollx, 644 + self.scrolly))
 
 
     def check_input(self):
