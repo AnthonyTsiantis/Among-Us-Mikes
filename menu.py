@@ -671,6 +671,8 @@ class game_lobby(pregame_lobby):
         self.engine_bolt_index = 0
         self.engine_puff_index = 0
         self.medbay_scan_index = 0
+        self.security_screen_index = 0
+        self.security_server_index = 0
         self.animation_index = 0
 
     def load_sprites(self):
@@ -815,6 +817,17 @@ class game_lobby(pregame_lobby):
         for i in range(1, 4):
             self.medbay_scan.append(medbay_spritesheet.parse_sprite('scan' + str(i) + '.png'))
 
+        security_spritesheet = spritesheet("images/background/game/game_map/security/spritesheet.png", "Character")
+        self.security_base1 = security_spritesheet.parse_sprite('base1.png')
+        self.security_chair = security_spritesheet.parse_sprite('chair.png')
+        self.security_screen = [security_spritesheet.parse_sprite('screen1.png'), security_spritesheet.parse_sprite('screen2.png')]
+        self.security_wire = security_spritesheet.parse_sprite('wire.png')
+        self.security_task = security_spritesheet.parse_sprite('task.png')
+
+        self.security_server = []
+        for i in range(1, 6):
+            self.security_server.append(security_spritesheet.parse_sprite('server' + str(i) + '.png'))
+
         
 
     def display_menu(self):
@@ -837,6 +850,8 @@ class game_lobby(pregame_lobby):
                 self.engine_bolt_index = (self.engine_bolt_index + 1) % len(self.engine_bolt)
                 self.engine_puff_index = (self.engine_puff_index + 1) % len(self.engine_puff)
                 self.medbay_scan_index = (self.medbay_scan_index + 1) % len(self.medbay_scan)
+                self.security_screen_index = (self.security_screen_index + 1) % len(self.security_screen)
+                self.security_server_index = (self.security_server_index + 1) % len(self.security_server)
 
             self.check_status()
             self.blit_screen()
@@ -857,6 +872,7 @@ class game_lobby(pregame_lobby):
         self.load_comms()
         self.load_engines()
         self.load_medbay()
+        self.load_security()
 
 
     def spawn(self):
@@ -1003,6 +1019,14 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.medbay_base2, (325 + self.scrollx, 960 + self.scrolly))
         self.game.display.blit(self.medbay_base3, (440 + self.scrollx, 875 + self.scrolly))
         self.game.display.blit(self.medbay_scan[self.medbay_scan_index], (350 + (self.medbay_scan_index * 7) + self.scrollx, 980 + -(self.medbay_scan_index * 20) + self.scrolly))
+
+    def load_security(self):
+        self.game.display.blit(self.security_base1, (-235 + self.scrollx, 730 + self.scrolly))
+        self.game.display.blit(self.security_wire, (0 + self.scrollx, 790 + self.scrolly))
+        self.game.display.blit(self.security_task, (-10 + self.scrollx, 805 + self.scrolly))
+        self.game.display.blit(self.security_screen[self.security_screen_index], (-155 + self.scrollx, 740 + self.scrolly))
+        self.game.display.blit(self.security_server[self.security_server_index], (-200 + self.scrollx, 780 + self.scrolly))
+        self.game.display.blit(self.security_chair, (-125 + self.scrollx, 802 + self.scrolly))
 
 
     def check_input(self):
