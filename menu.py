@@ -670,6 +670,7 @@ class game_lobby(pregame_lobby):
         self.engine_index = 0
         self.engine_bolt_index = 0
         self.engine_puff_index = 0
+        self.medbay_scan_index = 0
         self.animation_index = 0
 
     def load_sprites(self):
@@ -804,6 +805,16 @@ class game_lobby(pregame_lobby):
         self.engine_task2 = engine_spritesheet.parse_sprite('task2.png')
         self.engine_task3 = engine_spritesheet.parse_sprite('task4.png')
         self.engines_reactor_security_hallway = pygame.image.load("images/background/game/game_map/reactor_security_engine_hallway/Reactor_Security_Engines_Hallway.png")
+
+        medbay_spritesheet = spritesheet("images/background/game/game_map/medbay/spritesheet.png", "Character")
+        self.medbay_base1 = medbay_spritesheet.parse_sprite('base1.png')
+        self.medbay_base2 = medbay_spritesheet.parse_sprite('base2.png')
+        self.medbay_base3 = medbay_spritesheet.parse_sprite('base3.png')
+
+        self.medbay_scan = []
+        for i in range(1, 4):
+            self.medbay_scan.append(medbay_spritesheet.parse_sprite('scan' + str(i) + '.png'))
+
         
 
     def display_menu(self):
@@ -825,6 +836,7 @@ class game_lobby(pregame_lobby):
                 self.engine_index = (self.engine_index + 1) % len(self.engine_base)
                 self.engine_bolt_index = (self.engine_bolt_index + 1) % len(self.engine_bolt)
                 self.engine_puff_index = (self.engine_puff_index + 1) % len(self.engine_puff)
+                self.medbay_scan_index = (self.medbay_scan_index + 1) % len(self.medbay_scan)
 
             self.check_status()
             self.blit_screen()
@@ -844,6 +856,7 @@ class game_lobby(pregame_lobby):
         self.load_storage()
         self.load_comms()
         self.load_engines()
+        self.load_medbay()
 
 
     def spawn(self):
@@ -969,9 +982,7 @@ class game_lobby(pregame_lobby):
 
         # lower
         self.create_engine(-618, 1392)
-
-
-
+    
     def create_engine(self, x, y):
         self.game.display.blit(self.engine_rail2, (x + 252 + self.scrollx, y + 40 + self.scrolly))
         self.game.display.blit(self.engine_base[self.engine_index], (x + self.scrollx, y + self.scrolly))
@@ -985,6 +996,13 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.engine_puff[self.engine_puff_index], (x + 275 + self.scrollx, y + 35 + (self.engine_puff_index * -25) + self.scrolly))
         self.game.display.blit(self.engine_task1, (x + 10 + self.scrollx, y + 210 + self.scrolly))
         self.game.display.blit(self.engine_task2, (x + 77 + self.scrollx, y + 197 + self.scrolly))
+    
+
+    def load_medbay(self): 
+        self.game.display.blit(self.medbay_base1, (68 + self.scrollx, 550 + self.scrolly))
+        self.game.display.blit(self.medbay_base2, (325 + self.scrollx, 960 + self.scrolly))
+        self.game.display.blit(self.medbay_base3, (440 + self.scrollx, 875 + self.scrolly))
+        self.game.display.blit(self.medbay_scan[self.medbay_scan_index], (350 + (self.medbay_scan_index * 7) + self.scrollx, 980 + -(self.medbay_scan_index * 20) + self.scrolly))
 
 
     def check_input(self):
