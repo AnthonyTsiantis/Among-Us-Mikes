@@ -11,7 +11,7 @@ class game():
         self.move_f, self.move_b, self.move_l, self.move_r = False, False, False, False
         self.display_W, self.display_H = 1920, 1080
         self.display = pygame.Surface((self.display_W, self.display_H))
-        self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE) # CHANGE THIS TO FULLSCREEN 
+        self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE)
         self.font_name = 'Fonts/gameFont.ttf'
         self.fullscreen = False
         pygame.display.set_caption("St. Mike's Among Us!")
@@ -39,7 +39,7 @@ class game():
                 self.playing = False
 
             pygame.display.update()
-            self.clock.tick(60)
+            self.clock.tick(30)
             self.reset_keys()
 
     # event checker

@@ -586,8 +586,8 @@ class pregame_lobby(menu):
             self.run_display = False
         
         if self.game.start_key:
-            self.game.curr_menu = self.game.game_screen
             self.run_display = False
+            self.game.curr_menu = self.game.game_screen
         
         if self.game.move_f:
             if self.playery < 273:
@@ -648,13 +648,9 @@ class pregame_lobby(menu):
             self.status = "idle_r"
 
 
-# TODO
 class game_lobby(pregame_lobby):
     def __init__(self, game):
         menu.__init__(self, game)
-        self.stars = pygame.image.load("images/background/game/pregame/stars.png")
-        self.cafeteria = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria.png")
-        self.cafeteria_hallway_left = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria_Upper_Engine_Medbay_Hallway.png") 
         self.load_sprites()
         self.status = "idle_r"
         self.playerx = 0
@@ -676,6 +672,10 @@ class game_lobby(pregame_lobby):
         self.animation_index = 0
 
     def load_sprites(self):
+        self.stars = pygame.image.load("images/background/game/pregame/stars.png")
+        self.cafeteria = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria.png")
+        self.cafeteria_hallway_left = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria_Upper_Engine_Medbay_Hallway.png") 
+        
         weapons_spritesheet = spritesheet("images/background/game/game_map/weapons/weapons.png", "Character")
         self.cafeteria_weapons_hallway = weapons_spritesheet.parse_sprite('hallway.png')
         self.weapons_chair = weapons_spritesheet.parse_sprite('chair.png')
@@ -883,7 +883,7 @@ class game_lobby(pregame_lobby):
             self.blit_screen()
     
     def background(self):
-        self.game.display.blit(self.stars, (0, 0))
+        self.game.display.blit(self.stars, (0,0))
         self.load_cafeteria()
         self.load_nav()
         self.game.display.blit(self.O2_nav_weap_hallway, (1675 + self.scrollx, 660 + self.scrolly))
@@ -900,7 +900,6 @@ class game_lobby(pregame_lobby):
         self.load_medbay()
         self.load_security()
         self.load_reactor()
-
 
     def spawn(self):
         rand_coords = self.spawn_coords[random.randint(0,3)]
@@ -928,9 +927,6 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.weapons_screen[self.screen_index], (1775 + self.scrollx, 300 + self.scrolly))
         self.game.display.blit(self.weapons_box, (1958 + self.scrollx, 377 + self.scrolly))
         self.game.display.blit(self.weapons_task[0], (1725 + self.scrollx, 225 + self.scrolly))
-        
-        # TODO
-        # blit the blaster to the display "self.weapons_gun"
     
     def load_oxygen(self):
         self.game.display.blit(self.oxygen, (1342 + self.scrollx, 717 + self.scrolly))
