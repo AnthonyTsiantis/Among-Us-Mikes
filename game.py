@@ -1,3 +1,4 @@
+# import menu.py and pygame
 import pygame
 from menu import *
 
@@ -5,20 +6,21 @@ from menu import *
 class game():
     # Initilizing screen and menu's
     def __init__(self):
-        pygame.init()
-        self.running, self.playing = True, False
-        self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False
-        self.move_f, self.move_b, self.move_l, self.move_r = False, False, False, False
-        self.display_W, self.display_H = 1920, 1080
-        self.display = pygame.Surface((self.display_W, self.display_H))
-        self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE)
-        self.font_name = 'Fonts/gameFont.ttf'
-        self.fullscreen = False
-        pygame.display.set_caption("St. Mike's Among Us!")
-        self.icon = pygame.image.load("images/icon.png")
-        pygame.display.set_icon(self.icon)
-        self.clock = pygame.time.Clock()
-        self.skin = "Black"
+        pygame.init() # initilze pygame
+        self.running, self.playing = True, False # is screen displayed, is player playing
+        self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False # key inputs for menu's
+        self.move_f, self.move_b, self.move_l, self.move_r = False, False, False, False # key inputs for characters
+        self.display_W, self.display_H = 1920, 1080 # screen dimensions
+        self.display = pygame.Surface((self.display_W, self.display_H)) # create display surface
+        self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE) # initilize window
+        self.font_name = 'Fonts/gameFont.ttf' # game font 
+        pygame.display.set_caption("St. Mike's Among Us!") # game caption
+        self.icon = pygame.image.load("images/icon.png") # load the game icon
+        pygame.display.set_icon(self.icon) # set the icon
+        self.clock = pygame.time.Clock() # initilize the game clock
+        self.skin = "Black" # default character skin
+        
+        # initilize all the menu's in menu.py
         self.main_menu = MainMenu(self)
         self.settings = settingsMenu(self)
         self.skin_menu = skinMenu(self)
@@ -27,20 +29,19 @@ class game():
         self.graphics_menu = graphics_menu(self)
         self.pregame = pregame_lobby(self)
         self.game_screen = game_lobby(self)
-        self.curr_menu = self.main_menu
-        self.username = "Test"
+        self.curr_menu = self.main_menu # set default menu to main menu
 
     # game class game loop
     def game_loop(self):
         while self.playing:
-            self.check_events()
+            self.check_events() # check events
 
             if self.start_key:
                 self.playing = False
 
-            pygame.display.update()
-            self.clock.tick(30)
-            self.reset_keys()
+            pygame.display.update() # update display
+            self.clock.tick(30) # 30 FPS
+            self.reset_keys() # reset input back to false unless clicked
 
     # event checker
     def check_events(self):
@@ -51,7 +52,7 @@ class game():
                 self.running, self.playing = False, False
                 self.curr_menu.run_display = False
 
-            # key down
+            # key down, updates all keys if pressed
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     self.start_key = True

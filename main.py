@@ -1,7 +1,9 @@
+# import 
 import pygame
 from game import *
 from spritesheet import *
 
+# Initilize game
 g = game()
 
 # main game loop

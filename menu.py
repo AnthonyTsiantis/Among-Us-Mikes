@@ -5,19 +5,20 @@ import random
 
 # menu class that will be inherited to furture classes
 class menu():
+    # initilize menu class
     def __init__(self, game):
         self.game = game
-        self.mid_w, self.mid_h = self.game.display_W / 2, self.game.display_H / 2
-        self.run_display = True
-        self.cursor_rect = pygame.Rect(0, 0, 20, 20)
-        self.offset = -250
-        self.menu_background = pygame.image.load("images/background/menu/MainMenu.png")
+        self.mid_w, self.mid_h = self.game.display_W / 2, self.game.display_H / 2 # middle of the display
+        self.run_display = True     # run the display
+        self.cursor_rect = pygame.Rect(0, 0, 20, 20) # initilize the display
+        self.offset = -250 # cursor offset
+        self.menu_background = pygame.image.load("images/background/menu/MainMenu.png") # load the menu background into RAM
 
     # draw cursor function
     def draw_cursor(self):
         self.game.draw_text("*", 100, self.cursor_rect.x, self.cursor_rect.y)
 
-    # update screen
+    # update screen function
     def blit_screen(self):
         self.game.window.blit(self.game.display, (0, 0))
         pygame.display.update()
@@ -26,14 +27,16 @@ class menu():
 # main menu class
 class MainMenu(menu):
     def __init__(self, game):
-        menu.__init__(self, game)
-        self.state = "Start"
-        self.startx, self.starty = self.mid_w, self.mid_h + 75
+        menu.__init__(self, game)   # inherit the menu class
+        self.state = "Start"    # initilize the state to "Start"
+
+        # initilize the cursor locations for the following options
+        self.startx, self.starty = self.mid_w, self.mid_h + 75 
         self.settingsx, self.settingsy = self.mid_w, self.mid_h + 200
         self.quitx, self.quity = self.mid_w, self.mid_h + 325
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
 
-    # check for input
+    # input checking function
     def check_input(self):
         self.move_cursor()
         if self.game.start_key:
@@ -46,23 +49,23 @@ class MainMenu(menu):
                 self.game.running, self.game.playing = False, False
             self.run_display = False
 
-    # display menu
+    # display menu: updates display (game loop)
     def display_menu(self):
-        self.run_display = True
+        self.run_display = True     # enables the loop
         while self.run_display:
-            self.game.check_events()
-            self.check_input()
-            self.game.display.blit(self.menu_background, (0, 0))
-            self.game.draw_text("Main Menu", 250, self.mid_w, self.mid_h - 75)
-            self.game.draw_text("Play Game", 100, self.startx, self.starty)
-            self.game.draw_text(
-                "Settings", 100, self.settingsx, self.settingsy)
-            self.game.draw_text("Quit Game", 100, self.quitx, self.quity)
-            self.draw_cursor()
-            self.blit_screen()
+            self.game.check_events()    # runs the check events function
+            self.check_input()  # runs the check input function
+            self.game.display.blit(self.menu_background, (0, 0))    # blits the menu background to the screen
+            self.game.draw_text("Main Menu", 250, self.mid_w, self.mid_h - 75)  # draws the Main Menu button to the screen
+            self.game.draw_text("Play Game", 100, self.startx, self.starty)     # draws the play game button to the screen
+            self.game.draw_text("Settings", 100, self.settingsx, self.settingsy)    # draws the settings button to the screen
+            self.game.draw_text("Quit Game", 100, self.quitx, self.quity)   # draws the quit game button to the screen
+            self.draw_cursor()  # draws/updates cursor
+            self.blit_screen()  # Updates everything to the screen
 
-    # move the cursor
+    # move the cursor if input is detected
     def move_cursor(self):
+        # moves the cursor according to key input
         if self.game.down_key:
             if self.state == "Start":
                 self.cursor_rect.midtop = (
@@ -79,6 +82,7 @@ class MainMenu(menu):
                     self.startx + self.offset, self.starty)
                 self.state = "Start"
 
+        # moves the cursor according to key input
         elif self.game.up_key:
             if self.state == "Start":
                 self.cursor_rect.midtop = (
@@ -97,30 +101,32 @@ class MainMenu(menu):
 
 # settings menu
 class settingsMenu(menu):
+    # initilize the settings menu
     def __init__(self, game):
-        menu.__init__(self, game)
-        self.state = 'Skin'
-        self.skinx, self.skiny = self.mid_w, self.mid_h + 75
+        menu.__init__(self, game) # inherit menu class
+        self.state = 'Skin' # initilize the cursor state
+
+        # Initilize the location of the cursor for each option
+        self.skinx, self.skiny = self.mid_w, self.mid_h + 75 
         self.graphicsx, self.graphicsy = self.mid_w, self.mid_h + 200
         self.controlsx, self.controlsy = self.mid_w, self.mid_h + 325
         self.cursor_rect.midtop = (self.skinx + self.offset, self.skiny)
 
+    # Game loop
     def display_menu(self):
-        self.run_display = True
+        self.run_display = True # enable game loop
         while self.run_display:
-            self.game.check_events()
-            self.check_input()
-            self.game.display.blit(self.menu_background, (0, 0))
-            self.game.draw_text(
-                "Settings", 250, self.game.display_W / 2, self.game.display_H / 2 - 75)
-            self.game.draw_text("Select Skin", 100, self.skinx, self.skiny)
-            self.game.draw_text("Graphics/Audio", 100,
-                                self.graphicsx, self.graphicsy)
-            self.game.draw_text(
-                "Controls", 100, self.controlsx, self.controlsy)
-            self.draw_cursor()
-            self.blit_screen()
+            self.game.check_events()    # check events (button clicks)
+            self.check_input()  # if button inputs occur, update cursor
+            self.game.display.blit(self.menu_background, (0, 0))    # blit the menu background
+            self.game.draw_text("Settings", 250, self.game.display_W / 2, self.game.display_H / 2 - 75)     # draw the settings text to the screen
+            self.game.draw_text("Select Skin", 100, self.skinx, self.skiny)     # draw the select skin text to the screen
+            self.game.draw_text("Graphics/Audio", 100, self.graphicsx, self.graphicsy)  # draw the graphics/audio text to the screen
+            self.game.draw_text("Controls", 100, self.controlsx, self.controlsy) # draw the controls text to the screen
+            self.draw_cursor() # update the cursor
+            self.blit_screen() # push everything onto the screen
 
+    # check input function that updates the display and cursor
     def check_input(self):
         if self.game.back_key:
             self.game.curr_menu = self.game.main_menu
@@ -167,6 +173,8 @@ class skinMenu(menu):
         menu.__init__(self, game)
         self.state = "Black"
         self.img_scale = (200, 241)  # original Dimension: 440, 482
+
+        # inilize all the skins and their locations
         self.blackx, self.blacky = self.mid_w - 825, self.mid_h
         self.black_img = pygame.transform.scale(pygame.image.load("images/characters/Black/Black.png"), self.img_scale)
         self.whitex, self.whitey = self.mid_w - 675, self.mid_h
@@ -191,17 +199,22 @@ class skinMenu(menu):
         self.purple_img = pygame.transform.scale(pygame.image.load("images/characters/Purple/Purple.png"), self.img_scale)
         self.pinkx, self.pinky = self.mid_w + 825, self.mid_h
         self.pink_img = pygame.transform.scale(pygame.image.load("images/characters/Pink/Pink.png"), self.img_scale)
+        
+        # initilize skins
         self.vert_offset = 15
         self.hori_offset = 115
         self.cursor_vert_offset = 250
         self.cursor_rect.midtop = (self.blackx, self.blacky + self.cursor_vert_offset)
 
+    # Game loop
     def display_menu(self):
-        self.run_display = True
+        self.run_display = True # enable the game loop
         while self.run_display:
-            self.game.check_events()
-            self.check_input()
-            self.game.display.blit(self.menu_background, (0, 0))
+            self.game.check_events() # check events functions
+            self.check_input() # Check input function
+            self.game.display.blit(self.menu_background, (0, 0)) # blit background
+
+            # draw skin titles
             self.game.draw_text("Skins", 150, self.game.display_W / 2, (self.game.display_H / 2) - 100)
             self.game.draw_text("Black", 50, self.blackx, self.blacky)
             self.game.display.blit(self.black_img, (self.blackx - self.hori_offset, self.blacky + self.vert_offset))
@@ -227,8 +240,8 @@ class skinMenu(menu):
             self.game.display.blit(self.purple_img, (self.purplex - self.hori_offset, self.purpley + self.vert_offset))
             self.game.draw_text("Pink", 50, self.pinkx, self.pinky)
             self.game.display.blit(self.pink_img, (self.pinkx - self.hori_offset, self.pinky + self.vert_offset))
-            self.draw_cursor()
-            self.blit_screen()
+            self.draw_cursor() # update cursor
+            self.blit_screen() # update screen
 
     def move_cursor(self):
         if self.game.right_key:
@@ -853,8 +866,6 @@ class game_lobby(pregame_lobby):
         self.reactor_task1 = reactor_spritesheet.parse_sprite('task1.png')
         self.reactor_task2 = reactor_spritesheet.parse_sprite('task2.png')
         self.reactor_task3 = reactor_spritesheet.parse_sprite('task3.png')
-
-        
 
     def display_menu(self):
         self.run_display = True
