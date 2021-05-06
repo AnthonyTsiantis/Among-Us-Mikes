@@ -242,7 +242,8 @@ class skinMenu(menu):
             self.game.display.blit(self.pink_img, (self.pinkx - self.hori_offset, self.pinky + self.vert_offset))
             self.draw_cursor() # update cursor
             self.blit_screen() # update screen
-
+    
+    # move cursor function
     def move_cursor(self):
         if self.game.right_key:
             if self.state == "Black":
@@ -366,6 +367,7 @@ class skinMenu(menu):
                     self.blackx, self.blacky + self.cursor_vert_offset)
                 self.state = "Black"
 
+    # check game input function
     def check_input(self):
         self.move_cursor()
         if self.game.back_key:
@@ -377,8 +379,9 @@ class skinMenu(menu):
             self.game.curr_menu = self.game.settings
             self.run_display = False
 
-# host/join menu
+# host/join menu #TODO
 class host_join_menu(menu):
+    # initilize text and cursor locations
     def __init__(self, game):
         menu.__init__(self, game)
         self.state = 'Host'
@@ -386,7 +389,8 @@ class host_join_menu(menu):
         self.joinx, self.joiny = self.mid_w + 500, self.mid_h + 200
         self.offset = 100
         self.cursor_rect.midtop = (self.hostx, self.hosty + self.offset)
-
+    
+    # Menu display loop
     def display_menu(self):
         self.run_display = True
         while self.run_display:
@@ -399,6 +403,7 @@ class host_join_menu(menu):
             self.draw_cursor()
             self.blit_screen()
 
+    # update cursor and menu display
     def check_input(self):
         if self.game.back_key:
             self.game.curr_menu = self.game.main_menu
@@ -421,14 +426,16 @@ class host_join_menu(menu):
             self.run_display = False
 
 
-# controls menu
+# controls menu #TODO
 class controls_menu(menu):
+    # initilize menu
     def __init__(self, game):
         menu.__init__(self, game)
         self.menu_navx, self.menu_navy = self.mid_w - 500, self.mid_h + 50
         self.player_controlsx, self.player_controlsy = self.mid_w + 500, self.mid_h + 50
         self.offset = 100
 
+    # Menu loop
     def display_menu(self):
         self.run_display = True
         while self.run_display:
@@ -443,6 +450,7 @@ class controls_menu(menu):
             self.draw_cursor()
             self.blit_screen()
 
+    # update menu
     def check_input(self):
         if self.game.back_key:
             self.game.curr_menu = self.game.settings
@@ -503,6 +511,7 @@ class pregame_lobby(menu):
         self.num_usersx, self.num_usersy = 932, 900
         self.num_of_players = 1
         self.boxx, self.boxy = 725, 450
+        self.moved_left = False
 
     def display_menu(self):
         self.run_display = True
@@ -548,10 +557,11 @@ class pregame_lobby(menu):
             self.game.draw_text("Players: " + str(self.num_of_players) + "/30", 100, self.num_usersx, self.num_usersy)
             self.game.draw_text("Game Code: XYZ", 65, self.num_usersx, self.num_usersy - 75)
             self.game.draw_text("*Host must start game by hitting the enter key*", 30, self.num_usersx, self.num_usersy + 85)
+            print(self.playerx, self.playery)
             self.blit_screen()
-        
         self.playerx = 800
         self.playery = 240
+        
 
     def get_character(self):
         Spritesheet = spritesheet("images/characters/"+ self.game.skin + "/" + self.game.skin + "_character_spritesheet.png", "Character")
@@ -564,19 +574,50 @@ class pregame_lobby(menu):
         for i in range(14):
             self.spawn_in.append(Spritesheet.parse_sprite('spawn-in' + str(i + 1) + '.png'))
     
+    def map_boundaries(self):
+        out_of_bounds = False
+        top_left_angle = (-0.5 * self.playerx) + 630 # formula for slope of the top left side
+        top_right_angle = (0.4 * self.playerx) - 175 # formula for slope of the top right side
+        bottom_right_angle = (-1.1 * self.playerx) + 1822 # formula for slope of the bottom right side
+        bottom_left_angle  = (0.9 * self.playerx) - 39
+
+        # Top straight
+        if self.playerx > 800 and self.playery < 230 and self.playerx < 1000:
+            out_of_bounds = True
+
+        # Top left angle
+        elif (self.playery - top_left_angle) < 0:
+            out_of_bounds = True
+        
+        # Top right angle
+        elif (self.playery - top_right_angle) < 0:
+            out_of_bounds = True
+
+        # Right side straight    
+        elif self.playerx > 1160 and self.playery > 275 and self.playery < 545:
+            out_of_bounds = True
+        
+        # Bottom Right side
+        elif (self.playery - bottom_right_angle) > 0:
+            out_of_bounds = True
+        
+        # Bottom straight
+        elif self.playerx < 1110 and self.playerx > 710 and self.playery > 601:
+            out_of_bounds = True
+
+        # Bottom left side
+        elif (self.playery - bottom_left_angle) > 0:
+            out_of_bounds = True
+
+        # left side
+        elif self.playerx < 660 and self.playery > 300 and self.playery < 555:
+            out_of_bounds = True
+
+        return out_of_bounds
+
     def box_collision(self):
-        xvalues = False
-        yvalues = False
-        if self.playerx > 682 and self.playerx < 820:
-            xvalues = True
-        
-        if self.playery > 380 and self.playery < 532:
-            yvalues = True
-        
-        if xvalues and yvalues:
+        if self.playerx > 682 and self.playerx < 820 and self.playery > 380 and self.playery < 532:
             return True
-        else:
-            return False
     
     def check_status(self):
         if self.status == "idle_r" and self.spawned:
@@ -603,62 +644,124 @@ class pregame_lobby(menu):
             self.game.curr_menu = self.game.game_screen
         
         if self.game.move_f:
-            if self.playery < 273:
-                pass
-            elif self.box_collision():
-                pass
-            else:
+            if not self.box_collision() or not self.map_boundaries():
                 self.playery -= 7
                 self.status = "walking_r"
                 self.input = True
+                self.moved_left = False
             
-            while self.box_collision():
-                    self.playery += 1
+            while self.box_collision() or self.map_boundaries():
+                    if self.box_collision():
+                        self.playery += 1
+
+                    if self.map_boundaries():
+                        if self.playery < 300 and self.playerx < 800 and self.playerx < 1000:
+                            self.playery += 1
+                            self.playerx += 1
+
+                        elif self.playery < 300 and self.playerx >= 1000:
+                            self.playery += 1
+                            self.playerx -= 1
+                        
+                        elif self.playerx <= 710 and self.playerx > 660 and self.playery > 555:
+                            self.playerx += 1
+                            self.playery -= 1
+
+                        else:
+                            self.playery += 1
         
         if self.game.move_b:
-            if self.playery > 546:
-                pass
-            elif self.box_collision():
+            if self.box_collision() or self.map_boundaries():
                 pass
             else:
                 self.input = True
                 self.playery += 7
-                self.status = "walking_r"
+                self.status = "walking_l"
+                self.moved_left = True
             
-            while self.box_collision():
+            while self.box_collision() or self.map_boundaries():
+                if self.box_collision():
                     self.playery -= 1
-        
+
+                if self.map_boundaries():
+                    if self.playery >= 545 and self.playerx > 1110:
+                        self.playery -= 1
+                        self.playerx -= 1
+                    
+                    elif self.playerx <= 1110 and self.playerx > 710 and self.playery > 601:
+                        self.playery -= 1
+
+                    elif self.playerx <= 710 and self.playery > 555:
+                        self.playerx += 1
+                        self.playery -= 1
+                    
+                    else:
+                        self.playery -= 1
+                           
         if self.game.move_r:
-            if self.playerx > 1158:
-                pass
-            elif self.box_collision():
+            if self.box_collision() or self.map_boundaries():
                 pass
             else:   
                 self.input = True
                 self.playerx += 7
                 self.status = "walking_r"
-            
-            while self.box_collision():
+                self.moved_left = False
+
+            while self.box_collision() or self.map_boundaries():
+                if self.box_collision():
                     self.playerx -= 1
+                
+                if self.map_boundaries():
+                    if self.playery < 545 and self.playery > 300 and self.playerx > 1160:
+                        self.playerx -= 1
+
+                    elif self.playery <= 300 and self.playerx >= 1000:
+                        self.playery += 1
+                        self.playerx -= 1
+                    
+                    elif self.playery >= 545 and self.playerx > 1110:
+                        self.playery -= 1
+                        self.playerx -= 1
+                    
+                    else:
+                        self.playerx -= 1
         
         if self.game.move_l:
-            if self.playerx < 661:
-                pass
-            elif self.box_collision():
-                pass
-            else:
+            if not self.box_collision() or not self.map_boundaries():
                 self.input = True
                 self.playerx -= 7
                 self.status = "walking_l"
+                self.moved_left = True
             
-            while self.box_collision():
+            while self.box_collision() or self.map_boundaries():
+                if self.box_collision():
                     self.playerx += 1
+
+                elif self.map_boundaries(): 
+                    if self.playerx < 800 and self.playery < 300:
+                        self.playery += 1
+                        self.playerx += 1 
+                    
+                    elif self.playerx <= 710 and self.playery >= 555:
+                        self.playery -= 1
+                        self.playerx += 1
+                    
+                    elif self.playerx < 660 and self.playery >= 300 and self.playery < 555:
+                        self.playerx += 1
+                    
+                    else:
+                        self.playerx += 1
+
+                    
         
         if not self.game.move_l and not self.game.move_r and not self.game.move_f and not self.game.move_b:
             self.input = False
         
         if not self.input:
-            self.status = "idle_r"
+            if self.moved_left:
+                self.status = "idle_l"
+            else:
+                self.status = "idle_r"
 
 
 class game_lobby(pregame_lobby):
