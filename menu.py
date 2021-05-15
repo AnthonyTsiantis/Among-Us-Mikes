@@ -24,6 +24,8 @@ class menu():
         pygame.display.update()
         self.game.reset_keys()
 
+
+
 # main menu class
 class MainMenu(menu):
     def __init__(self, game):
@@ -99,7 +101,10 @@ class MainMenu(menu):
                     self.settingsx + self.offset, self.settingsy)
                 self.state = "Settings"
 
-# settings menu
+
+
+
+# settings menu, allows the user to change skin, audio and graphics, and controls
 class settingsMenu(menu):
     # initilize the settings menu
     def __init__(self, game):
@@ -167,7 +172,10 @@ class settingsMenu(menu):
                 self.game.curr_menu = self.game.controls_menu
         self.run_display = False
 
-# skin menu
+
+
+
+# skin menu allows the user to choose their skin
 class skinMenu(menu):
     def __init__(self, game):
         menu.__init__(self, game)
@@ -379,6 +387,9 @@ class skinMenu(menu):
             self.game.curr_menu = self.game.settings
             self.run_display = False
 
+
+
+
 # host/join menu #TODO
 class host_join_menu(menu):
     # initilize text and cursor locations
@@ -426,7 +437,9 @@ class host_join_menu(menu):
             self.run_display = False
 
 
-# controls menu #TODO
+
+
+# controls menu, explains how to navigate menu and play the game
 class controls_menu(menu):
     # initilize menu
     def __init__(self, game):
@@ -457,8 +470,8 @@ class controls_menu(menu):
         self.run_display = False
 
 
-# Graphics menu
-class graphics_menu(menu):  # TODO
+# Graphics and audio menu, allows the user to resize screen and control game volume # TODO
+class graphics_menu(menu):  
     def __init__(self, game):
         menu.__init__(self, game)
         self.displayx, self.displayy = self.mid_w - 500, self.mid_h + 50
@@ -483,8 +496,10 @@ class graphics_menu(menu):  # TODO
         self.run_display = False
 
 
+
 # Pregame lobby
 class pregame_lobby(menu):
+    # initilize lobby
     def __init__(self, game):
         menu.__init__(self, game)
         self.stars = pygame.image.load("images/background/game/pregame/stars.png")
@@ -513,6 +528,7 @@ class pregame_lobby(menu):
         self.boxx, self.boxy = 725, 450
         self.moved_left = False
 
+    # game loop
     def display_menu(self):
         self.run_display = True
         self.get_character()
@@ -562,7 +578,7 @@ class pregame_lobby(menu):
         self.playerx = 800
         self.playery = 240
         
-
+    # get the character from the spritesheet
     def get_character(self):
         Spritesheet = spritesheet("images/characters/"+ self.game.skin + "/" + self.game.skin + "_character_spritesheet.png", "Character")
         self.idle = [Spritesheet.parse_sprite('idle1.png'), Spritesheet.parse_sprite('idle2.png')]
@@ -574,6 +590,7 @@ class pregame_lobby(menu):
         for i in range(14):
             self.spawn_in.append(Spritesheet.parse_sprite('spawn-in' + str(i + 1) + '.png'))
     
+    # detemines map boundaries returning a boolean value if out of bounds
     def map_boundaries(self):
         out_of_bounds = False
         top_left_angle = (-0.5 * self.playerx) + 630 # formula for slope of the top left side
@@ -615,10 +632,14 @@ class pregame_lobby(menu):
 
         return out_of_bounds
 
+    # detemines if the player inteferes with the box 
     def box_collision(self):
         if self.playerx > 682 and self.playerx < 820 and self.playery > 380 and self.playery < 532:
             return True
+        else:
+            return False
     
+    # adjusts player sprite if input is detected
     def check_status(self):
         if self.status == "idle_r" and self.spawned:
                 self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), (self.playerx, self.playery))
@@ -634,6 +655,7 @@ class pregame_lobby(menu):
             self.game.display.blit(pygame.transform.flip(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), True, False), (self.playerx, self.playery))
             self.walk_counter = (self.walk_counter + 1) % len(self.walk)
 
+    # checks game input and moves player
     def check_input(self):
         if self.game.back_key:
             self.game.curr_menu = self.game.main_menu
@@ -764,7 +786,9 @@ class pregame_lobby(menu):
                 self.status = "idle_r"
 
 
+# the game lobby class
 class game_lobby(pregame_lobby):
+    # initlize the class
     def __init__(self, game):
         menu.__init__(self, game)
         self.load_sprites()
@@ -787,6 +811,7 @@ class game_lobby(pregame_lobby):
         self.security_server_index = 0
         self.animation_index = 0
 
+    # loads all the sprites into memory
     def load_sprites(self):
         self.stars = pygame.image.load("images/background/game/pregame/stars.png")
         self.cafeteria = pygame.image.load("images/background/game/game_map/cafeteria/Cafeteria.png")
@@ -970,6 +995,7 @@ class game_lobby(pregame_lobby):
         self.reactor_task2 = reactor_spritesheet.parse_sprite('task2.png')
         self.reactor_task3 = reactor_spritesheet.parse_sprite('task3.png')
 
+    # game loop
     def display_menu(self):
         self.run_display = True
         pregame_lobby.get_character(self)
@@ -996,6 +1022,7 @@ class game_lobby(pregame_lobby):
             self.check_status()
             self.blit_screen()
     
+    # blits all the map sprites
     def background(self):
         self.game.display.blit(self.stars, (0,0))
         self.load_cafeteria()
@@ -1015,16 +1042,19 @@ class game_lobby(pregame_lobby):
         self.load_security()
         self.load_reactor()
 
+    # spawn animation
     def spawn(self):
         rand_coords = self.spawn_coords[random.randint(0,3)]
         self.playerx, self.playery = rand_coords
         self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), rand_coords)
         self.spawned = True
     
+    # blits cafeteria section
     def load_cafeteria(self):
         self.game.display.blit(self.cafeteria_hallway_left, (-248 + self.scrollx, 353 + self.scrolly))
         self.game.display.blit(self.cafeteria, (467 + self.scrollx, 0 + self.scrolly))
 
+    # blits weapons section
     def load_weapons(self):
         self.game.display.blit(self.weapons_base[0], (1570 + self.scrollx, 257 + self.scrolly))
         self.game.display.blit(self.weapons_base[3], (1605 + self.scrollx, 205 + self.scrolly)) 
@@ -1042,6 +1072,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.weapons_box, (1958 + self.scrollx, 377 + self.scrolly))
         self.game.display.blit(self.weapons_task[0], (1725 + self.scrollx, 225 + self.scrolly))
     
+    # blits oxygen section
     def load_oxygen(self):
         self.game.display.blit(self.oxygen, (1342 + self.scrollx, 717 + self.scrolly))
         self.game.display.blit(self.oxygen_fans[self.oxygen_index], (1358 + self.scrollx, 785 + self.scrolly))
@@ -1050,6 +1081,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.oxygen_task2, (1410 + self.scrollx, 835 + self.scrolly))
         self.game.display.blit(self.oxygen_task1, (1558 + self.scrollx, 811 + self.scrolly))
 
+    # blits navigation section
     def load_nav(self):
         self.game.display.blit(self.nav2, (2270 + self.scrollx, 801 + self.scrolly))
         self.game.display.blit(self.nav3, (2276 + self.scrollx, 755 + self.scrolly))
@@ -1062,6 +1094,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.nav_task1, (2415 + self.scrollx, 770 + self.scrolly))
         self.game.display.blit(self.nav1, (2274 + self.scrollx, 751 + self.scrolly))
 
+    # blits shield section
     def load_shield(self):
         self.game.display.blit(self.shield1, (1550 + self.scrollx, 1375 + self.scrolly))
         self.game.display.blit(self.shield2, (1550 + self.scrollx, 1375 + self.scrolly))
@@ -1079,6 +1112,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.shield_rail4, (1576 + self.scrollx, 1429 + self.scrolly))
         self.game.display.blit(self.shield_mic, (1600 + self.scrollx, 1700 + self.scrolly))
     
+    # blits admin section
     def load_admin(self):
         self.game.display.blit(self.admin_base1, (1025 + self.scrollx, 1107 + self.scrolly))
         self.game.display.blit(self.admin_base3, (1039 + self.scrollx, 1057 + self.scrolly))
@@ -1095,6 +1129,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.admin_task2, (1110 + self.scrollx, 1085 + self.scrolly))
         self.game.display.blit(self.admin_vent, (1535 + self.scrollx, 1091 + self.scrolly))
 
+    # blits storage section
     def load_storage(self):
         self.game.display.blit(self.storage_base, (548 + self.scrollx, 1240 + self.scrolly))
         self.game.display.blit(self.storage_bins, (670 + self.scrollx, 1477 + self.scrolly))
@@ -1103,6 +1138,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.storage_task1, (1069 + self.scrollx, 1925 + self.scrolly))
         self.game.display.blit(self.storage_task2, (835 + self.scrollx, 1285 + self.scrolly))
 
+    # blits comms section
     def load_comms(self):
         self.game.display.blit(self.comms_base1, (1131 + self.scrollx, 1735 + self.scrolly))
         self.game.display.blit(self.comms_base3, (1143 + self.scrollx, 1722 + self.scrolly))
@@ -1114,6 +1150,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.comms_tape[self.comms_index], (1163 + self.scrollx, 1748 + self.scrolly))
         self.game.display.blit(self.comms_base2, (1130 + self.scrollx, 1690 + self.scrolly))
 
+    # blits electrical section
     def load_electrical(self):
         self.game.display.blit(self.elec_base1, (-222 + self.scrollx, 1138 + self.scrolly))
         self.game.display.blit(self.elec_base2, (154 + self.scrollx, 1275 + self.scrolly))
@@ -1124,6 +1161,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.elec_wire1, (130 + self.scrollx, 1150 + self.scrolly))
         self.game.display.blit(self.elec_wire2, (151 + self.scrollx, 1324 + self.scrolly))
     
+    # blits engines section
     def load_engines(self):
         self.game.display.blit(self.upper_engine_base, (-629 + self.scrollx, 261 + self.scrolly))
         self.game.display.blit(self.engine_task3, (-445 + self.scrollx, 295 + self.scrolly))
@@ -1135,7 +1173,8 @@ class game_lobby(pregame_lobby):
 
         # lower
         self.create_engine(-618, 1392)
-    
+
+    # engine function so the engine can be duplicates for upper and lower
     def create_engine(self, x, y):
         self.game.display.blit(self.engine_rail2, (x + 252 + self.scrollx, y + 40 + self.scrolly))
         self.game.display.blit(self.engine_base[self.engine_index], (x + self.scrollx, y + self.scrolly))
@@ -1150,13 +1189,14 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.engine_task1, (x + 10 + self.scrollx, y + 210 + self.scrolly))
         self.game.display.blit(self.engine_task2, (x + 77 + self.scrollx, y + 197 + self.scrolly))
     
-
+    # blit medbay section
     def load_medbay(self): 
         self.game.display.blit(self.medbay_base1, (68 + self.scrollx, 550 + self.scrolly))
         self.game.display.blit(self.medbay_base2, (325 + self.scrollx, 960 + self.scrolly))
         self.game.display.blit(self.medbay_base3, (440 + self.scrollx, 875 + self.scrolly))
         self.game.display.blit(self.medbay_scan[self.medbay_scan_index], (350 + (self.medbay_scan_index * 7) + self.scrollx, 980 + -(self.medbay_scan_index * 20) + self.scrolly))
 
+    # blit security section
     def load_security(self):
         self.game.display.blit(self.security_base1, (-235 + self.scrollx, 730 + self.scrolly))
         self.game.display.blit(self.security_wire, (0 + self.scrollx, 790 + self.scrolly))
@@ -1165,6 +1205,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.security_server[self.security_server_index], (-200 + self.scrollx, 780 + self.scrolly))
         self.game.display.blit(self.security_chair, (-125 + self.scrollx, 802 + self.scrolly))
 
+    # blit reactor section
     def load_reactor(self):
         self.game.display.blit(self.reactor_base1, (-967 + self.scrollx, 700 + self.scrolly))
         self.game.display.blit(self.reactor_part3, (-730 + self.scrollx, 950 + self.scrolly))
@@ -1191,7 +1232,7 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.reactor_part6, (-860 + self.scrollx, 995 + self.scrolly))
         self.game.display.blit(self.reactor_base2, (-963 + self.scrollx, 644 + self.scrolly))
 
-
+    # check keyboard input
     def check_input(self):
         if self.game.back_key:
             self.game.curr_menu = self.game.main_menu
@@ -1222,7 +1263,8 @@ class game_lobby(pregame_lobby):
         
         if not self.input:
             self.status = "idle_r"
-        
+    
+    # update player animate according to input
     def check_status(self):
         if self.status == "idle_r":
             self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), (self.playerx, self.playery))
