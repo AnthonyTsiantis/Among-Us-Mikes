@@ -573,7 +573,7 @@ class pregame_lobby(menu):
             self.game.draw_text("Players: " + str(self.num_of_players) + "/30", 100, self.num_usersx, self.num_usersy)
             self.game.draw_text("Game Code: XYZ", 65, self.num_usersx, self.num_usersy - 75)
             self.game.draw_text("*Host must start game by hitting the enter key*", 30, self.num_usersx, self.num_usersy + 85)
-            print(self.playerx, self.playery)
+
             self.blit_screen()
         self.playerx = 800
         self.playery = 240
@@ -793,12 +793,12 @@ class game_lobby(pregame_lobby):
         menu.__init__(self, game)
         self.load_sprites()
         self.status = "idle_r"
-        self.playerx = 0
-        self.playery = 0
-        self.scrollx = 0
-        self.scrolly = 0
+        self.playerx, self.playery = (910, 463)
+        self.scrollx, self.scrolly = (0,0)
         self.walk_counter = 0
-        self.spawn_coords = [(920, 330), (1070, 450), (920, 540), (770, 450)]
+        """self.spawn_coords = [(145, 13), (-6, -75), (-158, 13), (-6, 133)]
+        rand_coords = self.spawn_coords[random.randint(0,3)]
+        self.scrollx, self.scrolly = rand_coords"""
         self.spawned = False
         self.screen_index = 0
         self.oxygen_index = 0
@@ -810,6 +810,10 @@ class game_lobby(pregame_lobby):
         self.security_screen_index = 0
         self.security_server_index = 0
         self.animation_index = 0
+        self.idle_left = False 
+        self.border_color = (255, 0, 0, 100) 
+        self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
+        self.background()
 
     # loads all the sprites into memory
     def load_sprites(self):
@@ -1018,41 +1022,363 @@ class game_lobby(pregame_lobby):
                 self.medbay_scan_index = (self.medbay_scan_index + 1) % len(self.medbay_scan)
                 self.security_screen_index = (self.security_screen_index + 1) % len(self.security_screen)
                 self.security_server_index = (self.security_server_index + 1) % len(self.security_server)
-
+                
+            # print(self.scrollx, self.scrolly)
             self.check_status()
             self.blit_screen()
     
+    
     # blits all the map sprites
     def background(self):
-        self.game.display.blit(self.stars, (0,0))
-        self.load_cafeteria()
-        self.load_nav()
-        self.game.display.blit(self.O2_nav_weap_hallway, (1675 + self.scrollx, 660 + self.scrolly))
-        self.load_weapons()
-        self.game.display.blit(self.O2_nav_weap_task, (2210 + self.scrollx, 890 + self.scrolly))
-        self.load_oxygen()
-        self.game.display.blit(self.storage_shield_hallway, (1105 + self.scrollx, 1477 + self.scrolly))
-        self.load_shield()
-        self.load_admin()
-        self.load_electrical()
-        self.load_storage()
-        self.load_comms()
-        self.load_engines()
-        self.load_medbay()
-        self.load_security()
-        self.load_reactor()
+        if self.border_color[3] == 0:
+            self.draw_boundaries()
+            self.game.display.blit(self.stars, (0,0))
+            self.load_cafeteria()
+            self.load_nav()
+            self.game.display.blit(self.O2_nav_weap_hallway, (1675 + self.scrollx, 660 + self.scrolly))
+            self.load_weapons()
+            self.game.display.blit(self.O2_nav_weap_task, (2210 + self.scrollx, 890 + self.scrolly))
+            self.load_oxygen()
+            self.game.display.blit(self.storage_shield_hallway, (1105 + self.scrollx, 1477 + self.scrolly))
+            self.load_shield()
+            self.load_admin()
+            self.load_electrical()
+            self.load_storage()
+            self.load_comms()
+            self.load_engines()
+            self.load_medbay()
+            self.load_security()
+            self.load_reactor()
+
+        else:
+            self.game.display.blit(self.stars, (0,0))
+            self.load_cafeteria()
+            self.load_nav()
+            self.game.display.blit(self.O2_nav_weap_hallway, (1675 + self.scrollx, 660 + self.scrolly))
+            self.load_weapons()
+            self.game.display.blit(self.O2_nav_weap_task, (2210 + self.scrollx, 890 + self.scrolly))
+            self.load_oxygen()
+            self.game.display.blit(self.storage_shield_hallway, (1105 + self.scrollx, 1477 + self.scrolly))
+            self.load_shield()
+            self.load_admin()
+            self.load_electrical()
+            self.load_storage()
+            self.load_comms()
+            self.load_engines()
+            self.load_medbay()
+            self.load_security()
+            self.load_reactor()
+            self.draw_boundaries()
 
     # spawn animation
     def spawn(self):
-        rand_coords = self.spawn_coords[random.randint(0,3)]
-        self.playerx, self.playery = rand_coords
-        self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), rand_coords)
+        self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), (self.playerx, self.playery))
         self.spawned = True
+
+    # check keyboard input # TODO
+    def check_input(self):
+        if self.game.back_key:
+            self.game.curr_menu = self.game.main_menu
+        self.run_display = False
+
+        boundary = self.boundaries()
+        print(boundary)
+
+        if self.game.move_f:
+            if not boundary[0]:
+                self.scrolly += 8
+                self.status = "walking_r"
+                self.input = True
+                self.idle_left = False
+            
+            elif boundary[0] and boundary[1] == 'lf':
+                self.scrolly += 8
+                self.scrollx -= 8
+                self.status = "walking_r"
+                self.input = True
+                self.idle_left = False
+            
+            elif boundary[0] and boundary[1] == 'rf':
+                self.scrollx += 8
+                self.scrolly += 8
+                self.status = "walking_r"
+                self.input = True
+                self.idle_left = False
+                
+            
+            elif boundary[0] and boundary[1] != 'f' and boundary[1] != 'lfc'  and boundary[1] != 'rfc':
+                self.scrolly += 8
+                self.status = "walking_r"
+                self.input = True
+                self.idle_left = False
+            
+                
+            
+
+        if self.game.move_b:
+            if not boundary[0]:
+                self.input = True
+                self.scrolly -= 8
+                self.status = "walking_l"
+                self.idle_left = True
+            
+            elif boundary[0] and boundary[1] == 'rb':
+                self.scrollx += 8
+                self.scrolly -= 8
+                self.status = "walking_l"
+                self.input = True
+                self.idle_left = True
+            
+            elif boundary[0] and boundary[1] == 'lb':
+                self.scrollx -= 8
+                self.scrolly -= 8
+                self.status = "walking_r"
+                self.input = True
+                self.idle_left = False
+            
+            elif boundary[0] and boundary[1] != 'b' and boundary[1] != 'rbc' and boundary[1] != 'lbc':
+                self.scrolly -= 8
+                self.status = "walking_l"
+                self.input = True
+                self.idle_left = True
+                
+
+        if self.game.move_r:
+            if not boundary[0]:
+                self.input = True
+                self.scrollx -= 8
+                self.status = "walking_r"
+                self.idle_left = False
+            
+            elif boundary[0] and boundary[1] == 'rf':
+                self.scrollx -= 8
+                self.scrolly -= 8
+                self.status = "walking_r"
+                self.input = True
+                self.idle_left = False
+
+            elif boundary[0] and boundary[1] == 'rb':
+                self.scrollx -= 8
+                self.scrolly += 8
+                self.status = "walking_r"
+                self.input = True
+                self.idle_left = False
+            
+            elif boundary[0] and boundary[1] != 'r' and boundary[1] != 'rfc' and boundary[1] != 'rbc':
+                self.scrollx -= 8
+                self.status = "walking_r"
+                self.input = True
+                self.idle_left = False
+            
+        
+        if self.game.move_l:
+            if not boundary[0]:
+                self.input = True
+                self.scrollx += 8
+                self.status = "walking_l"
+                self.idle_left = True
+            
+            elif boundary[0] and boundary[1] == 'lf':
+                self.scrollx += 8
+                self.scrolly -= 8
+                self.status = "walking_l"
+                self.input = True
+                self.idle_left = True
+            
+            elif boundary[0] and boundary[1] == 'lb':
+                self.scrollx += 8
+                self.scrolly += 8
+                self.status = "walking_l"
+                self.input = True
+                self.idle_left = True
+
+            elif boundary[0] and boundary[1] != 'l' and boundary[1] != 'lfc' and boundary[1] != 'lbc':
+                self.scrollx += 8
+                self.status = "walking_l"
+                self.input = True
+                self.idle_left = True
+            
     
+        if not self.game.move_l and not self.game.move_r and not self.game.move_f and not self.game.move_b and not self.idle_left:
+            self.status = "idle_r"
+        
+        elif not self.game.move_l and not self.game.move_r and not self.game.move_f and not self.game.move_b and self.idle_left:
+            self.status = "idle_l"
+    
+
+    # update player animaton according to input
+    def check_status(self):
+        if self.status == "idle_r" and not self.idle_left:
+            self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), (self.playerx, self.playery))
+            if self.border_color[3] != 0:
+                pygame.draw.rect(self.game.display, self.border_color, self.player_hitbox, 2)
+
+        if self.status == "idle_l" and self.idle_left:
+            self.game.display.blit(pygame.transform.scale(self.idle[1], (50, 77)), (self.playerx, self.playery))
+            if self.border_color[3] != 0:
+                pygame.draw.rect(self.game.display, self.border_color, self.player_hitbox, 2)
+        
+        if self.status == "walking_r":
+            self.game.display.blit(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), (self.playerx, self.playery))
+            self.walk_counter = (self.walk_counter + 1) % len(self.walk)
+            if self.border_color[3] != 0:
+                pygame.draw.rect(self.game.display, self.border_color, self.player_hitbox, 2)
+        
+        if self.status == "walking_l":
+            self.game.display.blit(pygame.transform.flip(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), True, False), (self.playerx, self.playery))
+            self.walk_counter = (self.walk_counter + 1) % len(self.walk)
+            if self.border_color[3] != 0:
+                pygame.draw.rect(self.game.display, self.border_color, self.player_hitbox, 2)
+
+    # collide line line function deternmines if player is in contact with a line
+    def collideLineLine(self, Player0, Player1, Boundary0, Boundary1):  
+        d = (Player1[0]-Player0[0]) * (Boundary1[1]-Boundary0[1]) + (Player1[1]-Player0[1]) * (Boundary0[0]-Boundary1[0]) 
+
+        if d == 0:
+            return False
+
+        t = ((Boundary0[0]-Player0[0]) * (Boundary1[1]-Boundary0[1]) + (Boundary0[1]-Player0[1]) * (Boundary0[0]-Boundary1[0])) / d
+        u = ((Boundary0[0]-Player0[0]) * (Player1[1]-Player0[1]) + (Boundary0[1]-Player0[1]) * (Player0[0]-Player1[0])) / d
+        return 0 <= t <= 1 and 0 <= u <= 1
+
+    # collide RectLine Function determines if a line on player rect is in contact with angled line
+    def collideRectLine(self, player, line_p1, line_p2):
+        return (self.collideLineLine(line_p1, line_p2, player.topleft, player.bottomleft) or self.collideLineLine(line_p1, line_p2, player.bottomleft, player.bottomright) or 
+            self.collideLineLine(line_p1, line_p2, player.bottomright, player.topright) or self.collideLineLine(line_p1, line_p2, player.topright, player.topleft))
+
+    # boundaries function is used to determine what happens when player hitbox interferes with boundary hitbox
+    def boundaries(self):
+        # cafeteria boundaries
+        def cafeteria_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.caf_tl_s):
+                if self.collideRectLine(self.player_hitbox, *self.caf_tl_a_coords) or pygame.Rect.colliderect(self.player_hitbox, self.caf_hallway_top_s):
+                    return True, "lfc"
+                return True, "l"
+
+            elif self.collideRectLine(self.player_hitbox, *self.caf_tl_a_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.caf_tl_s):
+                    return True, "lfc"
+                elif pygame.Rect.colliderect(self.player_hitbox, self.caf_ts):
+                    return True, "lfc"
+                return True, "lf"
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_ts):
+                if self.collideRectLine(self.player_hitbox, *self.caf_tl_a_coords):
+                    return True, "lfc"
+                
+                elif self.collideRectLine(self.player_hitbox, *self.caf_tr_a_coords):
+                    return True, "rfc"
+                return True, "f"
+            
+            elif self.collideRectLine(self.player_hitbox, *self.caf_tr_a_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.caf_tr_s):
+                    return True, "rfc"
+                return True, "rf"
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_tr_s):
+                return True, "r"
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_br_s):
+                if self.collideRectLine(self.player_hitbox, *self.caf_br_a_coords):
+                    return True, 'rbc'
+                return True, "r"
+            
+            elif self.collideRectLine(self.player_hitbox, *self.caf_br_a_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.caf_br_s) or pygame.Rect.colliderect(self.player_hitbox, self.caf_bs_r):
+                    return True, "rbc"
+                return True, 'rb'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_bs_r) or pygame.Rect.colliderect(self.player_hitbox, self.caf_bs_l):
+                if self.collideRectLine(self.player_hitbox, *self.caf_bl_a_coords):
+                    return True, 'lbc'
+                return True, 'b'
+
+            elif self.collideRectLine(self.player_hitbox, *self.caf_bl_a_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.caf_bs_r) or pygame.Rect.colliderect(self.player_hitbox, self.caf_bl_s):
+                    return True, 'lbc'
+                return True, 'lb'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_bl_s):
+                if pygame.Rect.colliderect(self.player_hitbox, self.caf_hallway_br_s):
+                    return True, 'lbc'
+                return True, 'l'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_hallway_top_s):
+                return True, 'f'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_hallway_br_s):
+                return True, 'b'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_hallway_bl_s):
+                return True, 'b'
+            
+            return False, "N/A"
+        
+        # Cafeteria result
+        result = cafeteria_boundaries(self)
+        if result[0]:
+            return result
+
+        return result
+
+    # This function draws the boundary lines
+    def draw_boundaries(self):
+        # cafeteria and cafeteria hallway(left) lines
+        def draw_cafeteria_boundaries(self):
+            # top left straight
+            self.caf_tl_s = pygame.draw.line(self.game.display, self.border_color, (492 + self.scrollx, 375 + self.scrolly), (492 + self.scrollx, 170 + self.scrolly), 5)
+
+            # top left angle
+            self.caf_tl_a_coords = [(490 + self.scrollx, 175 + self.scrolly), (660 + self.scrollx, 5 + self.scrolly)]
+            self.caf_tl_a = pygame.draw.line(self.game.display, self.border_color, self.caf_tl_a_coords[0], self.caf_tl_a_coords[1], 5)
+
+            # top straight
+            self.caf_ts = pygame.draw.line(self.game.display, self.border_color, (658 + self.scrollx, 5 + self.scrolly), (1187 + self.scrollx, 5 + self.scrolly), 5)
+
+            # top right angle
+            self.caf_tr_a_coords = [(1187 + self.scrollx, 5 + self.scrolly), (1430 + self.scrollx, 250 + self.scrolly)]
+            self.caf_tr_a = pygame.draw.line(self.game.display, self.border_color, self.caf_tr_a_coords[0], self.caf_tr_a_coords[1], 5)
+
+            # top right straight
+            self.caf_tr_s = pygame.draw.line(self.game.display, self.border_color, (1430 + self.scrollx, 250 + self.scrolly), (1430 + self.scrollx, 375 + self.scrolly), 5)
+
+            # bottom right straight
+            self.caf_br_s = pygame.draw.line(self.game.display, self.border_color, (1430 + self.scrollx, 535 + self.scrolly), (1430 + self.scrollx, 730 + self.scrolly), 5)
+
+            # bottom right angle
+            self.caf_br_a_coords = [(1430 + self.scrollx, 730 + self.scrolly), (1215 + self.scrollx, 945 + self.scrolly)]
+            self.caf_br_a = pygame.draw.line(self.game.display, self.border_color, self.caf_br_a_coords[0], self.caf_br_a_coords[1], 5)
+
+            # bottom right straight
+            self.caf_bs_r = pygame.draw.line(self.game.display, self.border_color, (1215 + self.scrollx, 945 + self.scrolly), (1020 + self.scrollx, 945 + self.scrolly), 5)
+
+            # bottom straight left
+            self.caf_bs_l = pygame.draw.line(self.game.display, self.border_color, (701 + self.scrollx, 945 + self.scrolly), (890 + self.scrollx, 945 + self.scrolly), 5)
+            
+            # bottom left angle
+            self.caf_bl_a_coords = [(701 + self.scrollx, 945 + self.scrolly), (490 + self.scrollx, 735 + self.scrolly)]
+            self.caf_bl_a = pygame.draw.line(self.game.display, self.border_color, self.caf_bl_a_coords[0], self.caf_bl_a_coords[1], 5)
+
+            # Bottom left straight
+            self.caf_bl_s = pygame.draw.line(self.game.display, self.border_color, (492 + self.scrollx, 735 + self.scrolly), (492 + self.scrollx, 535 + self.scrolly), 5)
+
+            # cafeteria hallway top straight
+            self.caf_hallway_top_s = pygame.draw.line(self.game.display, self.border_color, (492 + self.scrollx, 372 + self.scrolly), (-225 + self.scrollx, 372 + self.scrolly), 5)
+            
+            # cafeteria hallway bottom right straight
+            self.caf_hallway_br_s = pygame.draw.line(self.game.display, self.border_color, (492 + self.scrollx, 540 + self.scrolly), (312 + self.scrollx, 540 + self.scrolly), 5)
+
+            # cafeteria hallway bottom left straight
+            self.caf_hallway_bl_s = pygame.draw.line(self.game.display, self.border_color, (180 + self.scrollx, 540 + self.scrolly), (-225 + self.scrollx, 540 + self.scrolly), 5)
+
+        draw_cafeteria_boundaries(self)
+
+            
     # blits cafeteria section
     def load_cafeteria(self):
         self.game.display.blit(self.cafeteria_hallway_left, (-248 + self.scrollx, 353 + self.scrolly))
         self.game.display.blit(self.cafeteria, (467 + self.scrollx, 0 + self.scrolly))
+
 
     # blits weapons section
     def load_weapons(self):
@@ -1231,51 +1557,3 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.reactor_part5, (-900 + self.scrollx, 1000 + self.scrolly))
         self.game.display.blit(self.reactor_part6, (-860 + self.scrollx, 995 + self.scrolly))
         self.game.display.blit(self.reactor_base2, (-963 + self.scrollx, 644 + self.scrolly))
-
-    # check keyboard input
-    def check_input(self):
-        if self.game.back_key:
-            self.game.curr_menu = self.game.main_menu
-        self.run_display = False
-
-        if self.game.move_f:
-            self.scrolly += 10
-            self.status = "walking_r"
-            self.input = True
-            
-        if self.game.move_b:
-            self.input = True
-            self.scrolly -= 10
-            self.status = "walking_r"
-            
-        if self.game.move_r:
-            self.input = True
-            self.scrollx -= 10
-            self.status = "walking_r"
-        
-        if self.game.move_l:
-            self.input = True
-            self.scrollx += 10
-            self.status = "walking_l"
-    
-        if not self.game.move_l and not self.game.move_r and not self.game.move_f and not self.game.move_b:
-            self.input = False
-        
-        if not self.input:
-            self.status = "idle_r"
-    
-    # update player animate according to input
-    def check_status(self):
-        if self.status == "idle_r":
-            self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), (self.playerx, self.playery))
-
-        if self.status == "idle_l":
-            self.game.display.blit(pygame.transform.scale(self.idle[1], (50, 77)), (self.playerx, self.playery))
-        
-        if self.status == "walking_r":
-            self.game.display.blit(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), (self.playerx, self.playery))
-            self.walk_counter = (self.walk_counter + 1) % len(self.walk)
-        
-        if self.status == "walking_l":
-            self.game.display.blit(pygame.transform.flip(pygame.transform.scale(self.walk[self.walk_counter], (50, 77)), True, False), (self.playerx, self.playery))
-            self.walk_counter = (self.walk_counter + 1) % len(self.walk)

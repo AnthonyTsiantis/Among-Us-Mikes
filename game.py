@@ -11,7 +11,7 @@ class game():
         self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False # key inputs for menu's
         self.move_f, self.move_b, self.move_l, self.move_r = False, False, False, False # key inputs for characters
         self.display_W, self.display_H = 1920, 1080 # screen dimensions
-        self.display = pygame.Surface((self.display_W, self.display_H)) # create display surface
+        self.display = pygame.Surface((self.display_W, self.display_H), pygame.SRCALPHA) # create display surface
         self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE) # initilize window
         self.font_name = 'Fonts/gameFont.ttf' # game font 
         pygame.display.set_caption("St. Mike's Among Us!") # game caption
