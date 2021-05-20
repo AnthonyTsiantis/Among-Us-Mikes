@@ -1276,10 +1276,15 @@ class game_lobby(pregame_lobby):
                 return True, "rf"
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.caf_tr_s):
+                if pygame.Rect.colliderect(self.player_hitbox, self.weap_hallway_top):
+                    return True, 'rfc'
                 return True, "r"
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.caf_br_s):
                 if self.collideRectLine(self.player_hitbox, *self.caf_br_a_coords):
+                    return True, 'rbc'
+                
+                elif pygame.Rect.colliderect(self.player_hitbox, self.weap_hallway_bot):
                     return True, 'rbc'
                 return True, "r"
             
@@ -1316,6 +1321,55 @@ class game_lobby(pregame_lobby):
         
         # Cafeteria result
         result = cafeteria_boundaries(self)
+        if result[0]:
+            return result
+        
+        def weapons_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.weap_hallway_top):
+                if pygame.Rect.colliderect(self.player_hitbox, self.weap_tl):
+                    return True, 'lfc'
+                return True, 'f'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.weap_tl):
+                if pygame.Rect.colliderect(self.player_hitbox, self.weap_ts):
+                    return True, 'lfc'
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.weap_ts):
+                if self.collideRectLine(self.player_hitbox, *self.weap_tr_a_coords):
+                    return True, 'rfc'
+                return True, 'f'
+
+            elif self.collideRectLine(self.player_hitbox, *self.weap_tr_a_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.weap_rs):
+                    return True, 'rfc'
+                return True, 'rf'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.weap_rs):
+                if pygame.Rect.colliderect(self.player_hitbox, self.weap_brs):
+                    return True, 'rbc'
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.weap_brs):
+                return True, 'b'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.weap_bls):
+                if self.collideRectLine(self.player_hitbox, *self.weap_bl_a_coords):
+                    return True, 'lbc'
+                return True, 'b'
+            
+            elif self.collideRectLine(self.player_hitbox, *self.weap_bl_a_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.weap_hallway_bot):
+                    return True, 'lbc'
+                return True, 'lb'
+                
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.weap_hallway_bot):
+                return True, 'b'
+            
+            return False, "N/A"
+        
+        result = weapons_boundaries(self)
         if result[0]:
             return result
 
@@ -1371,7 +1425,39 @@ class game_lobby(pregame_lobby):
             # cafeteria hallway bottom left straight
             self.caf_hallway_bl_s = pygame.draw.line(self.game.display, self.border_color, (180 + self.scrollx, 540 + self.scrolly), (-225 + self.scrollx, 540 + self.scrolly), 5)
 
+        def draw_weapons_boundaries(self):
+            # weapons hallway top line
+            self.weap_hallway_top = pygame.draw.line(self.game.display, self.border_color, (1430 + self.scrollx, 375 + self.scrolly), (1600 + self.scrollx, 375 + self.scrolly), 5)
+
+            # weapons top left line
+            self.weap_tl = pygame.draw.line(self.game.display, self.border_color, (1600 + self.scrollx, 375 + self.scrolly), (1600 + self.scrollx, 197 + self.scrolly), 5)
+
+            # weapons top straight
+            self.weap_ts = pygame.draw.line(self.game.display, self.border_color, (1600 + self.scrollx, 197 + self.scrolly), (1805 + self.scrollx, 197 + self.scrolly), 5)
+
+            # weapons right angle
+            self.weap_tr_a_coords = [(1805 + self.scrollx, 197 + self.scrolly), (1990 + self.scrollx, 380 + self.scrolly)]
+            self.weap_tr_a = pygame.draw.line(self.game.display, self.border_color, self.weap_tr_a_coords[0], self.weap_tr_a_coords[1], 5)
+
+            # weapons right straight
+            self.weap_rs = pygame.draw.line(self.game.display, self.border_color, (1990 + self.scrollx, 380 + self.scrolly), (1990 + self.scrollx, 645 + self.scrolly), 5)
+
+            # weapons bottom right straight 
+            self.weap_brs = pygame.draw.line(self.game.display, self.border_color, (1990 + self.scrollx, 645 + self.scrolly), (1872 + self.scrollx, 645 + self.scrolly), 5)
+
+            # weapons bottom left straight 
+            self.weap_bls = pygame.draw.line(self.game.display, self.border_color, (1740 + self.scrollx, 645 + self.scrolly), (1690 + self.scrollx, 645 + self.scrolly), 5)
+            
+            # weapons bottom left angle
+            self.weap_bl_a_coords = [(1690 + self.scrollx, 645 + self.scrolly), (1600 + self.scrollx, 535 + self.scrolly)]
+            self.weap_bl_a = pygame.draw.line(self.game.display, self.border_color, self.weap_bl_a_coords[0], self.weap_bl_a_coords[1], 5)
+
+            # weapons hallway bottom line
+            self.weap_hallway_bot = pygame.draw.line(self.game.display, self.border_color, (1430 + self.scrollx, 535 + self.scrolly), (1600 + self.scrollx, 535 + self.scrolly), 5)
+        
+
         draw_cafeteria_boundaries(self)
+        draw_weapons_boundaries(self)
 
             
     # blits cafeteria section
