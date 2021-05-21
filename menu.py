@@ -136,6 +136,7 @@ class settingsMenu(menu):
         if self.game.back_key:
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
+
         elif self.game.up_key:
             if self.state == "Skin":
                 self.state = "Controls"
@@ -1110,10 +1111,7 @@ class game_lobby(pregame_lobby):
                 self.scrolly += 8
                 self.status = "walking_r"
                 self.input = True
-                self.idle_left = False
-            
-                
-            
+                self.idle_left = False   
 
         if self.game.move_b:
             if not boundary[0]:
@@ -1170,7 +1168,6 @@ class game_lobby(pregame_lobby):
                 self.input = True
                 self.idle_left = False
             
-        
         if self.game.move_l:
             if not boundary[0]:
                 self.input = True
@@ -1351,6 +1348,8 @@ class game_lobby(pregame_lobby):
                 return True, 'r'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.weap_brs):
+                if pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_0r):
+                    return True, 'rbc'
                 return True, 'b'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.weap_bls):
@@ -1362,16 +1361,102 @@ class game_lobby(pregame_lobby):
                 if pygame.Rect.colliderect(self.player_hitbox, self.weap_hallway_bot):
                     return True, 'lbc'
                 return True, 'lb'
-                
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.weap_hallway_bot):
                 return True, 'b'
             
             return False, "N/A"
         
+        # weapons result
         result = weapons_boundaries(self)
         if result[0]:
             return result
+
+        def Oxygen_nav_weap_hallway_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_0r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_1r):
+                    return True, 'rfc'
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_1r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_2r):
+                    return True, 'rfc'
+                return True, 'f'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_2r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_3r):
+                    return True, 'rfc'
+                return True, 'r'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_3r):
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_4r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_5r):
+                    return True, 'rbc'
+                return True, 'b'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_5r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_6r):
+                    return True, 'rbc'
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_6r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_7r):
+                    return True, 'rbc'
+                return True, 'b'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_7r):
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_0l):
+                if pygame.Rect.colliderect(self.player_hitbox, self.oxygen_top):
+                    return True, 'lfc'
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_1l):
+                if pygame.Rect.colliderect(self.player_hitbox, self.oxygen_bottom):
+                    return True, 'lbc'
+
+                elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_2l):
+                    return True, 'lfc'
+                return True, 'l'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_2l):
+                if pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_3l):
+                    return True, 'lfc'
+                return True, 'f'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_3l):
+                return True, 'l'
+
+            return False, 'N/A'
+        
+        # 0xygen, navigation and weapons hallway result
+        result = Oxygen_nav_weap_hallway_boundaries(self)
+        if result[0]:
+            return result
+
+        def oxygen_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.oxygen_top):
+                if self.collideRectLine(self.player_hitbox, *self.oxygen_angle_coords):
+                    return True, 'lfc'
+                return True, 'f'
+            
+            elif self.collideRectLine(self.player_hitbox, *self.oxygen_angle_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.oxygen_bottom):
+                    return True,'lbc'
+                return True, 'lf'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.oxygen_bottom):
+                return True, 'b'
+            return False, 'N/A'
+            
+        
+        result = oxygen_boundaries(self)
+        if result[0]:
+            return result
+
 
         return result
 
@@ -1455,11 +1540,62 @@ class game_lobby(pregame_lobby):
             # weapons hallway bottom line
             self.weap_hallway_bot = pygame.draw.line(self.game.display, self.border_color, (1430 + self.scrollx, 535 + self.scrolly), (1600 + self.scrollx, 535 + self.scrolly), 5)
         
+        def draw_Oxygen_nav_weap_hallway_boundaries(self):
+            # numerically in order from top down
+                # 0th line on the right side
+            self.Oxygen_nav_weap_hall_0r =  pygame.draw.line(self.game.display, self.border_color, (1873 + self.scrollx, 645 + self.scrolly), (1873 + self.scrollx, 760 + self.scrolly), 5)
+            
+                # 1st line on the right side
+            self.Oxygen_nav_weap_hall_1r =  pygame.draw.line(self.game.display, self.border_color, (1873 + self.scrollx, 760 + self.scrolly), (2070 + self.scrollx, 760 + self.scrolly), 5)
+            
+                # 2nd line on right side
+            self.Oxygen_nav_weap_hall_2r =  pygame.draw.line(self.game.display, self.border_color, (2070 + self.scrollx, 760 + self.scrolly), (2070 + self.scrollx, 875 + self.scrolly), 5)
 
+                # 3rd line on right side
+            self.Oxygen_nav_weap_hall_3r =  pygame.draw.line(self.game.display, self.border_color, (2070 + self.scrollx, 875 + self.scrolly), (2310 + self.scrollx, 875 + self.scrolly), 5)
+
+                # 4th line on right side
+            self.Oxygen_nav_weap_hall_4r =  pygame.draw.line(self.game.display, self.border_color, (2070 + self.scrollx, 1035 + self.scrolly), (2310 + self.scrollx, 1035 + self.scrolly), 5)
+
+                # 5th line on right side
+            self.Oxygen_nav_weap_hall_5r =  pygame.draw.line(self.game.display, self.border_color, (2070 + self.scrollx, 1035 + self.scrolly), (2070 + self.scrollx, 1185 + self.scrolly), 5)
+
+                # 6th line on right side
+            self.Oxygen_nav_weap_hall_6r =  pygame.draw.line(self.game.display, self.border_color, (2070 + self.scrollx, 1185 + self.scrolly), (1872 + self.scrollx, 1185 + self.scrolly), 5)
+
+                # 7th line on right side
+            self.Oxygen_nav_weap_hall_7r =  pygame.draw.line(self.game.display, self.border_color, (1872 + self.scrollx, 1185 + self.scrolly), (1872 + self.scrollx, 1380 + self.scrolly), 5)
+
+                # 0th line on left side
+            self.Oxygen_nav_weap_hall_0l =  pygame.draw.line(self.game.display, self.border_color, (1740 + self.scrollx, 645 + self.scrolly), (1740 + self.scrollx, 760 + self.scrolly), 5)
+
+                # 1st line on left side
+            self.Oxygen_nav_weap_hall_1l = pygame.draw.line(self.game.display, self.border_color, (1935 + self.scrollx, 925 + self.scrolly), (1935 + self.scrollx, 1020 + self.scrolly), 5)
+
+                # 2nd line on left side
+            self.Oxygen_nav_weap_hall_2l = pygame.draw.line(self.game.display, self.border_color, (1735 + self.scrollx, 1020 + self.scrolly), (1935 + self.scrollx, 1020 + self.scrolly), 5)
+
+                # 3rd line on left side
+            self.Oxygen_nav_weap_hall_3l = pygame.draw.line(self.game.display, self.border_color, (1735 + self.scrollx, 1020 + self.scrolly), (1735 + self.scrollx, 1380 + self.scrolly), 5)
+        
+        def draw_oxygen(self):
+            # Oxygen top line
+            self.oxygen_top =  pygame.draw.line(self.game.display, self.border_color, (1740 + self.scrollx, 760 + self.scrolly), (1475 + self.scrollx, 760 + self.scrolly), 5)
+            
+            # Oxygen Angle
+            self.oxygen_angle_coords = [(1475 + self.scrollx, 760 + self.scrolly), (1350 + self.scrollx, 925 + self.scrolly)]
+            self.oxygen_angle = pygame.draw.line(self.game.display, self.border_color, self.oxygen_angle_coords[0], self.oxygen_angle_coords[1], 5)
+            
+            # Oxygen bottom line
+            self.oxygen_bottom =  pygame.draw.line(self.game.display, self.border_color, (1350 + self.scrollx, 925 + self.scrolly), (1935 + self.scrollx, 925 + self.scrolly), 5)
+        
+        
         draw_cafeteria_boundaries(self)
         draw_weapons_boundaries(self)
+        draw_Oxygen_nav_weap_hallway_boundaries(self)
+        draw_oxygen(self)
 
-            
+
     # blits cafeteria section
     def load_cafeteria(self):
         self.game.display.blit(self.cafeteria_hallway_left, (-248 + self.scrollx, 353 + self.scrolly))
