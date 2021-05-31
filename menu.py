@@ -1554,11 +1554,17 @@ class game_lobby(pregame_lobby):
                 return True, 'b'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.scs_hallway_vbr):
+                if pygame.Rect.colliderect(self.player_hitbox, self.comms_tr):
+                    return True, 'rfc'
                 return True, 'r'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.scs_hallway_vbl):
                 if pygame.Rect.colliderect(self.player_hitbox, self.scs_hallway_hbl):
                     return True, 'lbc'
+                
+                elif pygame.Rect.colliderect(self.player_hitbox, self.comms_tl):
+                    return True, 'lfc'
+
                 return True, 'l'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.scs_hallway_hbl):
@@ -1567,6 +1573,36 @@ class game_lobby(pregame_lobby):
             return False, 'N/A'
 
         result = scs_hallway_boundaries(self)
+        if result[0]:
+            return result
+
+        def comms_hallway_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.comms_tr):
+                if pygame.Rect.colliderect(self.player_hitbox, self.comms_r):
+                    return True, 'rfc'
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.comms_r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.comms_b):
+                    return True, 'rbc'
+                return True, 'r'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.comms_b):
+                if pygame.Rect.colliderect(self.player_hitbox, self.comms_l):
+                    return True, 'lbc'
+                return True, 'b'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.comms_l):
+                if pygame.Rect.colliderect(self.player_hitbox, self.comms_tl):
+                    return True, 'lfc'
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.comms_tl):
+                return True, 'f'
+
+            return False, 'N/A'
+
+        result = comms_hallway_boundaries(self)
         if result[0]:
             return result
 
@@ -1763,7 +1799,21 @@ class game_lobby(pregame_lobby):
             # hallway horizontal bottom left straight
             self.scs_hallway_hbl = pygame.draw.line(self.game.display, self.border_color, (1375 + self.scrollx, 1645 + self.scrolly), (1095 + self.scrollx, 1645 + self.scrolly), 5)
 
+        def draw_comms_boundaries(self):
+            # comms top right straight
+            self.comms_tr = pygame.draw.line(self.game.display, self.border_color, (1510 + self.scrollx, 1720 + self.scrolly), (1560 + self.scrollx, 1720 + self.scrolly), 5)
 
+            # right straight
+            self.comms_r = pygame.draw.line(self.game.display, self.border_color, (1560 + self.scrollx, 1720 + self.scrolly), (1560 + self.scrollx, 1955 + self.scrolly), 5)
+
+            # bottom straight
+            self.comms_b = pygame.draw.line(self.game.display, self.border_color, (1560 + self.scrollx, 1955 + self.scrolly), (1140 + self.scrollx, 1955 + self.scrolly), 5) 
+
+            # left straight
+            self.comms_l = pygame.draw.line(self.game.display, self.border_color, (1140 + self.scrollx, 1720 + self.scrolly), (1140 + self.scrollx, 1955 + self.scrolly), 5) 
+
+            # top left straight
+            self.comms_tl = pygame.draw.line(self.game.display, self.border_color, (1140 + self.scrollx, 1720 + self.scrolly), (1375 + self.scrollx, 1720 + self.scrolly), 5) 
 
 
         draw_cafeteria_boundaries(self)
@@ -1773,6 +1823,7 @@ class game_lobby(pregame_lobby):
         draw_navigation_boundaries(self)
         draw_shield_boundaries(self)
         draw_scs_hallway_boundaries(self)
+        draw_comms_boundaries(self)
 
 
 
