@@ -795,7 +795,7 @@ class game_lobby(pregame_lobby):
         self.load_sprites()
         self.status = "idle_r"
         self.playerx, self.playery = (910, 463)
-        self.scrollx, self.scrolly = (0,0)
+        self.scrollx, self.scrolly = (0, 0)
         self.walk_counter = 0
         """self.spawn_coords = [(145, 13), (-6, -75), (-158, 13), (-6, 133)]
         rand_coords = self.spawn_coords[random.randint(0,3)]
@@ -1389,10 +1389,14 @@ class game_lobby(pregame_lobby):
                 return True, 'r'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_3r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.nav_tl):
+                    return True, 'lfc'
                 return True, 'f'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_4r):
-                if pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_5r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.nav_bl):
+                    return True, 'lbc'
+                elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_5r):
                     return True, 'rbc'
                 return True, 'b'
             
@@ -1457,6 +1461,45 @@ class game_lobby(pregame_lobby):
         if result[0]:
             return result
 
+        def navigation_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.nav_tl):
+                if pygame.Rect.colliderect(self.player_hitbox, self.nav_ts):
+                    return True, 'lfc'
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.nav_ts):
+                if self.collideRectLine(self.player_hitbox, *self.nav_tr_a_coords):
+                    return True, 'rfc'
+                return True, 'f'
+
+            elif self.collideRectLine(self.player_hitbox, *self.nav_tr_a_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.nav_rs):
+                    return True, 'rfc'
+                return True, 'rf'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.nav_rs):
+                if self.collideRectLine(self.player_hitbox, *self.nav_br_a_coords):
+                    return True, 'rbc'
+                return True, 'r'
+
+            elif self.collideRectLine(self.player_hitbox, *self.nav_br_a_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.nav_bs):
+                    return True, 'rbc'
+                return True, 'rb'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.nav_bs):
+                if pygame.Rect.colliderect(self.player_hitbox, self.nav_bl):
+                    return True, 'lbc'
+                return True, 'b'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.nav_bl):
+                return True, 'l'
+            
+            return False, 'N/A'
+
+        result = navigation_boundaries(self)
+        if result[0]:
+            return result
 
         return result
 
@@ -1589,11 +1632,37 @@ class game_lobby(pregame_lobby):
             # Oxygen bottom line
             self.oxygen_bottom =  pygame.draw.line(self.game.display, self.border_color, (1350 + self.scrollx, 925 + self.scrolly), (1935 + self.scrollx, 925 + self.scrolly), 5)
         
+        def draw_navigation(self):
+            # Nav top left line
+            self.nav_tl = pygame.draw.line(self.game.display, self.border_color, (2310 + self.scrollx, 875 + self.scrolly), (2310 + self.scrollx, 755 + self.scrolly), 5)
+
+            # Nav top straight
+            self.nav_ts = pygame.draw.line(self.game.display, self.border_color, (2310 + self.scrollx, 755 + self.scrolly), (2465 + self.scrollx, 755 + self.scrolly), 5)
+
+            # nav top right angle
+            self.nav_tr_a_coords = [(2465 + self.scrollx, 755 + self.scrolly), (2605 + self.scrollx, 875 + self.scrolly)]
+            self.nav_tr_a = pygame.draw.line(self.game.display, self.border_color, self.nav_tr_a_coords[0], self.nav_tr_a_coords[1], 5)
+
+            # nav right straight
+            self.nav_rs = pygame.draw.line(self.game.display, self.border_color, (2605 + self.scrollx, 875 + self.scrolly), (2605 + self.scrollx, 1040 + self.scrolly), 5)
+
+            # nav bottom right angle
+            self.nav_br_a_coords = [(2605 + self.scrollx, 1040 + self.scrolly), (2465 + self.scrollx, 1150 + self.scrolly)]
+            self.nav_br_a = pygame.draw.line(self.game.display, self.border_color, self.nav_br_a_coords[0], self.nav_br_a_coords[1], 5)
+
+            # nav bottom straight
+            self.nav_bs = pygame.draw.line(self.game.display, self.border_color, (2465 + self.scrollx, 1150 + self.scrolly), (2310 + self.scrollx, 1150 + self.scrolly), 5)
+
+            # nav bottom left straight
+            self.nav_bl = pygame.draw.line(self.game.display, self.border_color, (2310 + self.scrollx, 1150 + self.scrolly), (2310 + self.scrollx, 1035 + self.scrolly), 5)
+            
         
         draw_cafeteria_boundaries(self)
         draw_weapons_boundaries(self)
         draw_Oxygen_nav_weap_hallway_boundaries(self)
         draw_oxygen(self)
+        draw_navigation(self)
+
 
 
     # blits cafeteria section
