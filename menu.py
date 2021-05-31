@@ -1411,6 +1411,8 @@ class game_lobby(pregame_lobby):
                 return True, 'b'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_7r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.shield_tls):
+                    return True, 'rfc'
                 return True, 'r'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_0l):
@@ -1432,6 +1434,8 @@ class game_lobby(pregame_lobby):
                 return True, 'f'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.Oxygen_nav_weap_hall_3l):
+                if self.collideRectLine(self.player_hitbox, *self.shield_ta_coords):
+                    return True, 'lfc'
                 return True, 'l'
 
             return False, 'N/A'
@@ -1498,6 +1502,43 @@ class game_lobby(pregame_lobby):
             return False, 'N/A'
 
         result = navigation_boundaries(self)
+        if result[0]:
+            return result
+
+        def shield_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.shield_tls):
+                if pygame.Rect.colliderect(self.player_hitbox, self.shield_rs):
+                    return True, 'rfc'
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.shield_rs):
+                if self.collideRectLine(self.player_hitbox, *self.shield_ba_coords):
+                    return True, 'rbc'
+                return True, 'r'
+            
+            elif self.collideRectLine(self.player_hitbox, *self.shield_ba_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.shield_bs):
+                    return True, 'rbc'
+                return True, 'rb'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.shield_bs):
+                if pygame.Rect.colliderect(self.player_hitbox, self.shield_lbs):
+                    return True, 'lbc'
+                return True, 'b'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.shield_lbs):
+                return True, 'l'
+
+            elif self.collideRectLine(self.player_hitbox, *self.shield_ta_coords):
+                return True, 'lf'
+
+            return False, 'N/A'
+        
+
+
+
+
+        result = shield_boundaries(self)
         if result[0]:
             return result
 
@@ -1656,12 +1697,37 @@ class game_lobby(pregame_lobby):
             # nav bottom left straight
             self.nav_bl = pygame.draw.line(self.game.display, self.border_color, (2310 + self.scrollx, 1150 + self.scrolly), (2310 + self.scrollx, 1035 + self.scrolly), 5)
             
-        
+        def draw_shield(self):
+            #shield top left straight
+            self.shield_tls = pygame.draw.line(self.game.display, self.border_color, (1872 + self.scrollx, 1380 + self.scrolly), (1990 + self.scrollx, 1380 + self.scrolly), 5)
+
+            # shield right straight
+            self.shield_rs = pygame.draw.line(self.game.display, self.border_color, (1990 + self.scrollx, 1380 + self.scrolly), (1990 + self.scrollx, 1640 + self.scrolly), 5)
+
+            # shield bottom angle
+            self.shield_ba_coords = [(1990 + self.scrollx, 1640 + self.scrolly), (1805 + self.scrollx, 1820 + self.scrolly)]
+            self.shield_ba = pygame.draw.line(self.game.display, self.border_color, self.shield_ba_coords[0], self.shield_ba_coords[1], 5)
+
+            # sheild bottom straight
+            self.shield_bs = pygame.draw.line(self.game.display, self.border_color, (1805 + self.scrollx, 1820 + self.scrolly), (1600 + self.scrollx, 1820 + self.scrolly), 5)
+
+            # shield bottom left straight
+            self.shield_lbs = pygame.draw.line(self.game.display, self.border_color, (1600 + self.scrollx, 1820 + self.scrolly), (1600 + self.scrollx, 1645 + self.scrolly), 5)
+
+            # shield top left angle
+            self.shield_ta_coords = [(1735 + self.scrollx, 1380 + self.scrolly), (1600 + self.scrollx, 1485 + self.scrolly)]
+            self.shield_ta = pygame.draw.line(self.game.display, self.border_color, self.shield_ta_coords[0], self.shield_ta_coords[1], 5)
+
+
+
+
+
         draw_cafeteria_boundaries(self)
         draw_weapons_boundaries(self)
         draw_Oxygen_nav_weap_hallway_boundaries(self)
         draw_oxygen(self)
         draw_navigation(self)
+        draw_shield(self)
 
 
 
