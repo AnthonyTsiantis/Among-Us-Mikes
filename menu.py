@@ -1669,9 +1669,13 @@ class game_lobby(pregame_lobby):
                 return True, 'l'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.sac_rt):
+                if pygame.Rect.colliderect(self.player_hitbox, self.admin_top):
+                    return True, 'rfc'
                 return True, 'r'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.sac_rb):
+                if pygame.Rect.colliderect(self.player_hitbox, self.admin_bh):
+                    return True, 'rbc'
                 return True, 'r'
 
             return False, 'N/A'
@@ -1679,6 +1683,42 @@ class game_lobby(pregame_lobby):
         result = sac_boundaries(self)
         if result[0]:
             return result
+
+        def admin_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.admin_top):
+                if pygame.Rect.colliderect(self.player_hitbox, self.admin_rs):
+                    return True, 'rfc'
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.admin_rs):
+                if self.collideRectLine(self.player_hitbox, *self.admin_ra_coords):
+                    return True, 'rbc'
+                return True, 'r'
+
+            elif self.collideRectLine(self.player_hitbox, *self.admin_ra_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.admin_bottom):
+                    return True, 'rbc'
+                return True, 'rb'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.admin_bottom):
+                if pygame.Rect.colliderect(self.player_hitbox, self.admin_left):
+                    return True, 'lbc'
+                return True, 'b'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.admin_left):
+                if pygame.Rect.colliderect(self.player_hitbox, self.admin_bh):
+                    return True, 'lbc'
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.admin_bh):
+                return True, 'b'
+
+            return False, 'N/A'
+        
+        result = admin_boundaries(self)
+        if result[0]:
+            return result
+
 
         return False, 'N/A'
 
@@ -1934,6 +1974,25 @@ class game_lobby(pregame_lobby):
             self.sac_rb = pygame.draw.line(self.game.display, self.border_color, (1020 + self.scrollx, 1265 + self.scrolly), (1020 + self.scrollx, 1215 + self.scrolly), 5)
 
 
+        def draw_admin_boundaries(self):
+            # Top straight
+            self.admin_top = pygame.draw.line(self.game.display, self.border_color, (1020 + self.scrollx, 1060 + self.scrolly), (1595 + self.scrollx, 1060 + self.scrolly), 5)
+
+            # right straight
+            self.admin_rs = pygame.draw.line(self.game.display, self.border_color, (1595 + self.scrollx, 1060 + self.scrolly), (1595 + self.scrollx, 1360 + self.scrolly), 5)
+
+            # right bottom angle
+            self.admin_ra_coords = [(1595 + self.scrollx, 1360 + self.scrolly), (1520 + self.scrollx, 1435 + self.scrolly)]
+            self.admin_ra = pygame.draw.line(self.game.display, self.border_color, self.admin_ra_coords[0], self.admin_ra_coords[1], 5)
+
+            # bottom straight
+            self.admin_bottom = pygame.draw.line(self.game.display, self.border_color, (1520 + self.scrollx, 1435 + self.scrolly), (1175 + self.scrollx, 1435 + self.scrolly), 5)
+
+            # left straight
+            self.admin_left = pygame.draw.line(self.game.display, self.border_color, (1175 + self.scrollx, 1435 + self.scrolly), (1175 + self.scrollx, 1215 + self.scrolly), 5)
+
+            # admin bottom hallway
+            self.admin_bh = pygame.draw.line(self.game.display, self.border_color, (1175 + self.scrollx, 1215 + self.scrolly), (1020 + self.scrollx, 1215 + self.scrolly), 5)
 
         draw_cafeteria_boundaries(self)
         draw_weapons_boundaries(self)
@@ -1945,6 +2004,7 @@ class game_lobby(pregame_lobby):
         draw_comms_boundaries(self)
         draw_storage_boundaries(self)
         draw_sac_boundaries(self)
+        draw_admin_boundaries(self)
 
 
 
