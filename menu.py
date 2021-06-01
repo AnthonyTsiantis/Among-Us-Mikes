@@ -1290,14 +1290,25 @@ class game_lobby(pregame_lobby):
                     return True, "rbc"
                 return True, 'rb'
             
-            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_bs_r) or pygame.Rect.colliderect(self.player_hitbox, self.caf_bs_l):
-                if self.collideRectLine(self.player_hitbox, *self.caf_bl_a_coords):
-                    return True, 'lbc'
+            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_bs_r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.sac_rt):
+                    return True, 'rbc'
                 return True, 'b'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.caf_bs_l):
+                if pygame.Rect.colliderect(self.player_hitbox, self.sac_ls):
+                    return True, 'lbc'
+
+                elif self.collideRectLine(self.player_hitbox, *self.caf_bl_a_coords):
+                    return True, 'lbc'
+
+                return True, 'b'
+
 
             elif self.collideRectLine(self.player_hitbox, *self.caf_bl_a_coords):
                 if pygame.Rect.colliderect(self.player_hitbox, self.caf_bs_r) or pygame.Rect.colliderect(self.player_hitbox, self.caf_bl_s):
                     return True, 'lbc'
+                    
                 return True, 'lb'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.caf_bl_s):
@@ -1634,22 +1645,38 @@ class game_lobby(pregame_lobby):
                     return True, 'lfc'
                 return True, 'lf'
 
-            elif pygame.Rect.colliderect(self.player_hitbox, self.storage_tl):    
+            elif pygame.Rect.colliderect(self.player_hitbox, self.storage_tl):  
+                if pygame.Rect.colliderect(self.player_hitbox, self.sac_ls):
+                    return True, 'lfc'  
                 return True, 'f'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.storage_tr):
-                if pygame.Rect.colliderect(self.player_hitbox, self.storage_rt):
+                if pygame.Rect.colliderect(self.player_hitbox, self.storage_rt) or pygame.Rect.colliderect(self.player_hitbox, self.sac_rb):
                     return True, 'rfc'
                 return True, 'f'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.storage_rt):
-                return True, 'r'
-                
-
+                return True, 'r'            
             
             return False, 'N/A'
 
         result = storage_boundaries(self)
+        if result[0]:
+            return result
+
+        def sac_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.sac_ls):
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.sac_rt):
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.sac_rb):
+                return True, 'r'
+
+            return False, 'N/A'
+
+        result = sac_boundaries(self)
         if result[0]:
             return result
 
@@ -1773,6 +1800,7 @@ class game_lobby(pregame_lobby):
                 # 3rd line on left side
             self.Oxygen_nav_weap_hall_3l = pygame.draw.line(self.game.display, self.border_color, (1735 + self.scrollx, 1020 + self.scrolly), (1735 + self.scrollx, 1380 + self.scrolly), 5)
         
+
         def draw_oxygen_boundaries(self):
             # Oxygen top line
             self.oxygen_top =  pygame.draw.line(self.game.display, self.border_color, (1740 + self.scrollx, 760 + self.scrolly), (1475 + self.scrollx, 760 + self.scrolly), 5)
@@ -1784,6 +1812,7 @@ class game_lobby(pregame_lobby):
             # Oxygen bottom line
             self.oxygen_bottom =  pygame.draw.line(self.game.display, self.border_color, (1350 + self.scrollx, 925 + self.scrolly), (1935 + self.scrollx, 925 + self.scrolly), 5)
         
+
         def draw_navigation_boundaries(self):
             # Nav top left line
             self.nav_tl = pygame.draw.line(self.game.display, self.border_color, (2310 + self.scrollx, 875 + self.scrolly), (2310 + self.scrollx, 755 + self.scrolly), 5)
@@ -1808,6 +1837,7 @@ class game_lobby(pregame_lobby):
             # nav bottom left straight
             self.nav_bl = pygame.draw.line(self.game.display, self.border_color, (2310 + self.scrollx, 1150 + self.scrolly), (2310 + self.scrollx, 1035 + self.scrolly), 5)
             
+
         def draw_shield_boundaries(self):
             #shield top left straight
             self.shield_tls = pygame.draw.line(self.game.display, self.border_color, (1872 + self.scrollx, 1380 + self.scrolly), (1990 + self.scrollx, 1380 + self.scrolly), 5)
@@ -1845,6 +1875,7 @@ class game_lobby(pregame_lobby):
 
             # hallway horizontal bottom left straight
             self.scs_hallway_hbl = pygame.draw.line(self.game.display, self.border_color, (1375 + self.scrollx, 1645 + self.scrolly), (1095 + self.scrollx, 1645 + self.scrolly), 5)
+
 
         def draw_comms_boundaries(self):
             # comms top right straight
@@ -1891,6 +1922,18 @@ class game_lobby(pregame_lobby):
             self.storage_rt = pygame.draw.line(self.game.display, self.border_color, (1095 + self.scrollx, 1265 + self.scrolly), (1095 + self.scrollx, 1485 + self.scrolly), 5)
 
 
+        # SAC = Storage + Admin + Cafeteria
+        def draw_sac_boundaries(self):
+            # left vertical straight
+            self.sac_ls = pygame.draw.line(self.game.display, self.border_color, (890 + self.scrollx, 1265 + self.scrolly), (890 + self.scrollx, 945 + self.scrolly), 5)
+
+            # right top straight
+            self.sac_rt = pygame.draw.line(self.game.display, self.border_color, (1020 + self.scrollx, 945 + self.scrolly), (1020 + self.scrollx, 1060 + self.scrolly), 5)
+
+            # right bottom straight
+            self.sac_rb = pygame.draw.line(self.game.display, self.border_color, (1020 + self.scrollx, 1265 + self.scrolly), (1020 + self.scrollx, 1215 + self.scrolly), 5)
+
+
 
         draw_cafeteria_boundaries(self)
         draw_weapons_boundaries(self)
@@ -1901,6 +1944,7 @@ class game_lobby(pregame_lobby):
         draw_scs_hallway_boundaries(self)
         draw_comms_boundaries(self)
         draw_storage_boundaries(self)
+        draw_sac_boundaries(self)
 
 
 
