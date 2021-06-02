@@ -1727,11 +1727,17 @@ class game_lobby(pregame_lobby):
 
         def seeh_boundaries(self):
             if pygame.Rect.colliderect(self.player_hitbox, self.seeh_t0):
+                if pygame.Rect.colliderect(self.player_hitbox,self.electrical_r5):
+                    return True, 'rfc'
                 return True, 'f'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.seeh_t1):
                 if pygame.Rect.colliderect(self.player_hitbox, self.seeh_t2):
                     return True, 'rfc'
+                
+                elif pygame.Rect.colliderect(self.player_hitbox,self.electrical_l):
+                    return True, 'lfc'
+
                 return True, 'f'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.seeh_t2):
@@ -1758,6 +1764,50 @@ class game_lobby(pregame_lobby):
             return False, 'N/A'
 
         result = seeh_boundaries(self)
+        if result[0]:
+            return result
+
+        def electrical_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox,self.electrical_l):
+                if pygame.Rect.colliderect(self.player_hitbox,self.electrical_t):
+                    return True, 'lfc'
+                return True, 'l'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox,self.electrical_t):
+                if pygame.Rect.colliderect(self.player_hitbox,self.electrical_r0):
+                    return True, 'rfc'
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox,self.electrical_r0):
+                if self.collideRectLine(self.player_hitbox, *self.electrical_r1_coords):
+                    return True, 'rbc'
+                return True, 'r'
+
+            elif self.collideRectLine(self.player_hitbox, *self.electrical_r1_coords):
+                if pygame.Rect.colliderect(self.player_hitbox,self.electrical_r2):
+                    return True, 'rbc'
+                return True, 'rb'
+
+            elif pygame.Rect.colliderect(self.player_hitbox,self.electrical_r2):
+                if self.collideRectLine(self.player_hitbox, *self.electrical_r3_coords):
+                    return True, 'rbc'
+                return True, 'r'
+
+            elif self.collideRectLine(self.player_hitbox, *self.electrical_r3_coords):
+                if pygame.Rect.colliderect(self.player_hitbox,self.electrical_r4):
+                    return True, 'rbc'
+                return True, 'rb'
+
+            elif pygame.Rect.colliderect(self.player_hitbox,self.electrical_r4):
+                return True, 'b'
+
+            elif pygame.Rect.colliderect(self.player_hitbox,self.electrical_r5):
+                return True, 'r'
+
+            return False, 'N/A'
+
+
+        result = electrical_boundaries(self)
         if result[0]:
             return result
 
@@ -2058,6 +2108,34 @@ class game_lobby(pregame_lobby):
             # 2nd bottom line
             self.seeh_b2 = pygame.draw.line(self.game.display, self.border_color, (-70 + self.scrollx, 1605 + self.scrolly), (-225 + self.scrollx, 1605 + self.scrolly), 5)
 
+        def draw_electrical_boundaries(self):
+            # left straight line
+            self.electrical_l = pygame.draw.line(self.game.display, self.border_color, (153 + self.scrollx, 1675 + self.scrolly), (153 + self.scrollx, 1145 + self.scrolly), 5)
+
+            # top straight
+            self.electrical_t = pygame.draw.line(self.game.display, self.border_color, (153 + self.scrollx, 1145 + self.scrolly), (580 + self.scrollx, 1145 + self.scrolly), 5)
+
+            # 0th right (top down)
+            self.electrical_r0 = pygame.draw.line(self.game.display, self.border_color, (580 + self.scrollx, 1145 + self.scrolly), (580 + self.scrollx, 1255 + self.scrolly), 5)
+
+            # 1st right
+            self.electrical_r1_coords = [(580 + self.scrollx, 1255 + self.scrolly), (480 + self.scrollx, 1360 + self.scrolly)]
+            self.electrical_r1 = pygame.draw.line(self.game.display, self.border_color, self.electrical_r1_coords[0], self.electrical_r1_coords[1], 5)
+
+            # 2nd Right
+            self.electrical_r2 = pygame.draw.line(self.game.display, self.border_color, (480 + self.scrollx, 1360 + self.scrolly), (480 + self.scrollx, 1525 + self.scrolly), 5)
+
+            # 3rd right
+            self.electrical_r3_coords = [(480 + self.scrollx, 1525 + self.scrolly), (390 + self.scrollx, 1610 + self.scrolly)]
+            self.electrical_r3 = pygame.draw.line(self.game.display, self.border_color, self.electrical_r3_coords[0], self.electrical_r3_coords[1], 5)
+
+            # 4th right
+            self.electrical_r4 = pygame.draw.line(self.game.display, self.border_color, (390 + self.scrollx, 1610 + self.scrolly), (280 + self.scrollx, 1610 + self.scrolly), 5)
+
+            # 5th right
+            self.electrical_r5 = pygame.draw.line(self.game.display, self.border_color, (280 + self.scrollx, 1610 + self.scrolly), (280 + self.scrollx, 1675 + self.scrolly), 5)
+
+
 
         draw_cafeteria_boundaries(self)
         draw_weapons_boundaries(self)
@@ -2071,7 +2149,7 @@ class game_lobby(pregame_lobby):
         draw_sac_boundaries(self)
         draw_admin_boundaries(self)
         draw_seeh_boundaries(self)
-
+        draw_electrical_boundaries(self)
 
 
     # blits cafeteria section
