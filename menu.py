@@ -1633,11 +1633,17 @@ class game_lobby(pregame_lobby):
                 return True, 'b'
 
             elif self.collideRectLine(self.player_hitbox, *self.storage_bla_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.seeh_b0):
+                    return True, 'lbc'
                 return True, 'lb'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.storage_lt):
                 if self.collideRectLine(self.player_hitbox, *self.storage_lta_coords):
                     return True, 'lfc'
+
+                elif pygame.Rect.colliderect(self.player_hitbox, self.seeh_t0):
+                    return True, 'lfc'
+                    
                 return True, 'l'
             
             elif self.collideRectLine(self.player_hitbox, *self.storage_lta_coords):
@@ -1719,6 +1725,41 @@ class game_lobby(pregame_lobby):
         if result[0]:
             return result
 
+        def seeh_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.seeh_t0):
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.seeh_t1):
+                if pygame.Rect.colliderect(self.player_hitbox, self.seeh_t2):
+                    return True, 'rfc'
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.seeh_t2):
+                if pygame.Rect.colliderect(self.player_hitbox, self.seeh_t3):
+                    return True, 'rfc'
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.seeh_t3):
+                return True, 'f'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.seeh_b0):
+                if pygame.Rect.colliderect(self.player_hitbox, self.seeh_b1):
+                    return True, 'lbc'
+                return True, 'b'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.seeh_b1):
+                if pygame.Rect.colliderect(self.player_hitbox, self.seeh_b2):
+                    return True, 'lbc'
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.seeh_b2):
+                return True, 'b'
+
+            return False, 'N/A'
+
+        result = seeh_boundaries(self)
+        if result[0]:
+            return result
 
         return False, 'N/A'
 
@@ -1994,6 +2035,30 @@ class game_lobby(pregame_lobby):
             # admin bottom hallway
             self.admin_bh = pygame.draw.line(self.game.display, self.border_color, (1175 + self.scrollx, 1215 + self.scrolly), (1020 + self.scrollx, 1215 + self.scrolly), 5)
 
+        # Storage electrical and engine hallway
+        def draw_seeh_boundaries(self):
+            # 0th top line
+            self.seeh_t0 = pygame.draw.line(self.game.display, self.border_color, (582 + self.scrollx, 1675 + self.scrolly), (280 + self.scrollx, 1675 + self.scrolly), 5)
+
+            # 1st top line
+            self.seeh_t1 = pygame.draw.line(self.game.display, self.border_color, (153 + self.scrollx, 1675 + self.scrolly), (67 + self.scrollx, 1675 + self.scrolly), 5)
+
+            # 2nd top line
+            self.seeh_t2 = pygame.draw.line(self.game.display, self.border_color, (67 + self.scrollx, 1675 + self.scrolly), (67 + self.scrollx, 1440 + self.scrolly), 5)
+
+            # 3rd top line
+            self.seeh_t3 = pygame.draw.line(self.game.display, self.border_color, (67 + self.scrollx, 1440 + self.scrolly), (-225 + self.scrollx, 1440 + self.scrolly), 5)
+
+            # 0th bottom line
+            self.seeh_b0 = pygame.draw.line(self.game.display, self.border_color, (582 + self.scrollx, 1843 + self.scrolly), (-70 + self.scrollx, 1843 + self.scrolly), 5)
+
+            # 1st bottom line
+            self.seeh_b1 = pygame.draw.line(self.game.display, self.border_color, (-70 + self.scrollx, 1843 + self.scrolly), (-70 + self.scrollx, 1605 + self.scrolly), 5)
+
+            # 2nd bottom line
+            self.seeh_b2 = pygame.draw.line(self.game.display, self.border_color, (-70 + self.scrollx, 1605 + self.scrolly), (-225 + self.scrollx, 1605 + self.scrolly), 5)
+
+
         draw_cafeteria_boundaries(self)
         draw_weapons_boundaries(self)
         draw_Oxygen_nav_weap_hallway_boundaries(self)
@@ -2005,6 +2070,7 @@ class game_lobby(pregame_lobby):
         draw_storage_boundaries(self)
         draw_sac_boundaries(self)
         draw_admin_boundaries(self)
+        draw_seeh_boundaries(self)
 
 
 
