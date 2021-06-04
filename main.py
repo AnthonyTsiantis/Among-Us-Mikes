@@ -1,6 +1,6 @@
 # import 
 import pygame
-from game import *
+from settings import *
 from spritesheet import *
 
 # Initilize game
