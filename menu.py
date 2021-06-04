@@ -797,9 +797,9 @@ class game_lobby(pregame_lobby):
         self.playerx, self.playery = (910, 463)
         self.scrollx, self.scrolly = (0, 0)
         self.walk_counter = 0
-        """self.spawn_coords = [(145, 13), (-6, -75), (-158, 13), (-6, 133)]
+        self.spawn_coords = [(145, 13), (-6, -75), (-158, 13), (-6, 133)]
         rand_coords = self.spawn_coords[random.randint(0,3)]
-        self.scrollx, self.scrolly = rand_coords"""
+        self.scrollx, self.scrolly = rand_coords
         self.spawned = False
         self.screen_index = 0
         self.oxygen_index = 0
@@ -1024,7 +1024,6 @@ class game_lobby(pregame_lobby):
                 self.security_screen_index = (self.security_screen_index + 1) % len(self.security_screen)
                 self.security_server_index = (self.security_server_index + 1) % len(self.security_server)
                 
-            # print(self.scrollx, self.scrolly)
             self.check_status()
             self.blit_screen()
     
@@ -1083,7 +1082,6 @@ class game_lobby(pregame_lobby):
         self.run_display = False
 
         boundary = self.boundaries()
-        print(boundary)
 
         if self.game.move_f:
             if not boundary[0]:
@@ -1321,11 +1319,17 @@ class game_lobby(pregame_lobby):
                 return True, 'f'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.caf_hallway_br_s):
+                if pygame.Rect.colliderect(self.player_hitbox, self.medbay_0r):
+                    return True, 'rbc'
                 return True, 'b'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.caf_hallway_bl_s):
                 if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_rb):
                     return True, 'rbc'
+
+                elif pygame.Rect.colliderect(self.player_hitbox, self.medbay_0l):
+                    return True, 'lbc'
+
                 return True, 'b'
             
             return False, "N/A"
@@ -1866,6 +1870,9 @@ class game_lobby(pregame_lobby):
             elif pygame.Rect.colliderect(self.player_hitbox,self.l_engine_tr):
                 if pygame.Rect.colliderect(self.player_hitbox,self.l_engine_rt):
                     return True, 'rfc'
+
+                elif pygame.Rect.colliderect(self.player_hitbox, self.ers_rbv):
+                    return True, 'rfc'
                 return True, 'f'
 
             elif pygame.Rect.colliderect(self.player_hitbox,self.l_engine_rt):
@@ -1907,7 +1914,7 @@ class game_lobby(pregame_lobby):
                 
                 elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_br):
                     return True, 'rbc'
-                    
+
                 return True, 'r'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.ers_rth):
@@ -2083,6 +2090,63 @@ class game_lobby(pregame_lobby):
 
 
         result = upper_engine_boundaries(self)
+        if result[0]:
+            return result
+
+        def medbay_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.medbay_0l):
+                if pygame.Rect.colliderect(self.player_hitbox, self.medbay_1l):
+                    return True, 'lfc'
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.medbay_1l):
+                if pygame.Rect.colliderect(self.player_hitbox, self.medbay_2l):
+                    return True, 'lfc'
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.medbay_2l):
+                if self.collideRectLine(self.player_hitbox, *self.medbay_3l_coords):
+                    return True, 'lbc'
+                return True, 'l'
+
+            elif self.collideRectLine(self.player_hitbox, *self.medbay_3l_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.medbay_bottom):
+                    return True, 'lbc'
+                return True, 'lb'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.medbay_bottom):
+                if pygame.Rect.colliderect(self.player_hitbox, self.medbay_4r):
+                    return True, 'rbc'
+                return True, 'b'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.medbay_0r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.medbay_1r):
+                    return True, 'rfc'
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.medbay_1r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.medbay_2r):
+                    return True, 'rfc'
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.medbay_2r):
+                if self.collideRectLine(self.player_hitbox, *self.medbay_3r_coords):
+                    return True, 'rfc'
+                return True, 'r'
+
+            elif self.collideRectLine(self.player_hitbox, *self.medbay_3r_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.medbay_4r):
+                    return True, 'rfc'
+                return True, 'rf'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.medbay_4r):
+                return True, 'r'
+            
+
+            return False, 'N/A'
+
+
+        result = medbay_boundaries(self)
         if result[0]:
             return result
 
@@ -2558,6 +2622,41 @@ class game_lobby(pregame_lobby):
             # bottom right
             self.u_engine_br = pygame.draw.line(self.game.display, self.border_color, (-225 + self.scrollx, 705 + self.scrolly), (-335 + self.scrollx, 705 + self.scrolly), 5)
 
+        def draw_medbay_boundaries(self):
+            # 0th left side
+            self.medbay_0l = pygame.draw.line(self.game.display, self.border_color, (180 + self.scrollx, 540 + self.scrolly), (180 + self.scrollx, 595 + self.scrolly), 5)
+
+            # 1st left side
+            self.medbay_1l = pygame.draw.line(self.game.display, self.border_color, (180 + self.scrollx, 595 + self.scrolly), (80 + self.scrollx, 595 + self.scrolly), 5)
+
+            # 2nd left side
+            self.medbay_2l = pygame.draw.line(self.game.display, self.border_color, (80 + self.scrollx, 595 + self.scrolly), (80 + self.scrollx, 970 + self.scrolly), 5)
+
+            # 3rd left side angle
+            self.medbay_3l_coords = [(80 + self.scrollx, 970 + self.scrolly), (150 + self.scrollx, 1060 + self.scrolly)]
+            self.medbay_3l = pygame.draw.line(self.game.display, self.border_color, self.medbay_3l_coords[0], self.medbay_3l_coords[1], 5)
+
+            # bottom straight
+            self.medbay_bottom = pygame.draw.line(self.game.display, self.border_color, (150 + self.scrollx, 1060 + self.scrolly), (575 + self.scrollx, 1060 + self.scrolly), 5)
+
+            # 0th right
+            self.medbay_0r = pygame.draw.line(self.game.display, self.border_color, (312 + self.scrollx, 540 + self.scrolly), (312 + self.scrollx, 595 + self.scrolly), 5) 
+
+            # 1st right
+            self.medbay_1r = pygame.draw.line(self.game.display, self.border_color, (312 + self.scrollx, 595 + self.scrolly), (430 + self.scrollx, 595 + self.scrolly), 5) 
+
+            # 2nd right
+            self.medbay_2r = pygame.draw.line(self.game.display, self.border_color, (430 + self.scrollx, 595 + self.scrolly), (430 + self.scrollx, 810 + self.scrolly), 5) 
+
+            # 3rd right
+            self.medbay_3r_coords = [(430 + self.scrollx, 810 + self.scrolly), (575 + self.scrollx, 950 + self.scrolly)]
+            self.medbay_3r = pygame.draw.line(self.game.display, self.border_color, self.medbay_3r_coords[0], self.medbay_3r_coords[1], 5)
+
+            # 4th right
+            self.medbay_4r = pygame.draw.line(self.game.display, self.border_color, (575 + self.scrollx, 950 + self.scrolly), (575 + self.scrollx, 1060 + self.scrolly), 5) 
+
+
+
 
         draw_cafeteria_boundaries(self)
         draw_weapons_boundaries(self)
@@ -2577,7 +2676,7 @@ class game_lobby(pregame_lobby):
         draw_reactor_boundaries(self)
         draw_security_boundaries(self)
         draw_upper_engine_boundaries(self)
-
+        draw_medbay_boundaries(self)
 
 
     # blits cafeteria section
