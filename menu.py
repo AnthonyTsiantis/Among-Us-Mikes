@@ -1881,11 +1881,17 @@ class game_lobby(pregame_lobby):
                 return True, 'l'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.ers_lbh):
+                if pygame.Rect.colliderect(self.player_hitbox, self.reactor_0rb):
+                    return True, 'rbc'
                 return True, 'b'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.ers_lth):
                 if pygame.Rect.colliderect(self.player_hitbox, self.ers_ltv):
                     return True, 'lfc'
+                
+                if pygame.Rect.colliderect(self.player_hitbox, self.reactor_0rt):
+                    return True, 'rfc'
+
                 return True, 'f'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.ers_ltv):
@@ -1911,6 +1917,66 @@ class game_lobby(pregame_lobby):
 
 
         result = ers_boundaries(self)
+        if result[0]:
+            return result
+
+        def reactor_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.reactor_0rb):
+                if pygame.Rect.colliderect(self.player_hitbox, self.reactor_1rb):
+                    return True, 'rbc'
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.reactor_1rb):
+                if pygame.Rect.colliderect(self.player_hitbox, self.reactor_2rb):
+                    return True, 'rbc'
+                return True, 'b'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.reactor_2rb):
+                if pygame.Rect.colliderect(self.player_hitbox, self.reactor_bs):
+                    return True, 'rbc'
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.reactor_bs):
+                if self.collideRectLine(self.player_hitbox, *self.reactor_ba_coords):
+                    return True, 'lbc'
+                return True, 'b'
+
+            elif self.collideRectLine(self.player_hitbox, *self.reactor_ba_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.reactor_ls):
+                    return True, 'lbc'
+                return True, 'lb'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.reactor_ls):
+                if self.collideRectLine(self.player_hitbox, *self.reactor_ta_coords):
+                    return True, 'lfc' 
+                return True, 'l'
+                
+            elif pygame.Rect.colliderect(self.player_hitbox, self.reactor_0rt):
+                if pygame.Rect.colliderect(self.player_hitbox, self.reactor_1rt):
+                    return True, 'rfc'
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.reactor_1rt):
+                if pygame.Rect.colliderect(self.player_hitbox, self.reactor_2rt):
+                    return True, 'rfc' 
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.reactor_2rt):
+                if pygame.Rect.colliderect(self.player_hitbox, self.reactor_ts):
+                    return True, 'rfc' 
+                return True, 'r' 
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.reactor_ts):
+                if self.collideRectLine(self.player_hitbox, *self.reactor_ta_coords):
+                    return True, 'lfc' 
+                return True, 'f'
+
+            elif self.collideRectLine(self.player_hitbox, *self.reactor_ta_coords):
+                return True, 'lf' 
+
+            return False, 'N/A'
+
+        result = reactor_boundaries(self)
         if result[0]:
             return result
 
@@ -2298,6 +2364,44 @@ class game_lobby(pregame_lobby):
             # right bottom verticle
             self.ers_rbv = pygame.draw.line(self.game.display, self.border_color, (-335 + self.scrollx, 1080 + self.scrolly), (-335 + self.scrollx, 1305 + self.scrolly), 5)
 
+        def draw_reactor_boundaries(self):
+            # 0th right bottom
+            self.reactor_0rb = pygame.draw.line(self.game.display, self.border_color, (-590 + self.scrollx, 1080 + self.scrolly), (-590 + self.scrollx, 1190 + self.scrolly), 5)
+
+            # 1st right bottom
+            self.reactor_1rb = pygame.draw.line(self.game.display, self.border_color, (-590 + self.scrollx, 1190 + self.scrolly), (-720 + self.scrollx, 1190 + self.scrolly), 5)
+
+            # 2nd right bottom
+            self.reactor_2rb = pygame.draw.line(self.game.display, self.border_color, (-720 + self.scrollx, 1190 + self.scrolly), (-720 + self.scrollx, 1330 + self.scrolly), 5)
+
+            # bottom straight
+            self.reactor_bs = pygame.draw.line(self.game.display, self.border_color, (-720 + self.scrollx, 1330 + self.scrolly), (-805 + self.scrollx, 1330 + self.scrolly), 5)
+
+            # bottom angle
+            self.reactor_ba_coords = [(-805 + self.scrollx, 1330 + self.scrolly), (-955 + self.scrollx, 1230 + self.scrolly)]
+            self.reactor_ba = pygame.draw.line(self.game.display, self.border_color, self.reactor_ba_coords[0], self.reactor_ba_coords[1], 5)
+
+            # left straight
+            self.reactor_ls = pygame.draw.line(self.game.display, self.border_color, (-955 + self.scrollx, 1230 + self.scrolly), (-955 + self.scrollx, 750 + self.scrolly), 5)
+
+            # 0th right top
+            self.reactor_0rt = pygame.draw.line(self.game.display, self.border_color, (-590 + self.scrollx, 915 + self.scrolly), (-590 + self.scrollx, 795 + self.scrolly), 5)
+
+            # 1st right top
+            self.reactor_1rt = pygame.draw.line(self.game.display, self.border_color, (-590 + self.scrollx, 795 + self.scrolly), (-720 + self.scrollx, 795 + self.scrolly), 5)
+
+            # 2nd right top
+            self.reactor_2rt = pygame.draw.line(self.game.display, self.border_color, (-720 + self.scrollx, 795 + self.scrolly), (-720 + self.scrollx, 650 + self.scrolly), 5)
+
+            # top straight
+            self.reactor_ts = pygame.draw.line(self.game.display, self.border_color, (-720 + self.scrollx, 650 + self.scrolly), (-805 + self.scrollx, 650 + self.scrolly), 5)
+
+            # top angle
+            self.reactor_ta_coords = [(-805 + self.scrollx, 650 + self.scrolly), (-955 + self.scrollx, 750 + self.scrolly)]
+            self.reactor_ta = pygame.draw.line(self.game.display, self.border_color, self.reactor_ta_coords[0], self.reactor_ta_coords[1], 5)
+
+
+
 
         draw_cafeteria_boundaries(self)
         draw_weapons_boundaries(self)
@@ -2314,6 +2418,7 @@ class game_lobby(pregame_lobby):
         draw_electrical_boundaries(self)
         draw_lower_engine_boundaries(self)
         draw_ers_boundaries(self)
+        draw_reactor_boundaries(self)
 
 
 
