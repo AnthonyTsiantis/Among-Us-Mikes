@@ -1889,7 +1889,7 @@ class game_lobby(pregame_lobby):
                 if pygame.Rect.colliderect(self.player_hitbox, self.ers_ltv):
                     return True, 'lfc'
                 
-                if pygame.Rect.colliderect(self.player_hitbox, self.reactor_0rt):
+                elif pygame.Rect.colliderect(self.player_hitbox, self.reactor_0rt):
                     return True, 'rfc'
 
                 return True, 'f'
@@ -1903,11 +1903,17 @@ class game_lobby(pregame_lobby):
                 return True, 'r'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.ers_rth):
+                if pygame.Rect.colliderect(self.player_hitbox, self.security_lt):
+                    return True, 'lfc'
                 return True, 'f'
                 
             elif pygame.Rect.colliderect(self.player_hitbox, self.ers_rbh):
                 if pygame.Rect.colliderect(self.player_hitbox, self.ers_rbv):
                     return True, 'rbc'
+                
+                elif pygame.Rect.colliderect(self.player_hitbox, self.security_lb):
+                    return True, 'lbc'  
+
                 return True, 'b'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.ers_rbv):
@@ -1977,6 +1983,38 @@ class game_lobby(pregame_lobby):
             return False, 'N/A'
 
         result = reactor_boundaries(self)
+        if result[0]:
+            return result
+
+        def security_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.security_lt):
+                if pygame.Rect.colliderect(self.player_hitbox, self.security_t):
+                    return True, 'lfc'
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.security_t):
+                if pygame.Rect.colliderect(self.player_hitbox, self.security_r):
+                    return True, 'rfc'
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.security_r):
+                if pygame.Rect.colliderect(self.player_hitbox, self.security_b):
+                    return True, 'rbc'    
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.security_b):
+                if pygame.Rect.colliderect(self.player_hitbox, self.security_lb):
+                    return True, 'lbc'    
+                return True, 'b'    
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.security_lb):
+                return True, 'l'    
+
+
+            return False, 'N/A'
+
+
+        result = security_boundaries(self)
         if result[0]:
             return result
 
@@ -2401,6 +2439,21 @@ class game_lobby(pregame_lobby):
             self.reactor_ta = pygame.draw.line(self.game.display, self.border_color, self.reactor_ta_coords[0], self.reactor_ta_coords[1], 5)
 
 
+        def draw_security_boundaries(self):
+            # left top
+            self.security_lt = pygame.draw.line(self.game.display, self.border_color, (-203 + self.scrollx, 915 + self.scrolly), (-203 + self.scrollx, 815 + self.scrolly), 5)
+
+            # top straight
+            self.security_t = pygame.draw.line(self.game.display, self.border_color, (-203 + self.scrollx, 815 + self.scrolly), (20 + self.scrollx, 815 + self.scrolly), 5)
+
+            # right straight
+            self.security_r = pygame.draw.line(self.game.display, self.border_color, (20 + self.scrollx, 815 + self.scrolly), (20 + self.scrollx, 1185 + self.scrolly), 5)
+
+            # bottom straight
+            self.security_b = pygame.draw.line(self.game.display, self.border_color, (20 + self.scrollx, 1185 + self.scrolly), (-203 + self.scrollx, 1185 + self.scrolly), 5)
+
+            # left bottom
+            self.security_lb = pygame.draw.line(self.game.display, self.border_color, (-203 + self.scrollx, 1185 + self.scrolly), (-203 + self.scrollx, 1080 + self.scrolly), 5)
 
 
         draw_cafeteria_boundaries(self)
@@ -2419,6 +2472,7 @@ class game_lobby(pregame_lobby):
         draw_lower_engine_boundaries(self)
         draw_ers_boundaries(self)
         draw_reactor_boundaries(self)
+        draw_security_boundaries(self)
 
 
 
