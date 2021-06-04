@@ -1304,7 +1304,6 @@ class game_lobby(pregame_lobby):
 
                 return True, 'b'
 
-
             elif self.collideRectLine(self.player_hitbox, *self.caf_bl_a_coords):
                 if pygame.Rect.colliderect(self.player_hitbox, self.caf_bs_r) or pygame.Rect.colliderect(self.player_hitbox, self.caf_bl_s):
                     return True, 'lbc'
@@ -1317,12 +1316,16 @@ class game_lobby(pregame_lobby):
                 return True, 'l'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.caf_hallway_top_s):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_rt):
+                    return True, 'rfc'
                 return True, 'f'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.caf_hallway_br_s):
                 return True, 'b'
             
             elif pygame.Rect.colliderect(self.player_hitbox, self.caf_hallway_bl_s):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_rb):
+                    return True, 'rbc'
                 return True, 'b'
             
             return False, "N/A"
@@ -1891,15 +1894,20 @@ class game_lobby(pregame_lobby):
                 
                 elif pygame.Rect.colliderect(self.player_hitbox, self.reactor_0rt):
                     return True, 'rfc'
-
                 return True, 'f'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.ers_ltv):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_bl):
+                    return True, 'lbc'
                 return True, 'l'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.ers_rtv):
                 if pygame.Rect.colliderect(self.player_hitbox, self.ers_rth):
                     return True, 'rfc'
+                
+                elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_br):
+                    return True, 'rbc'
+                    
                 return True, 'r'
 
             elif pygame.Rect.colliderect(self.player_hitbox, self.ers_rth):
@@ -2010,11 +2018,71 @@ class game_lobby(pregame_lobby):
             elif pygame.Rect.colliderect(self.player_hitbox, self.security_lb):
                 return True, 'l'    
 
-
             return False, 'N/A'
 
 
         result = security_boundaries(self)
+        if result[0]:
+            return result
+
+        def upper_engine_boundaries(self):
+            if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_bl):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_lb):
+                    return True, 'lbc'
+                return True, 'b'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_lb):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_eb):
+                    return True, 'lfc'
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_eb):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_er):
+                    return True, 'lfc'
+                return True, 'f'
+            
+            elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_er):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_et):
+                    return True, 'lbc'
+                return True, 'l'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_et):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_lt):
+                    return True, 'lbc'
+                elif self.collideRectLine(self.player_hitbox, *self.u_engine_lta_coords):
+                    return True, 'l'
+                return True, 'b'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_lt):
+                if self.collideRectLine(self.player_hitbox, *self.u_engine_lta_coords):
+                    return True, 'lfc'
+                return True, 'l'
+
+            elif self.collideRectLine(self.player_hitbox, *self.u_engine_lta_coords):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_t):
+                    return True, 'lfc'
+                return True, 'lf'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_t):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_rt):
+                    return True, 'rfc'
+                return True, 'f'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_rt):
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_rb):
+                if pygame.Rect.colliderect(self.player_hitbox, self.u_engine_br):
+                    return True, 'rbc'
+                return True, 'r'
+
+            elif pygame.Rect.colliderect(self.player_hitbox, self.u_engine_br):
+                return True, 'b'
+
+            return False, 'N/A'
+
+
+        result = upper_engine_boundaries(self)
         if result[0]:
             return result
 
@@ -2455,6 +2523,41 @@ class game_lobby(pregame_lobby):
             # left bottom
             self.security_lb = pygame.draw.line(self.game.display, self.border_color, (-203 + self.scrollx, 1185 + self.scrolly), (-203 + self.scrollx, 1080 + self.scrolly), 5)
 
+        def draw_upper_engine_boundaries(self):
+            # bottom left straight
+            self.u_engine_bl = pygame.draw.line(self.game.display, self.border_color, (-620 + self.scrollx, 705 + self.scrolly), (-467 + self.scrollx, 705 + self.scrolly), 5)
+
+            # left bottom straight
+            self.u_engine_lb = pygame.draw.line(self.game.display, self.border_color, (-620 + self.scrollx, 705 + self.scrolly), (-620 + self.scrollx, 540 + self.scrolly), 5)
+
+            # engine bottom
+            self.u_engine_eb = pygame.draw.line(self.game.display, self.border_color, (-620 + self.scrollx, 540 + self.scrolly), (-310 + self.scrollx, 540 + self.scrolly), 5)
+
+            # engine right
+            self.u_engine_er = pygame.draw.line(self.game.display, self.border_color, (-310 + self.scrollx, 540 + self.scrolly), (-310 + self.scrollx, 405 + self.scrolly), 5)
+
+            # engine top
+            self.u_engine_et = pygame.draw.line(self.game.display, self.border_color, (-310 + self.scrollx, 405 + self.scrolly), (-620 + self.scrollx, 405 + self.scrolly), 5)
+
+            # left top straight
+            self.u_engine_lt = pygame.draw.line(self.game.display, self.border_color, (-620 + self.scrollx, 405 + self.scrolly), (-620 + self.scrollx, 350 + self.scrolly), 5)
+
+            # left top angle
+            self.u_engine_lta_coords = [(-620 + self.scrollx, 350 + self.scrolly), (-520 + self.scrollx, 275 + self.scrolly)]
+            self.u_engine_lta = pygame.draw.line(self.game.display, self.border_color, self.u_engine_lta_coords[0], self.u_engine_lta_coords[1], 5)
+
+            # top straight
+            self.u_engine_t = pygame.draw.line(self.game.display, self.border_color, (-520 + self.scrollx, 275 + self.scrolly), (-225 + self.scrollx, 275 + self.scrolly), 5)
+
+            # right top
+            self.u_engine_rt = pygame.draw.line(self.game.display, self.border_color, (-225 + self.scrollx, 275 + self.scrolly), (-225 + self.scrollx, 372 + self.scrolly), 5)
+
+            # right bottom
+            self.u_engine_rb = pygame.draw.line(self.game.display, self.border_color, (-225 + self.scrollx, 540 + self.scrolly), (-225 + self.scrollx, 705 + self.scrolly), 5)
+
+            # bottom right
+            self.u_engine_br = pygame.draw.line(self.game.display, self.border_color, (-225 + self.scrollx, 705 + self.scrolly), (-335 + self.scrollx, 705 + self.scrolly), 5)
+
 
         draw_cafeteria_boundaries(self)
         draw_weapons_boundaries(self)
@@ -2473,6 +2576,7 @@ class game_lobby(pregame_lobby):
         draw_ers_boundaries(self)
         draw_reactor_boundaries(self)
         draw_security_boundaries(self)
+        draw_upper_engine_boundaries(self)
 
 
 
