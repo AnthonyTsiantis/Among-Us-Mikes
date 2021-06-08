@@ -12,6 +12,38 @@ class pregame_lobby(menu):
     # initilize lobby
     def __init__(self, game):
         menu.__init__(self, game)
+        self.load_sprites()
+        self.status = "idle_r"
+        self.walk_counter = 0
+        self.rocket_counter = 0
+        self.frame_index = 0
+        self.playerx = 800
+        self.playery = 240
+        self.input = False
+        self.spawned = False
+        self.spawn_counter = 0
+        self.spawn_index = 0
+        self.boxx, self.boxy = 725, 450
+        self.moved_left = False
+        self.current_task = "FUEL UPPER ENGINE" #change to ID CARD
+        self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
+        self.level_textx, self.level_texty = 125, 75
+        self.computer_textx, self.computer_texty = 425, 800
+        self.computer_password = ['PASSWORD123', 'IMPOSTOR123', 'CREWMATE123', 'DOUBLEBLUE123']
+        self.computer_password = self.computer_password[random.randint(0,3)]
+        self.computer_key = random.randint(1, 25)
+        self.encrypted_password = self.caesar_ciper(self.computer_password, self.computer_key)
+        self.wrong_password = False
+        self.counter = 0
+        self.begin_folder_animation = False
+        self.folder_animation_counter = 0
+        self.begin_upload = False
+        self.first_folder = False
+        self.close_files = False
+        self.folder_progress = 0
+        self.upload_progress_rect = pygame.Rect(440, 700, 0, 60)
+    
+    def load_sprites(self):
         self.stars = pygame.image.load("images/background/game/pregame/stars.png")
         
         self.id_card = pygame.transform.scale(pygame.image.load("images/tasks/Enter Id Code/admin_Card.png"), (50, 30))
@@ -63,48 +95,15 @@ class pregame_lobby(menu):
         self.folder_animation[3] = pygame.transform.scale(self.folder_animation[3], (325, 163))
         self.folder_animation[4] = pygame.transform.scale(self.folder_animation[4], (325, 163))
         self.folder_upload_button = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/upload.png").convert_alpha(), (200, 62))
-
-        self.progress_bar = pygame.image.load("images/tasks/Upload Data/progress bar.png").convert_alpha()
         self.folder_progress_bar = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/progress bar.png").convert_alpha(), (1017, 60))
         
-
-        self.status = "idle_r"
-        self.walk_counter = 0
-        self.rocket_counter = 0
-        self.frame_index = 0
-        self.playerx = 800
-        self.playery = 240
-        self.input = False
-        self.spawned = False
-        self.spawn_counter = 0
-        self.spawn_index = 0
-        self.boxx, self.boxy = 725, 450
-        self.moved_left = False
-        self.current_task = "UPLOAD DATA" #change to ID CARD
-        self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
-        self.level_textx, self.level_texty = 125, 75
-        self.computer_textx, self.computer_texty = 425, 800
-        self.computer_password = ['PASSWORD123', 'IMPOSTOR123', 'CREWMATE123', 'DOUBLEBLUE123']
-        self.computer_password = self.computer_password[random.randint(0,3)]
-        self.computer_key = random.randint(1, 25)
-        self.encrypted_password = self.caesar_ciper(self.computer_password, self.computer_key)
-        self.wrong_password = False
-        self.counter = 0
-        self.begin_folder_animation = False
-        self.folder_animation_counter = 0
-        self.begin_upload = False
-        self.first_folder = False
-        self.close_files = False
-        self.folder_progress = 0
-        self.upload_progress_rect = pygame.Rect(440, 700, 0, 60)
-
     # game loop
     def display_menu(self):
         self.run_display = True
         self.get_character()
         if self.game.previous_menu == self.game.difficulty_menu:
             # self.reset()
-            x = 'foo'
+            x = 'foo' #TODO
             
         
         while self.run_display:
@@ -167,16 +166,24 @@ class pregame_lobby(menu):
         self.close_files = False
         self.folder_progress = 0
         self.upload_progress_rect = pygame.Rect(440, 700, 0, 60)
+        
 
 
     # menu and gameplay buttons
     def buttons(self):
         self.game.display.blit(self.settings_button, (1800, 25))
         self.game.display.blit(self.use_button, (1700, 850))
+        self.progress_bar()
         if self.settings_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
             self.game.curr_menu = self.game.ingame_settings
             self.run_display = False
-
+    
+    def progress_bar(self):
+        self.game.display.blit(self.game.progress_bar, (500, 15))
+        self.game.progress_bar_rect.width = self.game.current_level * 94
+        pygame.draw.rect(self.game.display, (0, 255, 0), self.game.progress_bar_rect)
+        self.game.draw_text("Game Progress", 50, 600, 40, (255, 255, 255))
+    
     def id_card_task(self):
         if pygame.Rect.colliderect(self.player_hitbox, self.id_card_rect):
             self.game.display.blit(self.id_card, (1025, 260))
@@ -274,7 +281,6 @@ class pregame_lobby(menu):
         self.game.display.blit(self.folder_upload_button, (850, 550))
         upload_button_rect = pygame.Rect(850, 550, 200, 62)
         self.game.draw_text("Upload Progress", 60, 950, 675)
-        print(self.upload_progress_rect)
         self.upload_progress_rect.width = self.folder_progress * 44 # Final form(440, 700, 1017, 60)
         self.game.display.blit(self.folder_progress_bar, (440, 700))
         pygame.draw.rect(self.game.display, (0, 255, 0), self.upload_progress_rect)
@@ -313,7 +319,7 @@ class pregame_lobby(menu):
                 pass
             else:
                 self.upload_progress_rect.right = 1017
-                self.current_task = "NEXT"
+                self.current_task = "TURN ON POWER REACTOR"
                 self.counter = 0
         
         self.counter += 1
@@ -321,23 +327,27 @@ class pregame_lobby(menu):
 
     def blit_tasks(self):
         if self.current_task == "ID CARD":
+            self.game.current_level = 1
             self.id_card_task()
             self.game.draw_text("Level 1", 100, self.level_textx, self.level_texty, (255, 255, 255))
             self.game.draw_text("Collect the ID Card", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
 
         elif self.current_task == "UNLOCK COMPUTER":
+            self.game.current_level = 2
             self.unlock_computer()
             self.game.draw_text("Level 2", 100, self.level_textx, self.level_texty, (255, 255, 255))
             self.game.draw_text("Unlock the Computer", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
 
         elif self.current_task == "UPLOAD DATA":
+            self.game.current_level = 3
             self.upload_autopilot()
             self.game.draw_text("Level 3", 100, self.level_textx, self.level_texty, (255, 255, 255))
             self.game.draw_text("Upload the ", 50, self.level_textx - 15, self.level_texty + 75, (255, 255, 255))
             self.game.draw_text("Autopilot software", 50, self.level_textx + 25, self.level_texty + 125, (255, 255, 255))
 
-        elif self.current_task == "NEXT":
-            x = 'foo'
+        elif self.current_task == "TURN ON POWER REACTOR":
+            self.run_display = False
+            self.game.curr_menu = self.game.game_screen
 
 
     # get the character from the spritesheet
@@ -553,6 +563,7 @@ class game_lobby(pregame_lobby):
     # initlize the class
     def __init__(self, game):
         menu.__init__(self, game)
+        pregame_lobby.__init__(self, game)
         self.load_sprites()
         self.status = "idle_r"
         self.playerx, self.playery = (910, 463)
@@ -573,9 +584,13 @@ class game_lobby(pregame_lobby):
         self.security_server_index = 0
         self.animation_index = 0
         self.idle_left = False 
-        self.border_color = (255, 0, 0, 0) 
+        self.border_color = (255, 0, 0, 0) # change final value to 100 to see boundaries 
         self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
+        self.show_fuel = True
         self.background()
+        self.power_task = "REACTORS"
+        self.fuel_task_rect = None
+        self.engine_fuel_rect = pygame.Rect(500, 200, 614, 580)
 
     # loads all the sprites into memory
     def load_sprites(self):
@@ -761,6 +776,34 @@ class game_lobby(pregame_lobby):
         self.reactor_task2 = reactor_spritesheet.parse_sprite('task2.png')
         self.reactor_task3 = reactor_spritesheet.parse_sprite('task3.png')
 
+        self.settings_button =  pygame.transform.scale(pygame.image.load("images/background/game/buttons/settings_button.png").convert_alpha(), (100, 100))
+        self.settings_button_rect = pygame.Rect(1800, 25, 100, 100)
+        
+        self.use_button =  pygame.transform.scale(pygame.image.load("images/background/game/buttons/use_button.png").convert_alpha(), (213, 212))
+        self.use_button_rect = pygame.Rect(1700, 850, 213, 212)
+        self.use_button_alpha_value = 128
+        self.use_button.set_alpha(self.use_button_alpha_value)
+
+        self.calibrate_base = pygame.transform.scale(pygame.image.load("images/tasks/Calibrate Distributor/base.png").convert_alpha(), (900, 900))
+        self.calibrate_colour = "YELLOW"
+        self.calibrate_rotate = 25
+        self.calibrate_yellow_spinner = pygame.transform.scale(pygame.image.load("images/tasks/Calibrate Distributor/yellow_spinner.png").convert_alpha(), (248, 235))
+        self.calibrate_blue_spinner = pygame.transform.scale(pygame.image.load("images/tasks/Calibrate Distributor/blue_spinner.png").convert_alpha(), (248, 235))
+        self.calibrate_light_blue_spinner = pygame.transform.scale(pygame.image.load("images/tasks/Calibrate Distributor/light_blue spinner.png").convert_alpha(), (248, 235)) 
+        self.calibrate_wire1 = pygame.transform.scale(pygame.image.load("images/tasks/Calibrate Distributor/wire1.png").convert_alpha(), (103, 58)) 
+        self.calibrate_gauge = pygame.transform.scale(pygame.image.load("images/tasks/Calibrate Distributor/gauge.png").convert_alpha(), (245, 58)) 
+        self.calibrate_gauge_t = pygame.transform.scale(pygame.image.load("images/tasks/Calibrate Distributor/gague_transparent.png").convert_alpha(), (245, 58)) 
+        self.calibrate_button = pygame.transform.scale(pygame.image.load("images/tasks/Calibrate Distributor/button.png").convert_alpha(), (143, 50)) 
+        self.calibrate_wire2 = pygame.transform.scale(pygame.image.load("images/tasks/Calibrate Distributor/wire2.png").convert_alpha(), (103, 58)) 
+        self.calibrate_wire3 = pygame.transform.scale(pygame.image.load("images/tasks/Calibrate Distributor/wire3.png").convert_alpha(), (103, 58)) 
+
+
+        self.fuel_base1 = pygame.transform.scale(pygame.image.load("images/tasks/Fuel Engines/base1.png").convert_alpha(), (614, 900)) 
+        self.fuel_base2 = pygame.transform.scale(pygame.image.load("images/tasks/Fuel Engines/base2.png").convert_alpha(), (221, 221)) 
+        self.fuel_button = pygame.transform.scale(pygame.image.load("images/tasks/Fuel Engines/button.png").convert_alpha(), (137, 139)) 
+        self.fuel_wires = pygame.transform.scale(pygame.image.load("images/tasks/Fuel Engines/wires.png").convert_alpha(), (101, 94)) 
+
+
     # game loop
     def display_menu(self):
         self.run_display = True
@@ -784,12 +827,317 @@ class game_lobby(pregame_lobby):
                 self.medbay_scan_index = (self.medbay_scan_index + 1) % len(self.medbay_scan)
                 self.security_screen_index = (self.security_screen_index + 1) % len(self.security_screen)
                 self.security_server_index = (self.security_server_index + 1) % len(self.security_server)
-
+            
+            self.buttons()
+            if not self.game.task_running:
+                self.blit_tasks()
 
             self.check_status()
+            
+            if self.game.task_running:
+                self.blit_tasks()
+
             self.blit_screen()
+
+    # menu and gameplay buttons
+    def buttons(self):
+        self.game.display.blit(self.settings_button, (1800, 25))
+        self.game.display.blit(self.use_button, (1700, 850))
+        self.progress_bar()
+        if self.settings_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+            self.game.curr_menu = self.game.ingame_settings
+            self.run_display = False
+
+    def progress_bar(self):
+        self.game.display.blit(self.game.progress_bar, (500, 15))
+        self.game.progress_bar_rect.width = self.game.current_level * 94
+        pygame.draw.rect(self.game.display, (0, 255, 0), self.game.progress_bar_rect)
+        if self.game.current_level <= 2:
+            self.game.draw_text("Game Progress", 50, 610, 45, (0, 0, 0))
+        else:
+            self.game.draw_text("Game Progress", 50, 610, 45, (255, 255, 255))
+
+    def calibrate_task(self):
+        self.calibrate_rotate = (self.calibrate_rotate + 2) % 360
+        self.game.display.blit(self.calibrate_base, (500, 50))
+
+        if self.calibrate_colour == "YELLOW":
+            # Yellow spinner
+            rotated_image = pygame.transform.rotate(self.calibrate_yellow_spinner, self.calibrate_rotate)
+            new_rect = rotated_image.get_rect(center = self.calibrate_yellow_spinner.get_rect(topleft = (575, 105)).center)
+            
+            self.game.display.blit(self.calibrate_gauge, (1105, 150))
+            random_int = random.randint(0, 50)
+            pygame.draw.rect(self.game.display, (255, 255, 0), (1105, 150, random_int, 58))
+            self.game.display.blit(self.calibrate_button, (1150, 250))
+            self.calibrate_button_rect = pygame.Rect(1150, 250, 143, 50)
+            pygame.draw.rect(self.game.display, (255, 255, 0), self.calibrate_button_rect, 2) # button rect
+
+            if self.calibrate_rotate < 10 or self.calibrate_rotate > 350:
+                self.game.display.blit(self.calibrate_wire1, (795, 195))
+                pygame.draw.rect(self.game.display, (255, 255, 0), (1105, 150, 240, 58)) # gauge rect
+                pygame.draw.rect(self.game.display, (0, 255, 0), self.calibrate_button_rect, 2) # button rect
+                if self.calibrate_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                    self.calibrate_colour = "BLUE"
+                    self.calibrate_rotate = 70
+                    rotated_image = pygame.transform.rotate(self.calibrate_yellow_spinner, self.calibrate_rotate)
+                    new_rect = rotated_image.get_rect(center = self.calibrate_yellow_spinner.get_rect(topleft = (575, 105)).center)
+
+            self.game.display.blit(self.calibrate_gauge_t, (1100, 150))
+            self.game.display.blit(rotated_image, new_rect)
+
+            # Blue spinner
+            rotated_image = pygame.transform.rotate(self.calibrate_blue_spinner, 70)
+            new_rect = rotated_image.get_rect(center = self.calibrate_blue_spinner.get_rect(topleft = (575, 375)).center)
+            self.game.display.blit(rotated_image, new_rect)
+            self.game.display.blit(self.calibrate_gauge, (1105, 400))
+            self.game.display.blit(self.calibrate_button, (1150, 500))
+            self.game.display.blit(self.calibrate_gauge_t, (1100, 400))
+
+            # Light blue spinner
+            rotated_image = pygame.transform.rotate(self.calibrate_light_blue_spinner, 60)
+            new_rect = rotated_image.get_rect(center = self.calibrate_light_blue_spinner.get_rect(topleft = (575, 645)).center)
+            self.game.display.blit(self.calibrate_gauge, (1105, 670))
+            self.game.display.blit(self.calibrate_button, (1150, 770))
+            self.game.display.blit(self.calibrate_gauge_t, (1100, 670))
+            self.game.display.blit(rotated_image, new_rect)
+
+
+
+        elif self.calibrate_colour == "BLUE":
+            # Yellow Spinner
+            self.game.display.blit(self.calibrate_wire1, (795, 195))
+            self.game.display.blit(self.calibrate_yellow_spinner, (575, 105))
+            self.game.display.blit(self.calibrate_gauge, (1105, 150))
+            self.game.display.blit(self.calibrate_button, (1150, 250))
+            pygame.draw.rect(self.game.display, (255, 255, 0), (1105, 150, 240, 58)) # gauge rect
+            self.game.display.blit(self.calibrate_gauge_t, (1100, 150))
+            
+            # blue spinner
+            rotated_image = pygame.transform.rotate(self.calibrate_blue_spinner, self.calibrate_rotate)
+            new_rect = rotated_image.get_rect(center = self.calibrate_blue_spinner.get_rect(topleft = (575, 375)).center)
+            
+            self.game.display.blit(self.calibrate_gauge, (1105, 400))
+            random_int = random.randint(0, 50)
+            pygame.draw.rect(self.game.display, (0, 0, 255), (1105, 400, random_int, 58))
+            self.game.display.blit(self.calibrate_button, (1150, 500))
+            self.calibrate_button_rect = pygame.Rect(1150, 500, 143, 50)
+            pygame.draw.rect(self.game.display, (255, 255, 0), self.calibrate_button_rect, 2) # button rect
+
+            if self.calibrate_rotate < 10 or self.calibrate_rotate > 350:
+                self.game.display.blit(self.calibrate_wire2, (795, 460))
+                pygame.draw.rect(self.game.display, (0, 0, 255), (1105, 400, 240, 58)) # gauge rect
+                pygame.draw.rect(self.game.display, (0, 255, 0), self.calibrate_button_rect, 2) # button rect
+                if self.calibrate_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                    self.calibrate_colour = "LIGHT BLUE"
+                    self.calibrate_rotate = 60
+
+            self.game.display.blit(self.calibrate_gauge_t, (1100, 400))
+            self.game.display.blit(rotated_image, new_rect)
+
+            # Light blue spinner
+            rotated_image = pygame.transform.rotate(self.calibrate_light_blue_spinner, 60)
+            new_rect = rotated_image.get_rect(center = self.calibrate_light_blue_spinner.get_rect(topleft = (575, 645)).center)
+            self.game.display.blit(self.calibrate_gauge, (1105, 670))
+            self.game.display.blit(self.calibrate_button, (1150, 770))
+            self.game.display.blit(self.calibrate_gauge_t, (1100, 670))
+            self.game.display.blit(rotated_image, new_rect)
+
+
+        elif self.calibrate_colour == "LIGHT BLUE":
+            # Yellow Spinner
+            self.game.display.blit(self.calibrate_wire1, (795, 195))
+            self.game.display.blit(self.calibrate_yellow_spinner, (575, 105))
+            self.game.display.blit(self.calibrate_gauge, (1105, 150))
+            self.game.display.blit(self.calibrate_button, (1150, 250))
+            pygame.draw.rect(self.game.display, (255, 255, 0), (1105, 150, 240, 58)) # gauge rect
+            self.game.display.blit(self.calibrate_gauge_t, (1100, 150))
+            
+            # blue spinner                
+            self.game.display.blit(self.calibrate_gauge, (1105, 400))
+            self.game.display.blit(self.calibrate_button, (1150, 500))
+            self.game.display.blit(self.calibrate_wire2, (795, 460))
+            pygame.draw.rect(self.game.display, (0, 0, 255), (1105, 400, 240, 58)) # gauge rect
+            self.game.display.blit(self.calibrate_blue_spinner, (575, 375))
+            self.game.display.blit(self.calibrate_gauge_t, (1100, 400))
+
+            # Light blue spinner
+            rotated_image = pygame.transform.rotate(self.calibrate_light_blue_spinner, self.calibrate_rotate)
+            new_rect = rotated_image.get_rect(center = self.calibrate_light_blue_spinner.get_rect(topleft = (575, 645)).center)
+            
+            self.game.display.blit(self.calibrate_gauge, (1105, 670))
+            random_int = random.randint(0, 50)
+            pygame.draw.rect(self.game.display, (0, 255, 255), (1105, 670, random_int, 58))
+            self.game.display.blit(self.calibrate_button, (1150, 770))
+            self.calibrate_button_rect = pygame.Rect(1150, 770, 143, 50)
+            pygame.draw.rect(self.game.display, (255, 255, 0), self.calibrate_button_rect, 2) # button rect
+
+            if self.calibrate_rotate < 10 or self.calibrate_rotate > 350:
+                self.game.display.blit(self.calibrate_wire3, (795, 730))
+                pygame.draw.rect(self.game.display, (0, 255, 255), (1105, 670, 240, 58)) # gauge rect
+                pygame.draw.rect(self.game.display, (0, 255, 0), self.calibrate_button_rect, 2) # button rect
+                if self.calibrate_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                    if self.power_task == "REACTORS":
+                        self.current_task = "TURN ON POWER ELECTRICAL"
+                        self.calibrate_colour = "YELLOW"
+                        self.game.task_running = False
+                        self.power_task = "ELECTRICAL"
+                    
+                    elif self.power_task == "ELECTRICAL":
+                        self.current_task = "PICK UP FUEL"
+                        self.calibrate_colour = "YELLOW"
+                        self.game.task_running = False
+                        self.power_task = "DONE"
+
+            self.game.display.blit(self.calibrate_gauge_t, (1100, 670))
+            self.game.display.blit(rotated_image, new_rect)
+
+    def turn_on_power_electrical(self):
+        self.electrical_task_rect = pygame.Rect(348 + self.scrollx, 1202 + self.scrolly, 33, 24)
+        if pygame.Rect.colliderect(self.player_hitbox, self.electrical_task_rect):
+            pygame.draw.rect(self.game.display, (0, 255, 0), self.electrical_task_rect, 2)
+            self.use_button.set_alpha(255)
+        
+        else:
+            pygame.draw.rect(self.game.display, (255, 255, 0), self.electrical_task_rect, 2)
+            self.use_button.set_alpha(128)
+
+        if pygame.Rect.colliderect(self.player_hitbox, self.electrical_task_rect) and self.use_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+            self.game.task_running = True
+
+        if self.game.task_running:
+            self.calibrate_task()
+
+    def turn_on_power_reactor(self):
+        self.reactor_task_rect = pygame.Rect(-835 + self.scrollx, 1000 + self.scrolly, 56, 60)
+        if pygame.Rect.colliderect(self.player_hitbox, self.reactor_task_rect):
+            pygame.draw.rect(self.game.display, (0, 255, 0), self.reactor_task_rect, 2)
+            self.use_button.set_alpha(255)
+        
+        else:
+            pygame.draw.rect(self.game.display, (255, 255, 0), self.reactor_task_rect, 2)
+            self.use_button.set_alpha(128)
+
+        if pygame.Rect.colliderect(self.player_hitbox, self.reactor_task_rect) and self.use_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+            self.game.task_running = True
+
+        if self.game.task_running:
+            self.calibrate_task()
     
-    
+    def pick_up_fuel(self):
+        fuel_rect = pygame.Rect(750 + self.scrollx, 1700 + self.scrolly, 36, 47)
+        
+        if pygame.Rect.colliderect(self.player_hitbox, fuel_rect):
+            pygame.draw.rect(self.game.display, (0, 255, 0), fuel_rect, 2)
+            self.use_button.set_alpha(255)
+
+            if self.use_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                self.current_task = "FUEL LOWER ENGINE"
+                self.use_button.set_alpha(128)
+                self.show_fuel = False
+        
+        else:
+            pygame.draw.rect(self.game.display, (255, 255, 0), fuel_rect, 2)
+            self.use_button.set_alpha(128)
+
+    def fuel_engine(self, lower):
+        if lower:
+            self.fuel_task_rect = pygame.Rect(-510 + self.scrollx, 1335 + self.scrolly, 36, 24)
+            pygame.draw.rect(self.game.display, (255, 255, 0), self.fuel_task_rect, 2)
+        
+            if pygame.Rect.colliderect(self.player_hitbox, self.fuel_task_rect):
+                pygame.draw.rect(self.game.display, (0, 255, 0), self.fuel_task_rect, 2)
+                self.use_button.set_alpha(255)
+
+                if self.use_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                    self.game.task_running = True
+                    self.use_button.set_alpha(128)
+
+        if not lower:
+            self.fuel_task_rect = pygame.Rect(-445 + self.scrollx, 295 + self.scrolly, 36, 24)
+            pygame.draw.rect(self.game.display, (255, 255, 0), self.fuel_task_rect, 2)
+        
+            if pygame.Rect.colliderect(self.player_hitbox, self.fuel_task_rect):
+                pygame.draw.rect(self.game.display, (0, 255, 0), self.fuel_task_rect, 2)
+                self.use_button.set_alpha(255)
+
+                if self.use_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                    self.game.task_running = True
+                    self.use_button.set_alpha(128)
+
+        if self.game.task_running:
+            base_rect = (500, 100, 614, 890)
+            pygame.draw.rect(self.game.display, (0, 0, 0), base_rect) #background
+            pygame.draw.rect(self.game.display, (255, 255, 0), self.engine_fuel_rect) # Fuel level
+            self.game.display.blit(self.fuel_wires, (1100, 850))
+            self.game.display.blit(self.fuel_base2, (1150, 775))
+            self.game.display.blit(self.fuel_button, (1195, 815))
+            button_rect = pygame.Rect(1195, 815, 137, 139)
+            
+            if button_rect.collidepoint(self.game.mouse_pos): 
+                pygame.draw.rect(self.game.display, (0, 255, 0), button_rect, 2)
+                
+                if self.game.left_click:
+                    if self.engine_fuel_rect.height > 10:
+                        self.engine_fuel_rect.height -= 10
+                        self.engine_fuel_rect.height -= 10
+                        self.engine_fuel_rect.bottomleft = (500, 780)
+                    else:
+                        self.game.task_running = False
+                        if lower:
+                            self.current_task = "FUEL UPPER ENGINE"
+                        elif not lower:
+                            self.current_task = "NEXT"
+
+            else:
+                pygame.draw.rect(self.game.display, (255, 255, 0), button_rect, 2)
+
+
+            self.game.display.blit(self.fuel_base1, (500, 100))
+
+
+    def blit_tasks(self):
+        if self.current_task == "TURN ON POWER REACTOR":
+            self.game.current_level = 4
+            self.turn_on_power_reactor()
+            self.game.draw_text("Level 4", 100, self.level_textx + 25, self.level_texty, (255, 255, 255))
+            self.game.draw_text("Turn on power", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
+            self.game.draw_text("Task is in Reactors", 50, self.level_textx + 25, self.level_texty + 150, (255, 255, 255))
+
+        elif self.current_task == "TURN ON POWER ELECTRICAL":
+            self.game.current_level = 5
+            self.turn_on_power_electrical()
+            self.game.draw_text("Level 5", 100, self.level_textx + 25, self.level_texty, (255, 255, 255))
+            self.game.draw_text("Turn on power", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
+            self.game.draw_text("Task is in Electrical", 50, self.level_textx + 25, self.level_texty + 150, (255, 255, 255))
+
+
+        elif self.current_task == "PICK UP FUEL":
+            self.game.current_level = 6
+            self.pick_up_fuel()
+            self.game.draw_text("Level 6", 100, self.level_textx + 25, self.level_texty, (255, 255, 255))
+            self.game.draw_text("Pick Up Engine Fuel", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
+            self.game.draw_text("Task is in Storage", 50, self.level_textx + 25, self.level_texty + 150, (255, 255, 255))
+
+        elif self.current_task == "FUEL LOWER ENGINE":
+            self.game.current_level = 7
+            self.game.draw_text("Level 7", 100, self.level_textx + 25, self.level_texty, (255, 255, 255))
+            self.game.draw_text("Fuel Lower Engine", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
+            self.game.draw_text("Task is in Lower Engine Room", 50, self.level_textx + 25, self.level_texty + 150, (255, 255, 255))
+            self.fuel_engine(lower=True)
+
+        elif self.current_task == "FUEL UPPER ENGINE":
+            self.game.current_level = 8
+            self.game.draw_text("Level 8", 100, self.level_textx + 25, self.level_texty, (255, 255, 255))
+            self.game.draw_text("Fuel Upper Engine", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
+            self.game.draw_text("Task is in Upper Engine Room", 50, self.level_textx + 25, self.level_texty + 150, (255, 255, 255))
+            self.fuel_engine(lower=False)
+
+        elif self.current_task == "NEXT":
+            print("Yer")
+
+        
+
     # blits all the map sprites
     def background(self):
         if self.border_color[3] == 0:
@@ -1574,6 +1922,8 @@ class game_lobby(pregame_lobby):
                 return True, 'rb'
 
             elif pygame.Rect.colliderect(self.player_hitbox,self.electrical_r4):
+                if pygame.Rect.colliderect(self.player_hitbox,self.electrical_r5):
+                    return True, 'rbc'
                 return True, 'b'
 
             elif pygame.Rect.colliderect(self.player_hitbox,self.electrical_r5):
@@ -2527,9 +2877,11 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.storage_base, (548 + self.scrollx, 1240 + self.scrolly))
         self.game.display.blit(self.storage_bins, (670 + self.scrollx, 1477 + self.scrolly))
         self.game.display.blit(self.storage_bin, (925 + self.scrollx, 1485 + self.scrolly))
-        self.game.display.blit(self.storage_fuel, (750 + self.scrollx, 1700 + self.scrolly))
         self.game.display.blit(self.storage_task1, (1069 + self.scrollx, 1925 + self.scrolly))
         self.game.display.blit(self.storage_task2, (835 + self.scrollx, 1285 + self.scrolly))
+
+        if self.show_fuel == True:
+            self.game.display.blit(self.storage_fuel, (750 + self.scrollx, 1700 + self.scrolly))
 
     # blits comms section
     def load_comms(self):

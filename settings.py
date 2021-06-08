@@ -38,6 +38,9 @@ class game():
         self.task_running = False
         self.user_string = ''
         self.right_password = False
+        self.current_level = 0
+        self.progress_bar = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/progress bar.png").convert_alpha(), (848, 50))
+        self.progress_bar_rect = pygame.Rect(500, 15, 0, 50)
 
     # game class game loop
     def game_loop(self):

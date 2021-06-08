@@ -431,7 +431,7 @@ class skinMenu(menu):
 
 
 
-# host/join menu
+# Difficulty menu
 class difficulty_menu(menu):
     # initilize text and cursor locations
     def __init__(self, game):
