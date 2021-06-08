@@ -11,6 +11,9 @@ class game():
         self.running, self.playing = True, False # is screen displayed, is player playing
         self.up_key, self.down_key, self.start_key, self.back_key, self.right_key, self.left_key = False, False, False, False, False, False # key inputs for menu's
         self.move_f, self.move_b, self.move_l, self.move_r = False, False, False, False # key inputs for characters
+        self.mouse_pos = pygame.mouse.get_pos() # get mouse position
+        self.left_click = False
+        
         self.display_W, self.display_H = 1920, 1080 # screen dimensions
         self.display = pygame.Surface((self.display_W, self.display_H), pygame.SRCALPHA) # create display surface
         self.window = pygame.display.set_mode((self.display_W, self.display_H), pygame.RESIZABLE) # initilize window
@@ -24,21 +27,31 @@ class game():
         # initilize all the menu's in menu.py
         self.main_menu = MainMenu(self)
         self.settings = settingsMenu(self)
+        self.ingame_settings = ingame_settingsMenu(self)
         self.skin_menu = skinMenu(self)
-        self.host_join = host_join_menu(self)
+        self.difficulty_menu = difficulty_menu(self)
         self.controls_menu = controls_menu(self)
-        self.graphics_menu = graphics_menu(self)
         self.pregame = pregame_lobby(self)
         self.game_screen = game_lobby(self)
         self.curr_menu = self.main_menu # set default menu to main menu
+        self.previous_menu = self.main_menu
+        self.task_running = False
+        self.user_string = ''
+        self.right_password = False
 
     # game class game loop
     def game_loop(self):
         while self.playing:
             self.check_events() # check events
+            
 
             if self.start_key:
                 self.playing = False
+
+            if self.curr_menu == self.main_menu:
+                self.task_running = False
+                self.user_string = ''
+                self.right_password = False
 
             pygame.display.update() # update display
             self.clock.tick(30) # 30 FPS
@@ -46,6 +59,8 @@ class game():
 
     # event checker
     def check_events(self):
+        # get and update mouse position
+        self.mouse_pos = pygame.mouse.get_pos()
         # Event listener for loop
         for event in pygame.event.get():
             # Quit program
@@ -54,7 +69,7 @@ class game():
                 self.curr_menu.run_display = False
 
             # key down, updates all keys if pressed
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN and not self.task_running:
                 if event.key == pygame.K_RETURN:
                     self.start_key = True
 
@@ -85,6 +100,34 @@ class game():
                 if event.key == pygame.K_s:
                     self.move_b = True
             
+            elif event.type == pygame.KEYDOWN and self.curr_menu != self.pregame and self.curr_menu != self.game_screen:
+                if event.key == pygame.K_RETURN:
+                    self.start_key = True
+
+                if event.key == pygame.K_BACKSPACE:
+                    self.back_key = True
+
+                if event.key == pygame.K_DOWN:
+                    self.down_key = True
+
+                if event.key == pygame.K_UP:
+                    self.up_key = True
+                
+                if event.key == pygame.K_RIGHT:
+                    self.right_key = True
+                
+                if event.key == pygame.K_LEFT:
+                    self.left_key = True
+
+            elif event.type == pygame.KEYDOWN and self.task_running and self.curr_menu == self.pregame:
+                if event.key == pygame.K_BACKSPACE and not self.right_password:
+                    self.user_string = self.user_string[:-1]
+                
+                else:
+                    if not self.right_password:
+                        self.user_string += event.unicode
+
+            
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     self.move_l = False
@@ -97,19 +140,36 @@ class game():
                 
                 if event.key == pygame.K_s:
                     self.move_b = False
-                
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self.left_click = True
+                    self.mouse_pos = pygame.mouse.get_pos()
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    self.left_click = False
+                    self.mouse_pos = pygame.mouse.get_pos()
+
                 
 
     # reset key input
     def reset_keys(self):
-        self.start_key, self.back_key, self.right_key, self.left_key, self.up_key, self.down_key = False, False, False, False, False, False
+        self.start_key, self.back_key, self.right_key, self.left_key, self.up_key, self.down_key, self.left_click = False, False, False, False, False, False, False
 
     # draw text to screen
-    def draw_text(self, text, size, x, y):
+    def draw_text(self, text, size, x, y, color=(255, 255, 255)):
         font = pygame.font.Font(self.font_name, size)
-        text_surface = font.render(text, True, (255, 255, 255))
+        text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
         text_rect.center = (x, y)
+        self.display.blit(text_surface, text_rect)
+
+    def draw_task_text(self, text, size, x, y, color=(255, 255, 255)):
+        font = pygame.font.Font(self.font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.topleft = (x, y)
         self.display.blit(text_surface, text_rect)
     
 

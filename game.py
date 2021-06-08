@@ -1,9 +1,11 @@
 # import statments
 import pygame
+from pygame.locals import *
 from spritesheet import *
 from menu import *
 import math
 import random
+import time
 
 # Pregame lobby
 class pregame_lobby(menu):
@@ -11,16 +13,61 @@ class pregame_lobby(menu):
     def __init__(self, game):
         menu.__init__(self, game)
         self.stars = pygame.image.load("images/background/game/pregame/stars.png")
+        
+        self.id_card = pygame.transform.scale(pygame.image.load("images/tasks/Enter Id Code/admin_Card.png"), (50, 30))
+        self.id_card_rect = pygame.Rect(1025, 260, 50, 30)
+        
+        self.door_button = pygame.transform.scale(pygame.image.load("images/background/game/buttons/door_button.png").convert_alpha(), (100, 100))
+        self.door_button.set_alpha(128)
+        
+        self.map_button =  pygame.transform.scale(pygame.image.load("images/background/game/buttons/map_button.png").convert_alpha(), (100, 100))
+        
+        self.settings_button =  pygame.transform.scale(pygame.image.load("images/background/game/buttons/settings_button.png").convert_alpha(), (100, 100))
+        self.settings_button_rect = pygame.Rect(1800, 25, 100, 100)
+        
+        self.use_button =  pygame.transform.scale(pygame.image.load("images/background/game/buttons/use_button.png").convert_alpha(), (213, 212))
+        self.use_button_rect = pygame.Rect(1700, 850, 213, 212)
+        self.use_button_alpha_value = 128
+        self.use_button.set_alpha(self.use_button_alpha_value)
+
         Spritesheet = spritesheet("images/background/game/pregame/spritesheet.png", "Character")
         self.box = Spritesheet.parse_sprite('box.png',)
         self.ship = Spritesheet.parse_sprite('ship.png')
         self.front = Spritesheet.parse_sprite('front.png')
+        
         self.computers = [Spritesheet.parse_sprite('computer1.png'), Spritesheet.parse_sprite('computer2.png')]
+        self.computer_rect = pygame.Rect(740, 440, 80, 71)
+
+        self.computer_screen = pygame.transform.scale(pygame.image.load("images/tasks/computer task/screen.png").convert_alpha(), (1200, 841))
+        self.computer_text_box = pygame.transform.scale(pygame.image.load("images/tasks/computer task/text box.png").convert_alpha(), (1024, 115))
+        self.computer_enter_button = pygame.transform.scale(pygame.image.load("images/tasks/computer task/enter button.png").convert_alpha(), (250, 123))
+        self.computer_enter_button.set_alpha(128)
+        
         self.rocket = [Spritesheet.parse_sprite('rocket1.png'), Spritesheet.parse_sprite('rocket2.png'), Spritesheet.parse_sprite('rocket3.png'), Spritesheet.parse_sprite('rocket4.png'), Spritesheet.parse_sprite('rocket5.png'), Spritesheet.parse_sprite('rocket6.png')]
         self.left_rocket = []
         for rocket in self.rocket:
             self.left_rocket.append(pygame.transform.rotate(rocket, 23))
+
+        self.admin_wallet = pygame.image.load("images/tasks/Enter Id Code/admin_Wallet.png").convert_alpha()
+        self.enterID_panel = pygame.transform.scale(pygame.image.load("images/tasks/Enter Id Code/enterID_panel.png").convert_alpha(), (750, 748))
+
+        self.upload_base = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/base.png").convert_alpha(), (1200, 841))
+        self.files = pygame.image.load("images/tasks/Upload Data/files.png").convert_alpha()
+        self.filesx, self.filesy = 475, 275
+        self.folder_animation = []
+
+        for i in range(1, 6):
+            self.folder_animation.append(pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/folder" + str(i) + ".png").convert_alpha(), (275, 163)))
+
+        self.folder_animation[2] = pygame.transform.scale(self.folder_animation[2], (300, 163))
+        self.folder_animation[3] = pygame.transform.scale(self.folder_animation[3], (325, 163))
+        self.folder_animation[4] = pygame.transform.scale(self.folder_animation[4], (325, 163))
+        self.folder_upload_button = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/upload.png").convert_alpha(), (200, 62))
+
+        self.progress_bar = pygame.image.load("images/tasks/Upload Data/progress bar.png").convert_alpha()
+        self.folder_progress_bar = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/progress bar.png").convert_alpha(), (1017, 60))
         
+
         self.status = "idle_r"
         self.walk_counter = 0
         self.rocket_counter = 0
@@ -31,22 +78,45 @@ class pregame_lobby(menu):
         self.spawned = False
         self.spawn_counter = 0
         self.spawn_index = 0
-        self.num_usersx, self.num_usersy = 932, 900
-        self.num_of_players = 1
         self.boxx, self.boxy = 725, 450
         self.moved_left = False
+        self.current_task = "UPLOAD DATA" #change to ID CARD
+        self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
+        self.level_textx, self.level_texty = 125, 75
+        self.computer_textx, self.computer_texty = 425, 800
+        self.computer_password = ['PASSWORD123', 'IMPOSTOR123', 'CREWMATE123', 'DOUBLEBLUE123']
+        self.computer_password = self.computer_password[random.randint(0,3)]
+        self.computer_key = random.randint(1, 25)
+        self.encrypted_password = self.caesar_ciper(self.computer_password, self.computer_key)
+        self.wrong_password = False
+        self.counter = 0
+        self.begin_folder_animation = False
+        self.folder_animation_counter = 0
+        self.begin_upload = False
+        self.first_folder = False
+        self.close_files = False
+        self.folder_progress = 0
+        self.upload_progress_rect = pygame.Rect(440, 700, 0, 60)
 
     # game loop
     def display_menu(self):
         self.run_display = True
         self.get_character()
-        self.spawned = False
+        if self.game.previous_menu == self.game.difficulty_menu:
+            # self.reset()
+            x = 'foo'
+            
+        
         while self.run_display:
+            self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
+            
             if self.frame_index == 5:
                 self.frame_index = 0
                 self.rocket_counter = (self.rocket_counter + 1) % len(self.rocket)
+            
             self.game.check_events()
             
+
             if self.spawned:
                 self.check_input()
 
@@ -78,14 +148,198 @@ class pregame_lobby(menu):
             if not self.spawned:
                 self.spawn_index += 1
 
-            self.game.draw_text("Players: " + str(self.num_of_players) + "/30", 100, self.num_usersx, self.num_usersy)
-            self.game.draw_text("Game Code: XYZ", 65, self.num_usersx, self.num_usersy - 75)
-            self.game.draw_text("*Host must start game by hitting the enter key*", 30, self.num_usersx, self.num_usersy + 85)
 
+            self.buttons()
+            self.blit_tasks()
             self.blit_screen()
+        
+    def reset(self):
+        self.spawned = False
+        self.current_task = "ID CARD"
+        self.game.task_running = False
         self.playerx = 800
         self.playery = 240
+        self.id_card = pygame.transform.scale(pygame.image.load("images/tasks/Enter Id Code/admin_Card.png"), (50, 30))
+        self.game.right_password = False
+        self.counter = 0
+        self.begin_upload = False
+        self.first_folder = False
+        self.close_files = False
+        self.folder_progress = 0
+        self.upload_progress_rect = pygame.Rect(440, 700, 0, 60)
+
+
+    # menu and gameplay buttons
+    def buttons(self):
+        self.game.display.blit(self.settings_button, (1800, 25))
+        self.game.display.blit(self.use_button, (1700, 850))
+        if self.settings_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+            self.game.curr_menu = self.game.ingame_settings
+            self.run_display = False
+
+    def id_card_task(self):
+        if pygame.Rect.colliderect(self.player_hitbox, self.id_card_rect):
+            self.game.display.blit(self.id_card, (1025, 260))
+            pygame.draw.rect(self.game.display, (0, 255, 0), self.id_card_rect, 2)
+            self.use_button.set_alpha(255)
+            
+            if self.use_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                self.current_task = "UNLOCK COMPUTER"
+                self.use_button.set_alpha(128)
+
+        else: 
+            self.game.display.blit(self.id_card, (1025, 260))
+            pygame.draw.rect(self.game.display, (255, 255, 0), self.id_card_rect, 2)
+            self.use_button.set_alpha(128)
+
+
+    def unlock_computer(self):
+        if not self.game.task_running:
+            pygame.draw.rect(self.game.display, (255, 255, 0), self.computer_rect, 2)
+            self.use_button.set_alpha(128)
         
+        else:
+            self.id_card = pygame.transform.scale(pygame.image.load("images/tasks/Enter Id Code/admin_Card.png"), (350, 213))
+            self.game.display.blit(self.computer_screen, (350, 100))
+            self.game.display.blit(self.computer_text_box, (407, 775))
+            self.game.display.blit(self.id_card, (25, 500))
+            
+            self.game.draw_task_text(str(self.computer_key), 100, 290, 510, (0, 0, 0))
+            self.game.draw_task_text("Auto Pilot Computer", 150, 500, 200, (0, 0, 0))
+            self.game.draw_task_text("The password is encryted with a caesar cypher:", 65, 450, 400, (0, 0, 0))
+            self.game.draw_text(self.encrypted_password, 225, 900, 650, (0, 0, 0))
+
+            if self.game.user_string == '' and not self.wrong_password and not self.game.right_password:
+                self.game.draw_task_text("*User input will be displayed here*", 50, 425, 815, (0, 0, 0))
+
+            elif self.game.user_string == '' and self.wrong_password and not self.game.right_password:
+                self.game.draw_task_text("WRONG PASSWORD: Re-enter password", 50, 425, 815, (255, 0, 0))
+
+            if self.game.right_password:
+                if self.counter < 20 or self.counter > 40:
+                    self.game.draw_task_text("Password Accepted!", 50, 425, 815, (0, 255, 0))
+                self.counter += 1
+
+            if self.counter >= 60:
+                self.current_task = "UPLOAD DATA"
+                self.counter = 0
+
+            if len(self.game.user_string) == len(self.computer_password):
+                self.computer_enter_button.set_alpha(255)
+                if self.computer_enter_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                    if self.game.user_string.upper() == self.computer_password:
+                        self.wrong_password = False
+                        self.game.right_password = True
+                        self.game.user_string = ''
+                    else:
+                        self.game.user_string = ''
+                        self.wrong_password = True 
+            
+            else:
+                self.computer_enter_button.set_alpha(128)
+        
+
+            self.game.draw_task_text(self.game.user_string, 75, self.computer_textx, self.computer_texty, (0, 0, 0))
+            self.computer_enter_button_rect = self.game.display.blit(self.computer_enter_button, (1190, 770))
+            
+        
+        if pygame.Rect.colliderect(self.player_hitbox, self.computer_rect) and not self.game.task_running:
+            self.use_button.set_alpha(255)
+            pygame.draw.rect(self.game.display, (0, 255, 0), self.computer_rect, 2)
+            
+            if self.use_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                self.game.task_running = True
+                self.use_button.set_alpha(128)
+
+    def caesar_ciper(self, password, key):
+        result = ''
+        for i in range(len(password)):
+            char = password[i]
+            if char.isalpha():
+                # Encrypt uppercase characters in plain text
+                if (char.isupper()):
+                    result += chr((ord(char) + key - 65) % 26 + 65)
+            else:
+                result += str(int(char) + key)
+        return result
+
+    def upload_autopilot(self):
+        self.game.display.blit(self.upload_base, (350, 100))
+        self.game.draw_text("Upload Auto-Pilot Software", 90, 950, 225)
+        self.game.draw_text("Computer", 75, 610, 600)
+        self.game.draw_text("Ship", 75, 1285, 600)
+        self.game.display.blit(pygame.transform.scale(self.files, (300, 236)), (self.filesx, self.filesy))
+        self.game.display.blit(self.folder_animation[self.folder_animation_counter], (482, 375))
+        self.game.display.blit(self.folder_animation[self.folder_animation_counter], (1150, 375))
+        self.game.display.blit(self.folder_upload_button, (850, 550))
+        upload_button_rect = pygame.Rect(850, 550, 200, 62)
+        self.game.draw_text("Upload Progress", 60, 950, 675)
+        print(self.upload_progress_rect)
+        self.upload_progress_rect.width = self.folder_progress * 44 # Final form(440, 700, 1017, 60)
+        self.game.display.blit(self.folder_progress_bar, (440, 700))
+        pygame.draw.rect(self.game.display, (0, 255, 0), self.upload_progress_rect)
+        
+
+        if not self.begin_upload:
+            pygame.draw.rect(self.game.display, (255, 255, 0), upload_button_rect, 5)
+
+        else:
+            pygame.draw.rect(self.game.display, (0, 255, 0), upload_button_rect, 5)
+        
+        if upload_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+            self.begin_upload = True
+        
+        
+        if self.counter % 25 == 0 and self.begin_upload and not self.first_folder:
+            self.folder_animation_counter += 1
+            self.folder_progress += 1
+            
+            if self.folder_animation_counter < 4:
+                pass
+            else:
+                self.first_folder = True
+                self.counter = 0
+
+        elif self.counter % 25 == 0 and self.begin_upload and self.first_folder and not self.close_files:
+                self.filesx += 50
+                self.folder_progress += 1
+                if self.filesx > 1150:
+                    self.close_files = True
+
+        elif self.counter % 25 == 0 and self.begin_upload and self.first_folder and self.close_files:
+            self.folder_animation_counter -= 1
+            self.folder_progress += 1
+            if self.folder_animation_counter >= 0:
+                pass
+            else:
+                self.upload_progress_rect.right = 1017
+                self.current_task = "NEXT"
+                self.counter = 0
+        
+        self.counter += 1
+
+
+    def blit_tasks(self):
+        if self.current_task == "ID CARD":
+            self.id_card_task()
+            self.game.draw_text("Level 1", 100, self.level_textx, self.level_texty, (255, 255, 255))
+            self.game.draw_text("Collect the ID Card", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
+
+        elif self.current_task == "UNLOCK COMPUTER":
+            self.unlock_computer()
+            self.game.draw_text("Level 2", 100, self.level_textx, self.level_texty, (255, 255, 255))
+            self.game.draw_text("Unlock the Computer", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
+
+        elif self.current_task == "UPLOAD DATA":
+            self.upload_autopilot()
+            self.game.draw_text("Level 3", 100, self.level_textx, self.level_texty, (255, 255, 255))
+            self.game.draw_text("Upload the ", 50, self.level_textx - 15, self.level_texty + 75, (255, 255, 255))
+            self.game.draw_text("Autopilot software", 50, self.level_textx + 25, self.level_texty + 125, (255, 255, 255))
+
+        elif self.current_task == "NEXT":
+            x = 'foo'
+
+
     # get the character from the spritesheet
     def get_character(self):
         Spritesheet = spritesheet("images/characters/"+ self.game.skin + "/" + self.game.skin + "_character_spritesheet.png", "Character")
@@ -173,7 +427,7 @@ class pregame_lobby(menu):
             self.run_display = False
             self.game.curr_menu = self.game.game_screen
         
-        if self.game.move_f:
+        if self.game.move_f and not self.game.task_running:
             if not self.box_collision() or not self.map_boundaries():
                 self.playery -= 7
                 self.status = "walking_r"
@@ -200,7 +454,7 @@ class pregame_lobby(menu):
                         else:
                             self.playery += 1
         
-        if self.game.move_b:
+        if self.game.move_b and not self.game.task_running:
             if self.box_collision() or self.map_boundaries():
                 pass
             else:
@@ -228,7 +482,7 @@ class pregame_lobby(menu):
                     else:
                         self.playery -= 1
                            
-        if self.game.move_r:
+        if self.game.move_r and not self.game.task_running:
             if self.box_collision() or self.map_boundaries():
                 pass
             else:   
@@ -256,7 +510,7 @@ class pregame_lobby(menu):
                     else:
                         self.playerx -= 1
         
-        if self.game.move_l:
+        if self.game.move_l and not self.game.task_running:
             if not self.box_collision() or not self.map_boundaries():
                 self.input = True
                 self.playerx -= 7
@@ -530,7 +784,8 @@ class game_lobby(pregame_lobby):
                 self.medbay_scan_index = (self.medbay_scan_index + 1) % len(self.medbay_scan)
                 self.security_screen_index = (self.security_screen_index + 1) % len(self.security_screen)
                 self.security_server_index = (self.security_server_index + 1) % len(self.security_server)
-                
+
+
             self.check_status()
             self.blit_screen()
     
@@ -577,12 +832,14 @@ class game_lobby(pregame_lobby):
             self.load_reactor()
             self.draw_boundaries()
 
+
+
     # spawn animation
     def spawn(self):
         self.game.display.blit(pygame.transform.scale(self.idle[0], (50, 77)), (self.playerx, self.playery))
         self.spawned = True
 
-    # check keyboard input # TODO
+    # check keyboard input
     def check_input(self):
         if self.game.back_key:
             self.game.curr_menu = self.game.main_menu
