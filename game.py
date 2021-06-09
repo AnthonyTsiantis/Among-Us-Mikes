@@ -25,7 +25,7 @@ class pregame_lobby(menu):
         self.spawn_index = 0
         self.boxx, self.boxy = 725, 450
         self.moved_left = False
-        self.current_task = "FUEL UPPER ENGINE" #change to ID CARD
+        self.current_task = "ID CARD"
         self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
         self.level_textx, self.level_texty = 125, 75
         self.computer_textx, self.computer_texty = 425, 800
@@ -102,8 +102,7 @@ class pregame_lobby(menu):
         self.run_display = True
         self.get_character()
         if self.game.previous_menu == self.game.difficulty_menu:
-            # self.reset()
-            x = 'foo' #TODO
+            self.reset()
             
         
         while self.run_display:
@@ -166,6 +165,7 @@ class pregame_lobby(menu):
         self.close_files = False
         self.folder_progress = 0
         self.upload_progress_rect = pygame.Rect(440, 700, 0, 60)
+        self.current_task = "ID CARD"
         
 
 
@@ -321,6 +321,8 @@ class pregame_lobby(menu):
                 self.upload_progress_rect.right = 1017
                 self.current_task = "TURN ON POWER REACTOR"
                 self.counter = 0
+                self.begin_upload = False
+                self.game.task_running = False
         
         self.counter += 1
 
@@ -346,6 +348,7 @@ class pregame_lobby(menu):
             self.game.draw_text("Autopilot software", 50, self.level_textx + 25, self.level_texty + 125, (255, 255, 255))
 
         elif self.current_task == "TURN ON POWER REACTOR":
+            self.current_task = "ID CARD"
             self.run_display = False
             self.game.curr_menu = self.game.game_screen
 
@@ -587,10 +590,15 @@ class game_lobby(pregame_lobby):
         self.border_color = (255, 0, 0, 0) # change final value to 100 to see boundaries 
         self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
         self.show_fuel = True
-        self.background()
         self.power_task = "REACTORS"
         self.fuel_task_rect = None
         self.engine_fuel_rect = pygame.Rect(500, 200, 614, 580)
+        self.fueled = False
+        self.powered = False 
+        self.initiate_scan = False
+        self.current_task = "TURN ON POWER REACTOR"
+
+        self.background()
 
     # loads all the sprites into memory
     def load_sprites(self):
@@ -803,6 +811,28 @@ class game_lobby(pregame_lobby):
         self.fuel_button = pygame.transform.scale(pygame.image.load("images/tasks/Fuel Engines/button.png").convert_alpha(), (137, 139)) 
         self.fuel_wires = pygame.transform.scale(pygame.image.load("images/tasks/Fuel Engines/wires.png").convert_alpha(), (101, 94)) 
 
+        self.medbay_base_bottom = pygame.transform.scale(pygame.image.load("images/tasks/Submite Scan/base_bottom.png").convert_alpha(), (907, 277)) 
+        self.medbay_base_top = pygame.transform.scale(pygame.image.load("images/tasks/Submite Scan/base_top.png").convert_alpha(), (907, 322)) 
+        self.medbay_wire = pygame.transform.scale(pygame.image.load("images/tasks/Submite Scan/wire.png").convert_alpha(), (131, 653)) 
+        
+        self.upload_base = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/base.png").convert_alpha(), (1200, 841))
+        self.files = pygame.image.load("images/tasks/Upload Data/files.png").convert_alpha()
+        self.filesx, self.filesy = 475, 275
+        self.folder_animation = []
+
+        for i in range(1, 6):
+            self.folder_animation.append(pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/folder" + str(i) + ".png").convert_alpha(), (275, 163)))
+
+        self.folder_animation[2] = pygame.transform.scale(self.folder_animation[2], (300, 163))
+        self.folder_animation[3] = pygame.transform.scale(self.folder_animation[3], (325, 163))
+        self.folder_animation[4] = pygame.transform.scale(self.folder_animation[4], (325, 163))
+        self.folder_upload_button = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/upload.png").convert_alpha(), (200, 62))
+        self.folder_progress_bar = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/progress bar.png").convert_alpha(), (1017, 60))
+
+
+    def reset(self):
+        self.current_task = "TURN ON POWER REACTOR"
+        self.game.task_running = False
 
     # game loop
     def display_menu(self):
@@ -818,15 +848,18 @@ class game_lobby(pregame_lobby):
                 self.spawn()
             
             if self.animation_index == 0:
-                self.screen_index = (self.screen_index + 1) % len(self.weapons_screen)
-                self.oxygen_index = (self.oxygen_index + 1) % len(self.oxygen_fans)
-                self.comms_index = (self.comms_index + 1) % len(self.comms_tape)
-                self.engine_index = (self.engine_index + 1) % len(self.engine_base)
-                self.engine_bolt_index = (self.engine_bolt_index + 1) % len(self.engine_bolt)
-                self.engine_puff_index = (self.engine_puff_index + 1) % len(self.engine_puff)
-                self.medbay_scan_index = (self.medbay_scan_index + 1) % len(self.medbay_scan)
-                self.security_screen_index = (self.security_screen_index + 1) % len(self.security_screen)
-                self.security_server_index = (self.security_server_index + 1) % len(self.security_server)
+                if self.powered:
+                    self.screen_index = (self.screen_index + 1) % len(self.weapons_screen)
+                    self.oxygen_index = (self.oxygen_index + 1) % len(self.oxygen_fans)
+                    self.comms_index = (self.comms_index + 1) % len(self.comms_tape)
+                    self.security_screen_index = (self.security_screen_index + 1) % len(self.security_screen)
+                    self.security_server_index = (self.security_server_index + 1) % len(self.security_server)
+                    self.medbay_scan_index = (self.medbay_scan_index + 1) % len(self.medbay_scan)
+
+                    if self.fueled:
+                        self.engine_index = (self.engine_index + 1) % len(self.engine_base)
+                        self.engine_bolt_index = (self.engine_bolt_index + 1) % len(self.engine_bolt)
+                        self.engine_puff_index = (self.engine_puff_index + 1) % len(self.engine_puff)
             
             self.buttons()
             if not self.game.task_running:
@@ -988,6 +1021,7 @@ class game_lobby(pregame_lobby):
                         self.calibrate_colour = "YELLOW"
                         self.game.task_running = False
                         self.power_task = "DONE"
+                        self.powered = True
 
             self.game.display.blit(self.calibrate_gauge_t, (1100, 670))
             self.game.display.blit(rotated_image, new_rect)
@@ -1086,8 +1120,12 @@ class game_lobby(pregame_lobby):
                         self.game.task_running = False
                         if lower:
                             self.current_task = "FUEL UPPER ENGINE"
+                            self.engine_fuel_rect = pygame.Rect(500, 200, 614, 580)
+                            self.use_button.set_alpha(128)
                         elif not lower:
-                            self.current_task = "NEXT"
+                            self.current_task = "BIOMETERIC SCAN"
+                            self.counter = 0
+                            self.fueled = True
 
             else:
                 pygame.draw.rect(self.game.display, (255, 255, 0), button_rect, 2)
@@ -1095,6 +1133,113 @@ class game_lobby(pregame_lobby):
 
             self.game.display.blit(self.fuel_base1, (500, 100))
 
+    def biometric_scan(self):
+        if not self.game.task_running:
+            scan_rect = pygame.Rect(325 + self.scrollx, 960 + self.scrolly, 147, 93)
+            pygame.draw.rect(self.game.display, (255, 255, 0), scan_rect, 2)
+            
+            if pygame.Rect.colliderect(self.player_hitbox, scan_rect):
+                pygame.draw.rect(self.game.display, (0, 255, 0), scan_rect, 2)
+                self.use_button.set_alpha(255)
+
+                if self.use_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                    self.game.task_running = True
+                    self.use_button.set_alpha(128)       
+        
+        else:
+            self.scrollx = 530
+            self.scrolly = -467
+            self.initiate_scan = True
+            if self.powered and self.initiate_scan:
+                self.game.display.blit(self.medbay_scan[self.medbay_scan_index], (350 + (self.medbay_scan_index * 7) + self.scrollx, 980 + -(self.medbay_scan_index * 20) + self.scrolly))
+            
+            self.game.display.blit(self.medbay_wire, (1325, 200))
+            self.game.display.blit(self.medbay_base_top, (500, 100))
+            self.game.display.blit(self.medbay_base_bottom, (500, 700))
+
+            if self.counter > 820:
+                if self.counter < 1000:
+                    self.game.draw_text("Biometric Signature Authorized", 50, 950, 900, (0, 255, 0))
+                
+                else:
+                    self.current_task = "NAVIGATE SHIP"
+                    self.counter = 0
+                    self.game.task_running = False
+
+            else:
+                pygame.draw.rect(self.game.display, (0, 255, 0), (545, 735, self.counter, 60))
+                self.game.draw_text("Logging into system using biometric signature...", 50, 950, 300, (255, 255, 255))
+                self.game.draw_text("Scan will complete shortly...", 50, 950, 900, (255, 255, 255))
+            
+            self.counter += 5
+        
+    def chart_course(self):
+        if not self.game.task_running:
+            task_rect = pygame.Rect(2531 + self.scrollx, 905 + self.scrolly, 76, 158)
+            pygame.draw.rect(self.game.display, (255, 255, 0), task_rect, 2)
+            
+            if pygame.Rect.colliderect(self.player_hitbox, task_rect):
+                pygame.draw.rect(self.game.display, (0, 255, 0), task_rect, 2)
+                self.use_button.set_alpha(255)
+
+                if self.use_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                    self.game.task_running = True
+                    self.use_button.set_alpha(128)
+
+        else:
+            self.game.display.blit(self.upload_base, (350, 100))
+            self.game.draw_text("Upload Auto-Pilot Software", 90, 950, 225)
+            self.game.draw_text("Computer", 75, 610, 600)
+            self.game.draw_text("Ship", 75, 1285, 600)
+            self.game.display.blit(pygame.transform.scale(self.files, (300, 236)), (self.filesx, self.filesy))
+            self.game.display.blit(self.folder_animation[self.folder_animation_counter], (482, 375))
+            self.game.display.blit(self.folder_animation[self.folder_animation_counter], (1150, 375))
+            self.game.display.blit(self.folder_upload_button, (850, 550))
+            upload_button_rect = pygame.Rect(850, 550, 200, 62)
+            self.game.draw_text("Upload Progress", 60, 950, 675)
+            self.upload_progress_rect.width = self.folder_progress * 44 # Final form(440, 700, 1017, 60)
+            self.game.display.blit(self.folder_progress_bar, (440, 700))
+            pygame.draw.rect(self.game.display, (0, 255, 0), self.upload_progress_rect)
+            
+
+            if not self.begin_upload:
+                pygame.draw.rect(self.game.display, (255, 255, 0), upload_button_rect, 5)
+
+            else:
+                pygame.draw.rect(self.game.display, (0, 255, 0), upload_button_rect, 5)
+            
+            if upload_button_rect.collidepoint(self.game.mouse_pos) and self.game.left_click:
+                self.begin_upload = True
+            
+            
+            if self.counter % 25 == 0 and self.begin_upload and not self.first_folder:
+                self.folder_animation_counter += 1
+                self.folder_progress += 1
+                
+                if self.folder_animation_counter < 4:
+                    pass
+                else:
+                    self.first_folder = True
+                    self.counter = 0
+
+            elif self.counter % 25 == 0 and self.begin_upload and self.first_folder and not self.close_files:
+                    self.filesx += 50
+                    self.folder_progress += 1
+                    if self.filesx > 1150:
+                        self.close_files = True
+
+            elif self.counter % 25 == 0 and self.begin_upload and self.first_folder and self.close_files:
+                self.folder_animation_counter -= 1
+                self.folder_progress += 1
+                if self.folder_animation_counter >= 0:
+                    pass
+                else:
+                    self.upload_progress_rect.right = 1017
+                    self.current_task = "END GAME"
+                    self.counter = 0
+                    self.begin_upload = False
+            
+            self.counter += 1
 
     def blit_tasks(self):
         if self.current_task == "TURN ON POWER REACTOR":
@@ -1123,18 +1268,37 @@ class game_lobby(pregame_lobby):
             self.game.current_level = 7
             self.game.draw_text("Level 7", 100, self.level_textx + 25, self.level_texty, (255, 255, 255))
             self.game.draw_text("Fuel Lower Engine", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
-            self.game.draw_text("Task is in Lower Engine Room", 50, self.level_textx + 25, self.level_texty + 150, (255, 255, 255))
+            self.game.draw_text("Task is in", 50, self.level_textx + 25, self.level_texty + 150, (255, 255, 255))
+            self.game.draw_text("Lower Engine Room", 50, self.level_textx + 25, self.level_texty + 200, (255, 255, 255))
             self.fuel_engine(lower=True)
 
         elif self.current_task == "FUEL UPPER ENGINE":
             self.game.current_level = 8
             self.game.draw_text("Level 8", 100, self.level_textx + 25, self.level_texty, (255, 255, 255))
             self.game.draw_text("Fuel Upper Engine", 50, self.level_textx + 25, self.level_texty + 100, (255, 255, 255))
-            self.game.draw_text("Task is in Upper Engine Room", 50, self.level_textx + 25, self.level_texty + 150, (255, 255, 255))
+            self.game.draw_text("Task is in", 50, self.level_textx + 25, self.level_texty + 150, (255, 255, 255))
+            self.game.draw_text("Upper Engine Room", 50, self.level_textx + 25, self.level_texty + 200, (255, 255, 255))
             self.fuel_engine(lower=False)
 
-        elif self.current_task == "NEXT":
-            print("Yer")
+        elif self.current_task == "BIOMETERIC SCAN":
+            self.game.current_level = 9
+            self.game.draw_text("Level 9", 100, self.level_textx + 25, self.level_texty, (255, 255, 255))
+            self.game.draw_text("Complete Biometric Scan", 50, self.level_textx + 50, self.level_texty + 100, (255, 255, 255))
+            self.game.draw_text("Task is in Medbay", 50, self.level_textx + 25, self.level_texty + 150, (255, 255, 255))
+            self.biometric_scan()
+        
+        elif self.current_task == "NAVIGATE SHIP":
+            self.game.current_level = 10
+            self.game.draw_text("Level 10", 100, self.level_textx + 25, self.level_texty, (255, 255, 255))
+            self.game.draw_text("Update Ship's Auto Pilot", 50, self.level_textx + 50, self.level_texty + 100, (255, 255, 255))
+            self.game.draw_text("Task is in Navigation", 50, self.level_textx + 50, self.level_texty + 150, (255, 255, 255))
+            self.chart_course()
+
+        elif self.current_task == "END GAME":
+            self.run_display = False
+            self.reset()
+            self.game.curr_menu = self.game.main_menu
+            
 
         
 
@@ -2926,11 +3090,11 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.engine_rail1, (x + 97 + self.scrollx, y + 188 + self.scrolly))
 
         bolt = random.randint(0, 10)
-        if bolt:
+        if bolt and self.powered and self.fueled:
             self.game.display.blit(self.engine_bolt[self.engine_bolt_index], (x + 103 + self.scrollx, y + 49 + self.scrolly))
             self.game.display.blit(self.engine_bolt[self.engine_bolt_index], (x + 103 + self.scrollx, y + 85 + self.scrolly))
-        
-        self.game.display.blit(self.engine_puff[self.engine_puff_index], (x + 275 + self.scrollx, y + 35 + (self.engine_puff_index * -25) + self.scrolly))
+            self.game.display.blit(self.engine_puff[self.engine_puff_index], (x + 275 + self.scrollx, y + 35 + (self.engine_puff_index * -25) + self.scrolly))
+
         self.game.display.blit(self.engine_task1, (x + 10 + self.scrollx, y + 210 + self.scrolly))
         self.game.display.blit(self.engine_task2, (x + 77 + self.scrollx, y + 197 + self.scrolly))
     
@@ -2939,7 +3103,6 @@ class game_lobby(pregame_lobby):
         self.game.display.blit(self.medbay_base1, (68 + self.scrollx, 550 + self.scrolly))
         self.game.display.blit(self.medbay_base2, (325 + self.scrollx, 960 + self.scrolly))
         self.game.display.blit(self.medbay_base3, (440 + self.scrollx, 875 + self.scrolly))
-        self.game.display.blit(self.medbay_scan[self.medbay_scan_index], (350 + (self.medbay_scan_index * 7) + self.scrollx, 980 + -(self.medbay_scan_index * 20) + self.scrolly))
 
     # blit security section
     def load_security(self):
