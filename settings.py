@@ -30,9 +30,11 @@ class game():
         self.ingame_settings = ingame_settingsMenu(self)
         self.skin_menu = skinMenu(self)
         self.difficulty_menu = difficulty_menu(self)
+        self.game_difficulty = "Easy"
         self.controls_menu = controls_menu(self)
         self.pregame = pregame_lobby(self)
         self.game_screen = game_lobby(self)
+        self.end_game = end_game(self)
         self.curr_menu = self.main_menu # set default menu to main menu
         self.previous_menu = self.main_menu
         self.task_running = False
@@ -41,6 +43,12 @@ class game():
         self.current_level = 0
         self.progress_bar = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/progress bar.png").convert_alpha(), (848, 50))
         self.progress_bar_rect = pygame.Rect(500, 15, 0, 50)
+        self.game_time = 0
+        self.game_time_limit = 0
+        self.start_time = 0
+        self.end_time = 0
+        self.time_elapsed = 0
+        self.game_completed = True
 
     # game class game loop
     def game_loop(self):
@@ -174,6 +182,7 @@ class game():
         text_rect = text_surface.get_rect()
         text_rect.topleft = (x, y)
         self.display.blit(text_surface, text_rect)
+
     
 
 

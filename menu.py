@@ -488,6 +488,16 @@ class difficulty_menu(menu):
         elif self.game.start_key:
             self.game.curr_menu = self.game.pregame
             self.game.previous_menu = self.game.difficulty_menu
+            self.game.game_difficulty = self.level
+            if self.level == 'Easy':
+                self.game.game_time_limit = None
+
+            elif self.level == 'Medium':
+                self.game.game_time_limit = 600
+            
+            elif self.level == 'Hard':
+                self.game.game_time_limit = 300
+
             self.run_display = False
 
 
@@ -527,4 +537,52 @@ class controls_menu(menu):
                 self.game.curr_menu = self.game.ingame_settings
                 self.game.previous_menu = self.game.controls_menu
             self.run_display = False
+
+# controls menu, explains how to navigate menu and play the game
+class end_game(menu):
+    # initilize menu
+    def __init__(self, game):
+        menu.__init__(self, game)
+        self.counter = 0
+        self.stars = pygame.image.load("images/background/game/pregame/stars.png")
+        self.midx, self.midy = self.game.display_W // 2, self.game.display_H // 2
+
+    # Menu loop
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            self.check_input()
+            self.game.display.blit(self.stars, (0, 0))
+
+            if self.game.game_completed:
+                if self.counter < 250:
+                    self.game.draw_text("Game Completed", 200, self.midx, self.midy)
+
+                elif self.counter > 250:
+                    self.game.draw_text("Game Stats", 200, self.midx, self.midy - 400)
+                    self.game.draw_text("Level: " + self.game.game_difficulty, 100, self.midx, self.midy - 150)
+                    self.game.draw_text("Time to complete: " + str(round(self.game.game_time)) + " Seconds", 100, self.midx, self.midy - 50)
+                    self.game.draw_text("Level's Completed: 10", 100, self.midx, self.midy + 50)
+                    self.game.draw_text("Thanks for playing", 100, self.midx, self.midy + 300)
+                    self.game.draw_text("Press enter to continue", 50, self.midx, self.midy + 400)
+            
+            else:
+                self.game.draw_text("Game Over", 200, self.midx, self.midy, (255, 0, 0))
+                self.game.draw_text("Try Again", 100, self.midx, self.midy + 300)
+                self.game.draw_text("Press enter to continue", 50, self.midx, self.midy + 400)
+
+
+
+            self.draw_cursor()
+            self.blit_screen()
+            self.counter += 1
+
+    # update menu
+    def check_input(self):
+        if self.game.start_key:
+            self.game.curr_menu = self.game.main_menu
+            self.game.previous_menu = self.game.end_game
+            self.run_display = False
+            
 
