@@ -187,9 +187,14 @@ class ingame_settingsMenu(menu):
     # check input function that updates the display and cursor
     def check_input(self):
         if self.game.back_key:
-            self.game.curr_menu = self.game.pregame
-            self.game.previous_menu = self.game.ingame_settings
-            self.run_display = False
+            if self.game.in_game[0] and self.game.in_game[1] == "PREGAME":
+                self.game.curr_menu = self.game.pregame
+                self.game.previous_menu = self.game.ingame_settings
+                self.run_display = False
+            elif self.game.in_game[0] and self.game.in_game[1] == "MAIN":
+                self.game.curr_menu = self.game.game_screen
+                self.game.previous_menu = self.game.ingame_settings
+                self.run_display = False
 
         elif self.game.up_key:
             if self.state == "Skin":
@@ -224,6 +229,7 @@ class ingame_settingsMenu(menu):
             elif self.state == "Quit":
                 self.game.curr_menu = self.game.main_menu
                 self.game.previous_menu = self.game.ingame_settings
+                self.game.in_game = (False, "N/A")
             self.run_display = False
 
 
@@ -420,7 +426,7 @@ class skinMenu(menu):
         elif self.game.start_key:
             if self.game.previous_menu == self.game.ingame_settings:
                 self.game.skin = self.state
-                self.game.curr_menu = self.game.previous_menu
+                self.game.curr_menu = self.game.ingame_settings
                 self.game.previous_menu = self.game.skin_menu
                 self.run_display = False
             else:
@@ -518,11 +524,14 @@ class controls_menu(menu):
             self.game.check_events()
             self.check_input()
             self.game.display.blit(self.menu_background, (0, 0))
-            self.game.draw_text("Controls", 200, self.game.display_W / 2, self.game.display_H / 2 - 100)
+            self.game.draw_text("How to play", 200, self.game.display_W / 2, self.game.display_H / 2 - 100)
             self.game.draw_text("Menu Navigation", 100,self.menu_navx, self.menu_navy)
             self.game.draw_text("Navigate Menu's using the arrow keys, enter and backspace", 50, self.menu_navx, self.menu_navy + self.offset)
-            self.game.draw_text("Player controls", 100, self.player_controlsx, self.player_controlsy)
+            
+            self.game.draw_text("Game controls", 100, self.player_controlsx, self.player_controlsy)
             self.game.draw_text("Control the player using WASD keys", 50, self.player_controlsx, self.player_controlsy + self.offset)
+            self.game.draw_text("Task's and onscreen buttons are clickable", 50, self.player_controlsx, self.player_controlsy + 150)
+            self.game.draw_text("Usually, clickable object's are highlited by a yellow box", 50, self.player_controlsx, self.player_controlsy + 200)
             self.draw_cursor()
             self.blit_screen()
 
@@ -549,6 +558,10 @@ class end_game(menu):
     # Menu loop
     def display_menu(self):
         self.run_display = True
+        if self.game.game_completed:
+            pygame.mixer.Sound.play(self.game.victory)
+        else:
+            pygame.mixer.Sound.play(self.game.defeat)
         while self.run_display:
             self.game.check_events()
             self.check_input()
@@ -556,7 +569,7 @@ class end_game(menu):
 
             if self.game.game_completed:
                 if self.counter < 250:
-                    self.game.draw_text("Game Completed", 200, self.midx, self.midy)
+                    self.game.draw_text("Game Completed", 200, self.midx, self.midy, (0, 255, 0))
 
                 elif self.counter > 250:
                     self.game.draw_text("Game Stats", 200, self.midx, self.midy - 400)

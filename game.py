@@ -106,7 +106,8 @@ class pregame_lobby(menu):
         if self.game.previous_menu == self.game.difficulty_menu:
             self.reset()
             self.game.start_time = time.time()
-            
+            pygame.mixer.Sound.play(self.game.start)
+            self.game.in_game = (True, "PREGAME")
         
         while self.run_display:
             self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
@@ -360,6 +361,7 @@ class pregame_lobby(menu):
             self.current_task = "ID CARD"
             self.run_display = False
             self.game.curr_menu = self.game.game_screen
+            self.game.previous_menu = self.game.pregame
             self.game.task_running = False
             self.transition_state = False
             self.counter = 0
@@ -862,6 +864,7 @@ class game_lobby(pregame_lobby):
 
     def reset(self):
         self.current_task = "TURN ON POWER REACTOR"
+        self.power_task = "REACTORS"
         self.game.task_running = False
         self.spawn_coords = [(145, 13), (-6, -75), (-158, 13), (-6, 133)]
         rand_coords = self.spawn_coords[random.randint(0,3)]
@@ -872,6 +875,10 @@ class game_lobby(pregame_lobby):
     def display_menu(self):
         self.run_display = True
         pregame_lobby.get_character(self)
+        if self.game.previous_menu == self.game.pregame:
+            pygame.mixer.Sound.play(self.game.sus)
+            self.game.in_game = (True, "MAIN")
+
         while self.run_display:
             self.game.check_events()
             self.check_input()

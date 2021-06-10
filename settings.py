@@ -38,6 +38,7 @@ class game():
         self.end_game = end_game(self)
         self.curr_menu = self.main_menu # set default menu to main menu
         self.previous_menu = self.main_menu
+        self.in_game = (False, "N/A")
         
         # other varibales
         self.task_running = False
@@ -55,6 +56,12 @@ class game():
         self.highscore_filename = "highscore.txt"
         self.highscore = 0
         self.load_highscore()
+
+        # load sounds
+        self.defeat = pygame.mixer.Sound("sound/defeat.mp3")
+        self.start = pygame.mixer.Sound("sound/start.mp3")
+        self.sus = pygame.mixer.Sound("sound/sus.mp3")
+        self.victory = pygame.mixer.Sound("sound/victory.mp3")
 
     def load_highscore(self):
         self.dir = path.dirname(__file__)
