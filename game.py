@@ -163,6 +163,7 @@ class pregame_lobby(menu):
                 self.buttons()
             self.blit_tasks()
             self.blit_screen()
+            self.game.end_time = time.time()
         
     def reset(self):
         self.spawned = False
@@ -907,6 +908,7 @@ class game_lobby(pregame_lobby):
                 self.blit_tasks()
 
             self.blit_screen()
+            self.game.end_time = time.time()
 
     # menu and gameplay buttons
     def buttons(self):
@@ -1353,9 +1355,7 @@ class game_lobby(pregame_lobby):
             self.chart_course()
 
         elif self.current_task == "END GAME":
-            self.game.end_time = time.time()
             self.game.game_time = self.game.end_time - self.game.start_time
-            print(self.game.game_time)
             self.game.current_level = 11
             self.end_game()
             

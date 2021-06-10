@@ -3,6 +3,7 @@ import pygame
 from spritesheet import *
 import math
 import random
+from os import path
 
 # menu class that will be inherited to furture classes
 class menu():
@@ -501,8 +502,6 @@ class difficulty_menu(menu):
             self.run_display = False
 
 
-
-
 # controls menu, explains how to navigate menu and play the game
 class controls_menu(menu):
     # initilize menu
@@ -562,8 +561,16 @@ class end_game(menu):
                 elif self.counter > 250:
                     self.game.draw_text("Game Stats", 200, self.midx, self.midy - 400)
                     self.game.draw_text("Level: " + self.game.game_difficulty, 100, self.midx, self.midy - 150)
-                    self.game.draw_text("Time to complete: " + str(round(self.game.game_time)) + " Seconds", 100, self.midx, self.midy - 50)
-                    self.game.draw_text("Level's Completed: 10", 100, self.midx, self.midy + 50)
+                    self.game.draw_text("Level's Completed: 10", 100, self.midx, self.midy - 50)
+                    
+                    if self.game.time_elapsed < self.game.highscore:
+                        self.game.draw_text("Time to complete: " + str(round(self.game.game_time)) + " Seconds", 100, self.midx, self.midy + 50)
+                        self.game.draw_text("*Congrats, this is a new highscore*", 100, self.midx, self.midy + 150, (0, 255, 0))
+
+                    else:
+                        self.game.draw_text("Time to complete: " + str(round(self.game.game_time)) + " Seconds", 100, self.midx, self.midy + 50)
+                        self.game.draw_text("Time to beat: " + str(self.game.highscore) + " Seconds", 100, self.midx, self.midy + 150, (255, 0, 0))
+                    
                     self.game.draw_text("Thanks for playing", 100, self.midx, self.midy + 300)
                     self.game.draw_text("Press enter to continue", 50, self.midx, self.midy + 400)
             
@@ -577,10 +584,15 @@ class end_game(menu):
             self.draw_cursor()
             self.blit_screen()
             self.counter += 1
-
+            # if highscore >
     # update menu
     def check_input(self):
         if self.game.start_key:
+            if self.game.game_completed and self.game.time_elapsed < self.game.highscore:
+                with open(path.join(self.game.dir, self.game.highscore_filename), 'w') as f:
+                    f.write(str(self.game.time_elapsed))
+                    self.highscore = self.game.time_elapsed
+
             self.game.curr_menu = self.game.main_menu
             self.game.previous_menu = self.game.end_game
             self.run_display = False

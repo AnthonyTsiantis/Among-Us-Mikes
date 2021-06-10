@@ -2,6 +2,7 @@
 import pygame
 from menu import *
 from game import *
+from os import path
 
 # game class that controls key inputs and what is displayed on screen
 class game():
@@ -37,6 +38,8 @@ class game():
         self.end_game = end_game(self)
         self.curr_menu = self.main_menu # set default menu to main menu
         self.previous_menu = self.main_menu
+        
+        # other varibales
         self.task_running = False
         self.user_string = ''
         self.right_password = False
@@ -49,6 +52,22 @@ class game():
         self.end_time = 0
         self.time_elapsed = 0
         self.game_completed = True
+        self.highscore_filename = "highscore.txt"
+        self.highscore = 0
+        self.load_highscore()
+
+    def load_highscore(self):
+        self.dir = path.dirname(__file__)
+        try:
+            #try to read the file
+            with open(path.join(self.dir, self.highscore_filename), 'r+') as f:
+                self.highscore = int(f.read())
+
+        except:
+            #create the file
+            with open(path.join(self.dir, self.highscore_filename), 'w') as f:
+                f.write("10000")
+                self.highscore = 10000
 
     # game class game loop
     def game_loop(self):
