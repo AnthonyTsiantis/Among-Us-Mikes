@@ -101,6 +101,7 @@ class pregame_lobby(menu):
         
     # game loop
     def display_menu(self):
+        # run the display, load character, play sounds
         self.run_display = True
         self.get_character()
         if self.game.previous_menu == self.game.difficulty_menu:
@@ -109,6 +110,7 @@ class pregame_lobby(menu):
             pygame.mixer.Sound.play(self.game.start)
             self.game.in_game = (True, "PREGAME")
         
+        # display loop
         while self.run_display:
             self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
             
@@ -165,7 +167,8 @@ class pregame_lobby(menu):
             self.blit_tasks()
             self.blit_screen()
             self.game.end_time = time.time()
-        
+    
+    # reset game when completed or quit
     def reset(self):
         self.spawned = False
         self.game.task_running = False
@@ -181,6 +184,9 @@ class pregame_lobby(menu):
         self.upload_progress_rect = pygame.Rect(440, 700, 0, 60)
         self.current_task = "ID CARD"
         self.game.current_level = 0
+        self.filesx, self.filesy = 475, 275
+        self.folder_animation_counter = 0
+        
 
     # menu and gameplay buttons
     def buttons(self):
@@ -191,24 +197,22 @@ class pregame_lobby(menu):
             self.game.curr_menu = self.game.ingame_settings
             self.run_display = False
     
+    # progress bar functions
     def progress_bar(self):
         self.game.display.blit(self.game.progress_bar, (500, 15))
         self.game.progress_bar_rect.width = self.game.current_level * 80
         pygame.draw.rect(self.game.display, (0, 255, 0), self.game.progress_bar_rect)
         self.game.draw_text("Game Progress: Level " + str(self.game.current_level), 40, 650, 45, (0, 0, 0))
-        if self.game.game_difficulty == "Easy":
-            pass
+        self.game.time_elapsed = time.time() - self.game.start_time
+        if self.game.time_elapsed > self.game.game_time_limit:
+            self.game.game_completed = False
+            self.game.curr_menu = self.game.end_game
+            self.run_display = False
         else:
-            self.game.time_elapsed = time.time() - self.game.start_time
-            if self.game.time_elapsed > self.game.game_time_limit:
-                self.game.game_completed = False
-                self.game.curr_menu = self.game.end_game
-                self.run_display = False
-            else:
-                time_remaining = self.game.game_time_limit - self.game.time_elapsed
-                self.game.draw_text("Time Remaining: " + str(round(time_remaining)) + " Seconds", 40, 1150, 45, (0, 0, 0))
+            time_remaining = self.game.game_time_limit - self.game.time_elapsed
+            self.game.draw_text("Time Remaining: " + str(round(time_remaining)) + " Seconds", 40, 1150, 45, (0, 0, 0))
 
-    
+    # id card task function
     def id_card_task(self):
         if pygame.Rect.colliderect(self.player_hitbox, self.id_card_rect):
             self.game.display.blit(self.id_card, (1025, 260))
@@ -224,7 +228,7 @@ class pregame_lobby(menu):
             pygame.draw.rect(self.game.display, (255, 255, 0), self.id_card_rect, 2)
             self.use_button.set_alpha(128)
 
-
+    # unlock computers task function
     def unlock_computer(self):
         if not self.game.task_running:
             pygame.draw.rect(self.game.display, (255, 255, 0), self.computer_rect, 2)
@@ -283,6 +287,7 @@ class pregame_lobby(menu):
                 self.game.task_running = True
                 self.use_button.set_alpha(128)
 
+    # encrpt function used for computer
     def caesar_ciper(self, password, key):
         result = ''
         for i in range(len(password)):
@@ -295,6 +300,7 @@ class pregame_lobby(menu):
                 result += str(int(char) + key)
         return result
 
+    # autopilot function
     def upload_autopilot(self):
         self.game.display.blit(self.upload_base, (350, 100))
         self.game.draw_text("Upload Auto-Pilot Software", 90, 950, 225)
@@ -351,6 +357,7 @@ class pregame_lobby(menu):
         
         self.counter += 1
 
+    # transition screen function used to transition between lobbies
     def transition_screen(self):
         if self.counter < 1000:
             self.counter += 5
@@ -367,6 +374,7 @@ class pregame_lobby(menu):
             self.counter = 0
             self.reset()
 
+    # function used to determine what task the player is on
     def blit_tasks(self):
         if self.current_task == "ID CARD":
             self.game.current_level = 1
@@ -861,15 +869,38 @@ class game_lobby(pregame_lobby):
         self.folder_upload_button = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/upload.png").convert_alpha(), (200, 62))
         self.folder_progress_bar = pygame.transform.scale(pygame.image.load("images/tasks/Upload Data/progress bar.png").convert_alpha(), (1017, 60))
 
-
+    # reset function recalls the initilization function
     def reset(self):
-        self.current_task = "TURN ON POWER REACTOR"
-        self.power_task = "REACTORS"
-        self.game.task_running = False
+        self.status = "idle_r"
+        self.playerx, self.playery = (910, 463)
+        self.scrollx, self.scrolly = (0, 0)
+        self.walk_counter = 0
         self.spawn_coords = [(145, 13), (-6, -75), (-158, 13), (-6, 133)]
         rand_coords = self.spawn_coords[random.randint(0,3)]
         self.scrollx, self.scrolly = rand_coords
-        self.counter = 0
+        self.spawned = False
+        self.screen_index = 0
+        self.oxygen_index = 0
+        self.comms_index = 0
+        self.engine_index = 0
+        self.engine_bolt_index = 0
+        self.engine_puff_index = 0
+        self.medbay_scan_index = 0
+        self.security_screen_index = 0
+        self.security_server_index = 0
+        self.animation_index = 0
+        self.idle_left = False 
+        self.border_color = (255, 0, 0, 0) # change final value to 100 to see boundaries 
+        self.player_hitbox = pygame.Rect(self.playerx, self.playery, 50, 77)
+        self.show_fuel = True
+        self.power_task = "REACTORS"
+        self.fuel_task_rect = None
+        self.engine_fuel_rect = pygame.Rect(500, 200, 614, 580)
+        self.fueled = False
+        self.powered = False 
+        self.initiate_scan = False
+        self.current_task = "TURN ON POWER REACTOR"
+        self.folder_progress = 0
 
     # game loop
     def display_menu(self):
@@ -926,23 +957,22 @@ class game_lobby(pregame_lobby):
             self.game.curr_menu = self.game.ingame_settings
             self.run_display = False
 
+    # progress bar function
     def progress_bar(self):
         self.game.display.blit(self.game.progress_bar, (500, 15))
         self.game.progress_bar_rect.width = self.game.current_level * 80
         pygame.draw.rect(self.game.display, (0, 255, 0), self.game.progress_bar_rect)
         self.game.draw_text("Game Progress: Level " + str(self.game.current_level), 40, 650, 45, (0, 0, 0))
-        if self.game.game_difficulty == "Easy":
-            pass
+        self.game.time_elapsed = time.time() - self.game.start_time
+        if self.game.time_elapsed > self.game.game_time_limit:
+            self.game.game_completed = False
+            self.game.curr_menu = self.game.end_game
+            self.run_display = False
         else:
-            self.game.time_elapsed = time.time() - self.game.start_time
-            if self.game.time_elapsed > self.game.game_time_limit:
-                self.game.game_completed = False
-                self.game.curr_menu = self.game.end_game
-                self.run_display = False
-            else:
-                time_remaining = self.game.game_time_limit - self.game.time_elapsed
-                self.game.draw_text("Time Remaining: " + str(round(time_remaining)) + " Seconds", 40, 1150, 45, (0, 0, 0))
+            time_remaining = self.game.game_time_limit - self.game.time_elapsed
+            self.game.draw_text("Time Remaining: " + str(round(time_remaining)) + " Seconds", 40, 1150, 45, (0, 0, 0))
 
+    # calibrate tasks function
     def calibrate_task(self):
         self.calibrate_rotate = (self.calibrate_rotate + 2) % 360
         self.game.display.blit(self.calibrate_base, (500, 50))
@@ -1079,6 +1109,7 @@ class game_lobby(pregame_lobby):
             self.game.display.blit(self.calibrate_gauge_t, (1100, 670))
             self.game.display.blit(rotated_image, new_rect)
 
+    # turn on power in electrical function
     def turn_on_power_electrical(self):
         self.electrical_task_rect = pygame.Rect(348 + self.scrollx, 1202 + self.scrolly, 33, 24)
         if pygame.Rect.colliderect(self.player_hitbox, self.electrical_task_rect):
@@ -1095,6 +1126,7 @@ class game_lobby(pregame_lobby):
         if self.game.task_running:
             self.calibrate_task()
 
+    # turn on power in reactor function
     def turn_on_power_reactor(self):
         self.reactor_task_rect = pygame.Rect(-835 + self.scrollx, 1000 + self.scrolly, 56, 60)
         if pygame.Rect.colliderect(self.player_hitbox, self.reactor_task_rect):
@@ -1111,6 +1143,7 @@ class game_lobby(pregame_lobby):
         if self.game.task_running:
             self.calibrate_task()
     
+    # pick up fuel function
     def pick_up_fuel(self):
         fuel_rect = pygame.Rect(750 + self.scrollx, 1700 + self.scrolly, 36, 47)
         
@@ -1127,6 +1160,7 @@ class game_lobby(pregame_lobby):
             pygame.draw.rect(self.game.display, (255, 255, 0), fuel_rect, 2)
             self.use_button.set_alpha(128)
 
+    # fuel engines function
     def fuel_engine(self, lower):
         if lower:
             self.fuel_task_rect = pygame.Rect(-510 + self.scrollx, 1335 + self.scrolly, 36, 24)
@@ -1187,6 +1221,7 @@ class game_lobby(pregame_lobby):
 
             self.game.display.blit(self.fuel_base1, (500, 100))
 
+    # biometric scan function
     def biometric_scan(self):
         if not self.game.task_running:
             scan_rect = pygame.Rect(325 + self.scrollx, 960 + self.scrolly, 147, 93)
@@ -1226,7 +1261,8 @@ class game_lobby(pregame_lobby):
                 self.game.draw_text("Scan will complete shortly...", 50, 950, 900, (255, 255, 255))
             
             self.counter += 5
-        
+
+    # chart course function     
     def chart_course(self):
         if not self.game.task_running:
             task_rect = pygame.Rect(2531 + self.scrollx, 905 + self.scrolly, 76, 158)
@@ -1295,9 +1331,10 @@ class game_lobby(pregame_lobby):
             
             self.counter += 1
 
+    # end game function
     def end_game(self):
         self.game.task_running = True
-        if self.counter < 400:
+        if self.counter < 450:
             self.scrollx += 10
             self.playerx += 10
             self.counter += 1
@@ -1308,6 +1345,7 @@ class game_lobby(pregame_lobby):
             self.reset()
             self.game.curr_menu = self.game.end_game
 
+    # determine and display tasks function
     def blit_tasks(self):
         if self.current_task == "TURN ON POWER REACTOR":
             self.game.current_level = 4

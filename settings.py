@@ -51,7 +51,7 @@ class game():
         self.game_time_limit = 0
         self.start_time = 0
         self.end_time = 0
-        self.time_elapsed = 0
+        self.time_elapsed = 1
         self.game_completed = True
         self.highscore_filename = "highscore.txt"
         self.highscore = 0

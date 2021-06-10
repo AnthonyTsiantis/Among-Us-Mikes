@@ -497,7 +497,7 @@ class difficulty_menu(menu):
             self.game.previous_menu = self.game.difficulty_menu
             self.game.game_difficulty = self.level
             if self.level == 'Easy':
-                self.game.game_time_limit = None
+                self.game.game_time_limit = 900
 
             elif self.level == 'Medium':
                 self.game.game_time_limit = 600
